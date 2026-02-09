@@ -6,87 +6,103 @@
 <title>CONSIA</title>
 
 <style>
-body{
-margin:0;
-background:black;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-overflow:hidden;
-font-family:Helvetica, Arial, sans-serif;
+html, body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-#logo{
-position:absolute;
-color:white;
-font-size:28px;
-letter-spacing:8px;
-transition:1.5s;
+/* LOADER /
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-#avatar{
-position:absolute;
-width:100%;
-height:100%;
-object-fit:cover;
-opacity:0;
-transition:2s;
+#loader h1 {
+  color: white;
+  letter-spacing: 12px;
+  font-weight: 300;
+  animation: fade 2s ease-in-out infinite;
 }
 
-.eye{
-position:absolute;
-width:14px;
-height:14px;
-background:#00ffff;
-border-radius:50%;
-box-shadow:0 0 30px #00ffff;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-opacity:0;
-transition:2s;
+@keyframes fade {
+  0% {opacity: 0.2;}
+  50% {opacity: 1;}
+  100% {opacity: 0.2;}
+}
+
+/ VIDEO */
+#videoContainer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
 </head>
 
 <body>
 
-<div id="logo">CONSIA</div>
+<!-- LOADER -->
+<div id="loader">
+  <h1>CONSIA</h1>
+</div>
 
-<video id="avatar" muted playsinline>
-<source src="avatar.mp4" type="video/mp4">
-</video>
+<!-- VIDEO -->
+<div id="videoContainer">
+  <video id="avatarVideo" autoplay muted playsinline loop>
+    <source src="avatar.mp4" type="video/mp4">
+  </video>
+</div>
 
-<audio id="voice" src="voice.wav"></audio>
-<audio id="water" src="water.wav" loop></audio>
-
-<div class="eye" id="eye"></div>
+<!-- AUDIOS -->
+<audio id="voiceAudio" src="voice.wav"></audio>
+<audio id="waterAudio" src="water.wav" loop></audio>
 
 <script>
 
-function activar(){
+// Espera Loader
+setTimeout(() => {
 
-document.getElementById("logo").style.opacity="0";
+  // Oculta loader
+  document.getElementById("loader").style.display = "none";
 
-let avatar=document.getElementById("avatar");
-avatar.style.opacity="1";
-avatar.play();
+  // Muestra video
+  document.getElementById("videoContainer").style.display = "block";
 
-let voice=document.getElementById("voice");
-voice.play();
+  const video = document.getElementById("avatarVideo");
+  const voice = document.getElementById("voiceAudio");
+  const water = document.getElementById("waterAudio");
 
-let water=document.getElementById("water");
-water.volume=0.4;
-water.play();
+  // Activa sonido video
+  video.muted = false;
+  video.play().catch(()=>{});
 
-document.getElementById("eye").style.opacity="1";
+  // Agua ambiente
+  water.volume = 0.3;
+  water.play().catch(()=>{});
 
-}
+  // Voz
+  setTimeout(() => {
+    voice.play().catch(()=>{});
+  }, 1500);
 
-// 👇 Trigger táctil real iOS
-document.addEventListener("touchstart", activar, {once:true});
-document.addEventListener("click", activar, {once:true});
+}, 3000);
 
 </script>
 

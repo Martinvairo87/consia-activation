@@ -24,7 +24,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 9999;
 }
 
 #loader h1 {
@@ -65,7 +65,7 @@ video {
 
 <!-- VIDEO -->
 <div id="videoContainer">
-  <video id="avatarVideo" autoplay muted playsinline loop>
+  <video id="avatarVideo" muted playsinline loop>
     <source src="avatar.mp4" type="video/mp4">
   </video>
 </div>
@@ -76,41 +76,34 @@ video {
 
 <script>
 
-function startExperience() {
+// Espera que cargue todo
+window.onload = () => {
 
-  document.getElementById("loader").style.display = "none";
-  document.getElementById("videoContainer").style.display = "block";
-
-  const video = document.getElementById("avatarVideo");
-  const voice = document.getElementById("voiceAudio");
-  const water = document.getElementById("waterAudio");
-
-  // Video
-  video.muted = false;
-  video.play().catch(()=>{});
-
-  // Agua ambiente
-  water.volume = 0.25;
-  water.play().catch(()=>{});
-
-  // Voz luego
   setTimeout(() => {
-    voice.volume = 1;
-    voice.play().catch(()=>{});
-  }, 1200);
-}
 
-// Loader 3 seg
-setTimeout(() => {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("videoContainer").style.display = "block";
 
-  // iPhone necesita interacción
-  document.body.addEventListener("click", startExperience, { once:true });
+    const video = document.getElementById("avatarVideo");
+    const voice = document.getElementById("voiceAudio");
+    const water = document.getElementById("waterAudio");
 
-  // Si desktop
-  startExperience();
+    // Video autoplay
+    video.muted = false;
+    video.play().catch(()=>{});
 
-}, 3000);
+    // Agua ambiente
+    water.volume = 0.25;
+    water.play().catch(()=>{});
 
+    // Voz
+    setTimeout(() => {
+      voice.play().catch(()=>{});
+    }, 1200);
+
+  }, 3000);
+
+};
 </script>
 
 </body>

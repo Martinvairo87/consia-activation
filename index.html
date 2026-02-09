@@ -76,31 +76,38 @@ video {
 
 <script>
 
-// Espera Loader
-setTimeout(() => {
+function startExperience() {
 
-  // Oculta loader
   document.getElementById("loader").style.display = "none";
-
-  // Muestra video
   document.getElementById("videoContainer").style.display = "block";
 
   const video = document.getElementById("avatarVideo");
   const voice = document.getElementById("voiceAudio");
   const water = document.getElementById("waterAudio");
 
-  // Activa sonido video
+  // Video
   video.muted = false;
   video.play().catch(()=>{});
 
   // Agua ambiente
-  water.volume = 0.3;
+  water.volume = 0.25;
   water.play().catch(()=>{});
 
-  // Voz
+  // Voz luego
   setTimeout(() => {
+    voice.volume = 1;
     voice.play().catch(()=>{});
-  }, 1500);
+  }, 1200);
+}
+
+// Loader 3 seg
+setTimeout(() => {
+
+  // iPhone necesita interacción
+  document.body.addEventListener("click", startExperience, { once:true });
+
+  // Si desktop
+  startExperience();
 
 }, 3000);
 

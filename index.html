@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>CONSIA LIVE</title>
+<title>CONSIA LIVE · Teletransportación</title>
 <style>
   :root{
     --glass: rgba(0,0,0,.55);
@@ -15,9 +15,16 @@
   }
   html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;}
   #stage{position:fixed;inset:0;background:#000;}
-  video, img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  #fallbackImg{display:none;}
+  .layer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  #bgVideo, #bgImg, #avatarVideo, #avatarImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  #bgVideo, #bgImg{filter:saturate(1.05) contrast(1.03);}
+  #avatarVideo, #avatarImg{filter:saturate(1.08) contrast(1.04);}
+  #bgImg, #avatarImg{display:none;}
   #fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen;opacity:.95;}
+
+  /* transitions */
+  .fadeIn{animation:fadeIn .55s ease both;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
   /* loader */
   #loader{
@@ -35,7 +42,7 @@
   }
   #tap .card{
     background:var(--glass);border:1px solid var(--line);border-radius:18px;
-    padding:18px 18px;max-width:340px;color:var(--txt);text-align:center;
+    padding:18px 18px;max-width:360px;color:var(--txt);text-align:center;
   }
   #tap .hint{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.25;}
 
@@ -56,8 +63,8 @@
   #chat{
     position:fixed;right:14px;
     bottom: calc(84px + env(safe-area-inset-bottom));
-    width:min(380px,calc(100vw - 28px));
-    height:min(340px,calc(100vh - 180px));
+    width:min(420px,calc(100vw - 28px));
+    height:min(360px,calc(100vh - 180px));
     z-index:30;background:var(--glass);border:1px solid var(--line);
     border-radius:18px;backdrop-filter:blur(16px);display:flex;flex-direction:column;overflow:hidden;
   }
@@ -76,29 +83,55 @@
   .c{color:var(--ok)}
   .small{font-size:12px;color:var(--muted)}
 
-  /* tiny status */
+  /* status */
   #status{
     position:fixed;left:14px;bottom: calc(14px + env(safe-area-inset-bottom));z-index:30;
     padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);
     color:var(--muted);font-size:12px;backdrop-filter:blur(10px)
   }
 
-  /* mobile: chat full-width */
+  /* teleport pill */
+  #telePill{
+    position:fixed;left:14px;top: calc(14px + env(safe-area-inset-top));z-index:30;
+    padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);
+    color:var(--muted);font-size:12px;backdrop-filter:blur(10px)
+  }
+
+  /* camera modal */
+  #camModal{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60;
+    background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
+    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+  }
+  #camBox{
+    width:min(520px,calc(100vw - 28px));
+    background:rgba(0,0,0,.6);
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:hidden;
+  }
+  #camTop{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+  #camVid{width:100%;height:340px;object-fit:cover;background:#000}
   @media (max-width: 640px){
     #chat{left:14px;right:14px;width:auto}
+    #camVid{height:260px}
   }
 </style>
 </head>
 <body>
 
 <div id="stage">
-  <!-- TU video local del repo -->
-  <video id="v" playsinline muted loop preload="auto" poster="avatar-poster.jpg">
+  <!-- BACKGROUND (teleport) -->
+  <video id="bgVideo" class="layer" playsinline muted loop preload="auto">
+    <source src="./bg.mp4" type="video/mp4">
+  </video>
+  <img id="bgImg" class="layer" src="./bg.jpg" alt="Background"/>
+
+  <!-- AVATAR -->
+  <video id="avatarVideo" class="layer" playsinline muted loop preload="auto" poster="avatar-poster.jpg">
     <source src="./avatar.mp4" type="video/mp4">
   </video>
-
-  <!-- Fallback -->
-  <img id="fallbackImg" src="./avatar.jpg" alt="CONSIA" />
+  <img id="avatarImg" class="layer" src="./avatar.jpg" alt="CONSIA"/>
 
   <canvas id="fx"></canvas>
 </div>
@@ -107,17 +140,19 @@
 
 <div id="tap">
   <div class="card">
-    <div style="font-size:16px;letter-spacing:.12em;margin-bottom:10px">CONSIA</div>
+    <div style="font-size:16px;letter-spacing:.12em;margin-bottom:10px">CONSIA · LIVE</div>
     <button id="tapBtn">Un toque para iniciar</button>
-    <div class="hint">Audio / micrófono pueden requerir 1 toque. Después queda 1-click.</div>
+    <div class="hint">Después queda 1-click. (Audio / micrófono / cámara pueden requerir 1 toque).</div>
   </div>
 </div>
+
+<div id="telePill">Teletransportación: <b id="teleState">ON</b></div>
 
 <div id="chat">
   <div id="chatHeader">
     <div id="leftHead">
       <span class="sys">CONSIA</span>
-      <span id="mode">LIVE · Auto-Idioma · Voz Natural</span>
+      <span id="mode">LIVE · Voz Natural · Teleport</span>
     </div>
     <select id="lang" title="Idioma / Translate">
       <option value="auto" selected>Auto</option>
@@ -131,7 +166,7 @@
   </div>
   <div id="log"></div>
   <div id="inputRow">
-    <input id="msg" placeholder="Escribí o hablá…" />
+    <input id="msg" placeholder="Escribí o decí: ‘teletransportame a…’" />
     <button id="send">Enviar</button>
   </div>
 </div>
@@ -140,28 +175,39 @@
   <button id="talk">Hablar</button>
   <button id="stop">Stop</button>
   <button id="audio">Ambiente</button>
+  <button id="teleport">Teleport</button>
+  <button id="sign">Señas</button>
   <button id="unlock">Face ID</button>
   <button id="captions">Subtítulos</button>
 </div>
 
 <div id="status">Inicializando…</div>
 
+<!-- Modo señas (cámara) -->
+<div id="camModal">
+  <div id="camBox">
+    <div id="camTop">
+      <div class="sys">CONSIA · Modo Señas</div>
+      <button id="camClose">Cerrar</button>
+    </div>
+    <video id="camVid" autoplay playsinline muted></video>
+    <div style="padding:10px 12px;border-top:1px solid var(--line)" class="small">
+      Mostrá señas o gestos. (La interpretación inteligente se activa vía tu API /scene cuando quieras.)
+    </div>
+  </div>
+</div>
+
 <script>
 /* =========================
-   CONFIG (NO TOCAR O SOLO CAMBIAR API_URL)
+   CONFIG
 ========================= */
-// Tu endpoint real (Worker):
-const API_URL = "https://api.consia.world/ask"; // o tu workers.dev para test
-
-// Si tu API devuelve audio, soportamos:
-// - { audio_b64: "..." , audio_mime: "audio/mpeg" }
-// - { audio_url: "https://..." }
+const API_URL = "https://api.consia.world/ask";
+const SCENE_URL = "https://api.consia.world/scene"; // opcional: si no existe, usamos escenas locales
 const AUDIO_PREFERRED = true;
 
 /* =========================
    ELEMENTS
 ========================= */
-const v = document.getElementById("v");
 const loader = document.getElementById("loader");
 const tap = document.getElementById("tap");
 const tapBtn = document.getElementById("tapBtn");
@@ -170,7 +216,18 @@ const msgEl = document.getElementById("msg");
 const sendBtn = document.getElementById("send");
 const statusEl = document.getElementById("status");
 const langEl = document.getElementById("lang");
-const fallbackImg = document.getElementById("fallbackImg");
+
+const bgVideo = document.getElementById("bgVideo");
+const bgImg = document.getElementById("bgImg");
+const avatarVideo = document.getElementById("avatarVideo");
+const avatarImg = document.getElementById("avatarImg");
+
+const teleBtn = document.getElementById("teleport");
+const teleStateEl = document.getElementById("teleState");
+
+const camModal = document.getElementById("camModal");
+const camVid = document.getElementById("camVid");
+const camClose = document.getElementById("camClose");
 
 /* =========================
    STATUS / LOG
@@ -185,7 +242,7 @@ function addLine(cls, text){
 }
 
 /* =========================
-   AUTO LOCALE (device)
+   LOCALE
 ========================= */
 function deviceLocale(){
   const nav = (navigator.language || "es").toLowerCase();
@@ -205,449 +262,19 @@ function tz(){
 }
 
 /* =========================
-   NATURAL VOICE (best available)
+   VOICE (best available)
 ========================= */
 let VOICES = [];
-let voiceReady = false;
-function refreshVoices(){
-  VOICES = speechSynthesis.getVoices() || [];
-  if(VOICES.length) voiceReady = true;
-}
+function refreshVoices(){ VOICES = speechSynthesis.getVoices() || []; }
 refreshVoices();
 speechSynthesis.onvoiceschanged = refreshVoices;
 
 function scoreVoice(voice, lang){
   const name = (voice.name || "").toLowerCase();
   const vlang = (voice.lang || "").toLowerCase();
-
   let s = 0;
-  if(vlang.startsWith(lang)) s += 50;
-  if(vlang.startsWith(lang + "-")) s += 55;
-
-  // Prefer “natural/neural” voices (best-effort heuristics)
+  if(vlang.startsWith(lang+"-")) s += 60;
+  if(vlang.startsWith(lang)) s += 55;
   if(name.includes("neural")) s += 45;
   if(name.includes("premium")) s += 35;
-  if(name.includes("enhanced")) s += 30;
-  if(name.includes("natural")) s += 30;
-
-  // Prefer Apple voices on iOS/macOS
-  if(name.includes("siri")) s += 20;
-  if(name.includes("apple")) s += 15;
-
-  // Penalize clearly robotic/legacy
-  if(name.includes("compact")) s -= 10;
-  if(name.includes("google") && name.includes("español")) s += 10;
-
-  // Slight preference for default
-  if(voice.default) s += 5;
-
-  return s;
-}
-
-function pickBestVoice(lang){
-  if(!VOICES || !VOICES.length) return null;
-  let best = null, bestS = -1e9;
-  for(const v of VOICES){
-    const s = scoreVoice(v, lang);
-    if(s > bestS){ bestS = s; best = v; }
-  }
-  return best;
-}
-
-let speaking = false;
-let captionsOn = true;
-let ttsAudio = null;
-
-function stopAllAudio(){
-  try{ if(ttsAudio){ ttsAudio.pause(); ttsAudio = null; } }catch(e){}
-  try{ speechSynthesis.cancel(); }catch(e){}
-  speaking = false;
-}
-
-function speakNative(text){
-  speaking = true;
-  try{ speechSynthesis.cancel(); }catch(e){}
-  const u = new SpeechSynthesisUtterance(text);
-
-  const lang = pickTargetLang();
-  u.lang = lang === "pt" ? "pt-BR" : (lang === "en" ? "en-US" : (lang === "fr" ? "fr-FR" : (lang==="it"?"it-IT":(lang==="de"?"de-DE":"es-ES"))));
-
-  // pick best voice
-  const vv = pickBestVoice(lang);
-  if(vv) u.voice = vv;
-
-  // Natural settings
-  u.rate = 1.0;
-  u.pitch = 1.0;
-  u.volume = 1.0;
-
-  u.onend = ()=>{ speaking = false; };
-  u.onerror = ()=>{ speaking = false; };
-  speechSynthesis.speak(u);
-}
-
-/* If API returns audio -> play it (more natural than browser voice) */
-async function speakFromApiAudio(payload){
-  // payload: {audio_b64, audio_mime} OR {audio_url}
-  try{
-    stopAllAudio();
-    speaking = true;
-
-    let src = "";
-    if(payload.audio_url){
-      src = payload.audio_url;
-    }else if(payload.audio_b64){
-      const mime = payload.audio_mime || "audio/mpeg";
-      src = `data:${mime};base64,${payload.audio_b64}`;
-    }else{
-      speaking = false;
-      return false;
-    }
-
-    ttsAudio = new Audio(src);
-    ttsAudio.onended = ()=>{ speaking = false; };
-    ttsAudio.onerror = ()=>{ speaking = false; };
-    await ttsAudio.play();
-    return true;
-  }catch(e){
-    speaking = false;
-    return false;
-  }
-}
-
-async function speak(text, apiAudioPayload){
-  // Prefer API audio if present
-  if(AUDIO_PREFERRED && apiAudioPayload){
-    const ok = await speakFromApiAudio(apiAudioPayload);
-    if(ok) return;
-  }
-  speakNative(text);
-}
-
-/* =========================
-   MIC (STT)
-========================= */
-let rec = null;
-function startSTT(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){
-    addLine("sys","CONSIA: Tu navegador no soporta reconocimiento de voz. Usá chat.");
-    speak("Tu navegador no soporta reconocimiento de voz. Usá chat.");
-    return;
-  }
-  if(rec){ try{ rec.stop(); }catch(e){} rec=null; }
-
-  rec = new SR();
-  const lang = pickTargetLang();
-  rec.lang = lang === "pt" ? "pt-BR" : (lang === "en" ? "en-US" : (lang === "fr" ? "fr-FR" : (lang==="it"?"it-IT":(lang==="de"?"de-DE":"es-ES"))));
-  rec.interimResults = false;
-
-  rec.onresult = (e)=>{
-    const t = e.results?.[0]?.[0]?.transcript || "";
-    if(t.trim()){
-      addLine("me","Usuario: " + t);
-      askConsia(t);
-    }
-  };
-  rec.onerror = ()=>{};
-  rec.onend = ()=>{};
-  rec.start();
-}
-
-/* =========================
-   AMBIENTE
-========================= */
-let ambient = null;
-let ambientOn = false;
-async function toggleAmbient(){
-  if(!ambient){
-    ambient = new Audio("./water.wav");
-    ambient.loop = true;
-    ambient.volume = 0.22;
-  }
-  ambientOn = !ambientOn;
-  try{
-    if(ambientOn){
-      await ambient.play();
-      addLine("sys","(Ambiente ON)");
-    }else{
-      ambient.pause();
-      addLine("sys","(Ambiente OFF)");
-    }
-  }catch(e){
-    showTap();
-  }
-}
-
-/* =========================
-   “FACE ID” (Passkey local demo)
-========================= */
-async function faceIdUnlock(){
-  if(!window.PublicKeyCredential){
-    addLine("sys","CONSIA: Face ID no disponible acá. Usá chat/voz.");
-    speak("Face ID no disponible acá. Usá chat o voz.");
-    return;
-  }
-
-  const have = localStorage.getItem("consia_passkey") === "1";
-  const rp = { name:"CONSIA", id: location.hostname };
-  const user = { id: new TextEncoder().encode("consia-owner"), name:"owner@consia", displayName:"CONSIA Owner" };
-
-  try{
-    if(!have){
-      await navigator.credentials.create({
-        publicKey:{
-          rp, user,
-          pubKeyCredParams:[{type:"public-key", alg:-7}],
-          challenge: crypto.getRandomValues(new Uint8Array(32)),
-          authenticatorSelection:{ userVerification:"required" },
-          timeout: 60000,
-          attestation:"none"
-        }
-      });
-      localStorage.setItem("consia_passkey","1");
-      addLine("sys","CONSIA: Owner Mode habilitado (Face ID).");
-      speak("Owner Mode habilitado.");
-      return;
-    }
-
-    await navigator.credentials.get({
-      publicKey:{
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
-        timeout: 60000,
-        userVerification:"required"
-      }
-    });
-    addLine("sys","CONSIA: Owner Mode OK.");
-    speak("Owner Mode OK.");
-  }catch(e){
-    addLine("sys","CONSIA: Face ID cancelado.");
-  }
-}
-
-/* =========================
-   CONSIA API
-========================= */
-async function askConsia(userText){
-  setStatus("Pensando…");
-  const lang = pickTargetLang();
-
-  try{
-    const res = await fetch(API_URL, {
-      method:"POST",
-      headers:{ "content-type":"application/json" },
-      body: JSON.stringify({
-        message: userText,
-        lang,
-        locale: navigator.language || "",
-        timezone: tz(),
-        mode: "LIVE",
-        proactive_translate: true,
-        // flags “top” (tu Worker puede usarlas o ignorarlas)
-        features: {
-          voice: true,
-          captions: captionsOn,
-          multimodal: false,
-          sign_mode: true
-        }
-      })
-    });
-
-    const data = await res.json().catch(()=>({}));
-    const reply = (data && (data.text || data.reply || data.message)) || "CONSIA activo. Te escucho. Repetí tu consulta.";
-
-    if(captionsOn) addLine("c","CONSIA: " + reply);
-
-    // Audio preferido si viene del server (más natural)
-    const apiAudioPayload = (data && (data.audio_b64 || data.audio_url)) ? {
-      audio_b64: data.audio_b64,
-      audio_mime: data.audio_mime,
-      audio_url: data.audio_url
-    } : null;
-
-    await speak(reply, apiAudioPayload);
-
-    setStatus("Listo");
-    pulseMouthFor(Math.min(2600, 900 + reply.length * 10));
-  }catch(e){
-    if(captionsOn) addLine("sys","CONSIA: No pude conectar con la API. Probá de nuevo.");
-    await speak("No pude conectar con la API. Probá de nuevo.");
-    setStatus("Sin conexión");
-    pulseMouthFor(1400);
-  }
-}
-
-/* =========================
-   LOADER / AUTOPLAY SAFE
-========================= */
-let started = false;
-
-function hideLoader(){
-  loader.classList.add("hidden");
-  setTimeout(()=> loader.style.display="none", 380);
-}
-function showTap(){ tap.style.display="flex"; }
-function hideTap(){ tap.style.display="none"; }
-
-function tryPlayVideo(){
-  return v.play().then(()=>true).catch(()=>false);
-}
-
-async function bootstrap(){
-  setStatus("Cargando avatar…");
-  // intento autoplay muted
-  const ok = await tryPlayVideo();
-  if(!ok){
-    showTap();
-    setStatus("Un toque para iniciar");
-  }
-
-  // FAILSAFE: nunca pantalla negra eterna
-  setTimeout(()=>{
-    if(!started){
-      hideLoader();
-      started = true;
-      setStatus("Listo");
-      consiaIntro();
-    }
-  }, 2000);
-
-  // Si el video no carga, fallback
-  setTimeout(()=>{
-    if(v.readyState < 2){
-      fallbackImg.style.display = "block";
-      v.style.display = "none";
-      if(!started){
-        hideLoader();
-        started = true;
-        setStatus("Listo (fallback)");
-        consiaIntro();
-      }
-    }
-  }, 3500);
-
-  v.addEventListener("canplay", ()=>{
-    if(started) return;
-    hideLoader();
-    started = true;
-    setStatus("Listo");
-    consiaIntro();
-  }, { once:true });
-
-  v.addEventListener("error", ()=>{
-    fallbackImg.style.display = "block";
-    v.style.display = "none";
-    if(!started){
-      hideLoader();
-      started = true;
-      setStatus("Listo (fallback)");
-      consiaIntro();
-    }
-  }, { once:true });
-}
-
-tapBtn.onclick = async ()=>{
-  hideTap();
-  await tryPlayVideo();
-  if(!started){
-    hideLoader();
-    started = true;
-    setStatus("Listo");
-    consiaIntro();
-  }
-};
-
-/* =========================
-   INTRO (proactivo)
-========================= */
-function consiaIntro(){
-  if(captionsOn){
-    addLine("sys","CONSIA: Listo. Podés hablar 🎙️ o escribir. (Idioma Auto · Traducción proactiva)");
-    addLine("small","Tip: si tu navegador tiene una voz “Neural/Premium”, CONSIA la elige sola.");
-  }
-  speak("CONSIA listo. Podés hablar o escribir. Idioma automático. Traducción proactiva.");
-  pulseMouthFor(1700);
-}
-
-/* =========================
-   UI EVENTS
-========================= */
-document.getElementById("talk").onclick = startSTT;
-document.getElementById("stop").onclick = ()=>{ try{ if(rec) rec.stop(); }catch(e){} stopAllAudio(); };
-document.getElementById("audio").onclick = toggleAmbient;
-document.getElementById("unlock").onclick = faceIdUnlock;
-document.getElementById("captions").onclick = ()=>{
-  captionsOn = !captionsOn;
-  addLine("sys", captionsOn ? "(Subtítulos ON)" : "(Subtítulos OFF)");
-};
-
-sendBtn.onclick = ()=>{
-  const t = msgEl.value.trim();
-  if(!t) return;
-  msgEl.value = "";
-  if(captionsOn) addLine("me","Usuario: " + t);
-  askConsia(t);
-};
-msgEl.addEventListener("keydown",(e)=>{ if(e.key === "Enter") sendBtn.click(); });
-
-/* =========================
-   LIP / BLINK FX (visual)
-========================= */
-const fx = document.getElementById("fx");
-const ctx = fx.getContext("2d");
-function resizeFx(){ fx.width = innerWidth; fx.height = innerHeight; }
-addEventListener("resize", resizeFx);
-resizeFx();
-
-let mouthAmp = 0;
-let blinkPhase = 0;
-let breath = 0;
-
-function pulseMouthFor(ms){
-  const t0 = performance.now();
-  function tick(t){
-    const p = Math.min(1, (t - t0) / ms);
-    mouthAmp = (1 - p);
-    if(p < 1) requestAnimationFrame(tick);
-  }
-  mouthAmp = 1;
-  requestAnimationFrame(tick);
-}
-
-function drawFX(){
-  ctx.clearRect(0,0,fx.width,fx.height);
-
-  breath += 0.012;
-  const glow = (Math.sin(breath)*0.10 + 0.18);
-
-  // halo suave (sensación “vivo”)
-  ctx.fillStyle = `rgba(120,200,255,${glow})`;
-  ctx.beginPath();
-  ctx.arc(fx.width*0.5, fx.height*0.56, Math.min(fx.width,fx.height)*0.20, 0, Math.PI*2);
-  ctx.fill();
-
-  // parpadeo (visual)
-  blinkPhase += 0.018;
-  if(Math.sin(blinkPhase) > 0.996){
-    ctx.fillStyle = "rgba(210,240,255,.28)";
-    ctx.fillRect(fx.width*0.5 - 100, fx.height*0.33, 200, 10);
-  }
-
-  // “boca” (visual)
-  const talking = speaking ? 1 : 0;
-  const open = talking * (8 + 18*Math.abs(Math.sin(performance.now()/95))) + (mouthAmp*10);
-  ctx.strokeStyle = "rgba(190,245,255,.65)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.ellipse(fx.width*0.5, fx.height*0.72, 60, 10 + open, 0, 0, Math.PI*2);
-  ctx.stroke();
-
-  requestAnimationFrame(drawFX);
-}
-drawFX();
-
-/* START */
-bootstrap();
-</script>
-</body>
-</html>
+  if

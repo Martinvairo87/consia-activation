@@ -1,18 +1,20 @@
+}
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CONSIA</title>
+<title>CONSIA LIVE</title>
 
 <style>
-html, body{
+html,body{
 margin:0;
 padding:0;
 background:black;
 height:100%;
 overflow:hidden;
-font-family:Arial, Helvetica, sans-serif;
+font-family:Arial;
+color:white;
 }
 
 /* LOADER /
@@ -28,10 +30,8 @@ z-index:9999;
 }
 
 #loader h1{
-color:white;
 letter-spacing:12px;
-font-weight:300;
-animation:fade 2s ease-in-out infinite;
+animation:fade 2s infinite;
 }
 
 @keyframes fade{
@@ -41,101 +41,142 @@ animation:fade 2s ease-in-out infinite;
 }
 
 / VIDEO /
-#videoContainer{
-position:fixed;
-width:100%;
-height:100%;
-display:none;
-}
-
 video{
+position:fixed;
 width:100%;
 height:100%;
 object-fit:cover;
+display:none;
 }
 
-/ BOTON MIC /
-#micBtn{
+/ UI /
+#ui{
 position:fixed;
-bottom:40px;
+bottom:30px;
 left:50%;
 transform:translateX(-50%);
-width:80px;
-height:80px;
-border-radius:50%;
-background:rgba(255,255,255,.1);
-border:1px solid rgba(255,255,255,.3);
-color:white;
-font-size:28px;
 display:flex;
-align-items:center;
-justify-content:center;
-backdrop-filter:blur(10px);
+gap:10px;
 z-index:5;
+}
+
+button{
+padding:14px 20px;
+border-radius:30px;
+border:none;
+background:rgba(255,255,255,.1);
+color:white;
+backdrop-filter:blur(10px);
+}
+
+/ CHAT /
+#chatBox{
+position:fixed;
+right:20px;
+bottom:20px;
+width:260px;
+height:320px;
+background:rgba(0,0,0,.7);
+border:1px solid rgba(255,255,255,.2);
+display:flex;
+flex-direction:column;
+}
+
+#messages{
+flex:1;
+overflow:auto;
+padding:10px;
+font-size:13px;
+}
+
+input{
+border:none;
+padding:10px;
+background:black;
+color:white;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOADER -->
 <div id="loader">
 <h1>CONSIA</h1>
 </div>
 
-<!-- VIDEO -->
-<div id="videoContainer">
-<video id="avatarVideo" muted playsinline loop>
-<source src="avatar.mp4" type="video/mp4">
-</video>
+<video id="avatar" src="avatar.mp4" playsinline loop muted></video>
+
+<div id="ui">
+<button onclick="startVoice()">🎙 Hablar</button>
+<button onclick="stopVoice()">⏹ Stop</button>
 </div>
 
-<!-- AUDIOS -->
-<audio id="voiceAudio" src="voice.wav"></audio>
-<audio id="waterAudio" src="water.wav" loop></audio>
-
-<!-- MIC -->
-<div id="micBtn">●</div>
+<div id="chatBox">
+<div id="messages"></div>
+<input id="textInput" placeholder="Escribí..." onkeydown="sendChat(event)">
+</div>
 
 <script>
 
-function startCONSIA(){
-
-document.getElementById("loader").style.display="none";
-document.getElementById("videoContainer").style.display="block";
-
-const video=document.getElementById("avatarVideo");
-const voice=document.getElementById("voiceAudio");
-const water=document.getElementById("waterAudio");
-
-video.muted=false;
-video.play().catch(()=>{});
-
-water.volume=0.25;
-water.play().catch(()=>{});
+const avatar=document.getElementById("avatar");
+const messages=document.getElementById("messages");
 
 setTimeout(()=>{
-voice.play().catch(()=>{});
-},1200);
+document.getElementById("loader").style.display="none";
+avatar.style.display="block";
+avatar.play();
+},3000);
 
+/ VOICE RECOGNITION /
+let recognition;
+
+function startVoice(){
+
+recognition=new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang="es-ES";
+
+recognition.onresult=(e)=>{
+let text=e.results[0][0].transcript;
+addMsg("Usuario: "+text);
+consiaReply(text);
+};
+
+recognition.start();
 }
 
-// Loader 3 seg
-window.onload=()=>{
-setTimeout(()=>{
+function stopVoice(){
+if(recognition) recognition.stop();
+}
 
-document.body.addEventListener("click",startCONSIA,{once:true});
-startCONSIA();
+/ CHAT /
+function sendChat(e){
+if(e.key==="Enter"){
+let text=e.target.value;
+addMsg("Usuario: "+text);
+consiaReply(text);
+e.target.value="";
+}
+}
 
-},3000);
-};
+/ RESPUESTA IA DEMO /
+function consiaReply(text){
 
-/ MIC DEMO */
-document.getElementById("micBtn").onclick=()=>{
-alert("Micrófono activado (demo)");
-};
+let reply="Estoy escuchándote. "+text;
+
+addMsg("CONSIA: "+reply);
+
+let speech=new SpeechSynthesisUtterance(reply);
+speech.lang="es-ES";
+speechSynthesis.speak(speech);
+}
+
+/ MENSAJES */
+function addMsg(msg){
+messages.innerHTML+="<div>"+msg+"</div>";
+messages.scrollTop=messages.scrollHeight;
+}
 
 </script>
 
 </body>
-</html>
+</html

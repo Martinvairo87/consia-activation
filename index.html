@@ -1,181 +1,258 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CONSIA LIVE</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CONSIA LIVE</title>
 
-<style>
-html,body{
-margin:0;
-padding:0;
-background:black;
-height:100%;
-overflow:hidden;
-font-family:Arial;
-color:white;
-}
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+    }
 
-/* LOADER /
-#loader{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-}
+    /* LAYERS */
+    #videoLayer { position: fixed; inset: 0; z-index: 1; background:#000; }
+    #uiLayer    { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+    #loader     { position: fixed; inset: 0; z-index: 9; background:#000; display:flex; align-items:center; justify-content:center; }
 
-#loader h1{
-letter-spacing:12px;
-animation:fade 2s infinite;
-}
+    /* LOADER */
+    #loader h1{
+      margin:0;
+      letter-spacing: 12px;
+      font-weight: 300;
+      animation: fade 1.8s ease-in-out infinite;
+      text-align:center;
+    }
+    @keyframes fade { 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }
 
-@keyframes fade{
-0%{opacity:.2;}
-50%{opacity:1;}
-100%{opacity:.2;}
-}
+    /* VIDEO: FULL FIT (no crop) */
+    video{
+      width:100%;
+      height:100%;
+      object-fit: contain; /* <-- muestra TODO el cuadro del video */
+      background:#000;
+      display:block;
+    }
 
-/ VIDEO /
-video{
-position:fixed;
-width:100%;
-height:100%;
-object-fit:cover;
-display:none;
-}
+    /* CONTROLS */
+    #controls{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 18px;
+      display:flex;
+      gap:10px;
+      pointer-events: auto;
+    }
+    button{
+      padding: 12px 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.45);
+      color:#fff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-size: 14px;
+    }
 
-/ UI /
-#ui{
-position:fixed;
-bottom:30px;
-left:50%;
-transform:translateX(-50%);
-display:flex;
-gap:10px;
-z-index:5;
-}
+    /* CHAT */
+    #chatBox{
+      position: fixed;
+      right: 14px;
+      bottom: 70px;
+      width: min(320px, calc(100vw - 28px));
+      height: 320px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 16px;
+      overflow: hidden;
+      display:flex;
+      flex-direction: column;
+      pointer-events: auto;
+    }
+    #messages{
+      flex:1;
+      overflow:auto;
+      padding: 10px 10px 0 10px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .m{ margin:0 0 10px 0; opacity:.95; }
+    .me{ opacity: .9; }
+    .ai{ opacity: 1; }
+    #inputRow{
+      display:flex;
+      gap:8px;
+      padding:10px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.35);
+    }
+    #textInput{
+      flex:1;
+      border:none;
+      outline:none;
+      padding:10px 12px;
+      border-radius: 12px;
+      background:#000;
+      color:#fff;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    #sendBtn{
+      width: 54px;
+      border-radius: 12px;
+    }
 
-button{
-padding:14px 20px;
-border-radius:30px;
-border:none;
-background:rgba(255,255,255,.1);
-color:white;
-backdrop-filter:blur(10px);
-}
-
-/ CHAT /
-#chatBox{
-position:fixed;
-right:20px;
-bottom:20px;
-width:260px;
-height:320px;
-background:rgba(0,0,0,.7);
-border:1px solid rgba(255,255,255,.2);
-display:flex;
-flex-direction:column;
-}
-
-#messages{
-flex:1;
-overflow:auto;
-padding:10px;
-font-size:13px;
-}
-
-input{
-border:none;
-padding:10px;
-background:black;
-color:white;
-}
-</style>
+    /* MOBILE: más compacto */
+    @media (max-width: 420px){
+      #chatBox{ height: 280px; }
+      button{ padding: 11px 14px; font-size: 13px; }
+    }
+  </style>
 </head>
 
 <body>
+  <!-- LOADER -->
+  <div id="loader"><h1>CONSIA</h1></div>
 
-<div id="loader">
-<h1>CONSIA</h1>
-</div>
+  <!-- VIDEO -->
+  <div id="videoLayer">
+    <video id="avatar" src="avatar.mp4" playsinline loop muted></video>
+  </div>
 
-<video id="avatar" src="avatar.mp4" playsinline loop muted></video>
+  <!-- UI -->
+  <div id="uiLayer">
+    <div id="chatBox">
+      <div id="messages"></div>
+      <div id="inputRow">
+        <input id="textInput" placeholder="Escribí..." />
+        <button id="sendBtn">➤</button>
+      </div>
+    </div>
 
-<div id="ui">
-<button onclick="startVoice()">🎙 Hablar</button>
-<button onclick="stopVoice()">⏹ Stop</button>
-</div>
+    <div id="controls">
+      <button id="btnStart">🎙 Hablar</button>
+      <button id="btnStop">⏹ Stop</button>
+      <button id="btnSound">🔊 Audio</button>
+    </div>
+  </div>
 
-<div id="chatBox">
-<div id="messages"></div>
-<input id="textInput" placeholder="Escribí..." onkeydown="sendChat(event)">
-</div>
+  <script>
+    const avatar = document.getElementById("avatar");
+    const loader = document.getElementById("loader");
+    const messages = document.getElementById("messages");
+    const textInput = document.getElementById("textInput");
+    const sendBtn = document.getElementById("sendBtn");
 
-<script>
+    const btnStart = document.getElementById("btnStart");
+    const btnStop  = document.getElementById("btnStop");
+    const btnSound = document.getElementById("btnSound");
 
-const avatar=document.getElementById("avatar");
-const messages=document.getElementById("messages");
+    // Voz del sistema (TTS)
+    function speak(text){
+      try{
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "es-ES";
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
 
-setTimeout(()=>{
-document.getElementById("loader").style.display="none";
-avatar.style.display="block";
-avatar.play();
-},3000);
+    function addMsg(kind, text){
+      const p = document.createElement("p");
+      p.className = `m ${kind}`;
+      p.textContent = text;
+      messages.appendChild(p);
+      messages.scrollTop = messages.scrollHeight;
+    }
 
-/ VOICE RECOGNITION /
-let recognition;
+    // Respuesta demo (después lo conectamos a IA real)
+    function consiaReply(userText){
+      const reply = "CONSIA activo. Te escucho. Dijiste: " + userText;
+      addMsg("ai", "CONSIA: " + reply);
+      speak(reply);
+    }
 
-function startVoice(){
+    // Chat send
+    function sendText(){
+      const t = (textInput.value || "").trim();
+      if(!t) return;
+      addMsg("me", "Usuario: " + t);
+      textInput.value = "";
+      consiaReply(t);
+    }
+    sendBtn.onclick = sendText;
+    textInput.addEventListener("keydown", (e)=>{ if(e.key === "Enter") sendText(); });
 
-recognition=new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang="es-ES";
+    // Speech Recognition
+    let recognition = null;
 
-recognition.onresult=(e)=>{
-let text=e.results[0][0].transcript;
-addMsg("Usuario: "+text);
-consiaReply(text);
-};
+    function startVoice(){
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SR){
+        addMsg("ai", "CONSIA: Voz no disponible en este navegador. Usá el chat.");
+        return;
+      }
+      recognition = new SR();
+      recognition.lang = "es-ES";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
 
-recognition.start();
-}
+      recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript || "";
+        addMsg("me", "Usuario: " + text);
+        consiaReply(text);
+      };
+      recognition.onerror = () => {};
+      recognition.onend = () => {};
 
-function stopVoice(){
-if(recognition) recognition.stop();
-}
+      try{ recognition.start(); }catch(e){}
+    }
 
-/ CHAT /
-function sendChat(e){
-if(e.key==="Enter"){
-let text=e.target.value;
-addMsg("Usuario: "+text);
-consiaReply(text);
-e.target.value="";
-}
-}
+    function stopVoice(){
+      try{ if(recognition) recognition.stop(); }catch(e){}
+    }
 
-/ RESPUESTA IA DEMO /
-function consiaReply(text){
+    btnStart.onclick = startVoice;
+    btnStop.onclick  = stopVoice;
 
-let reply="Estoy escuchándote. "+text;
+    // Audio toggle (desbloquea autoplay con sonido cuando tocás)
+    let audioUnlocked = false;
+    btnSound.onclick = async () => {
+      try{
+        if(!audioUnlocked){
+          avatar.muted = false;
+          await avatar.play();
+          audioUnlocked = true;
+          btnSound.textContent = "🔈 Audio OK";
+          addMsg("ai", "CONSIA: Audio desbloqueado.");
+        }else{
+          avatar.muted = !avatar.muted;
+          btnSound.textContent = avatar.muted ? "🔇 Audio" : "🔈 Audio OK";
+        }
+      }catch(e){
+        addMsg("ai", "CONSIA: Tocá de nuevo para habilitar audio.");
+      }
+    };
 
-addMsg("CONSIA: "+reply);
+    // Start sequence
+    window.addEventListener("load", async () => {
+      // Loader 3s
+      setTimeout(async () => {
+        loader.style.display = "none";
 
-let speech=new SpeechSynthesisUtterance(reply);
-speech.lang="es-ES";
-speechSynthesis.speak(speech);
-}
+        // Autoplay video (silencioso) siempre
+        try{ await avatar.play(); }catch(e){}
 
-/ MENSAJES */
-function addMsg(msg){
-messages.innerHTML+="<div>"+msg+"</div>";
-messages.scrollTop=messages.scrollHeight;
-}
-
-</script>
-
+        // Mensaje inicial
+        addMsg("ai", "CONSIA: Listo. Podés hablar (🎙) o escribir en el chat.");
+      }, 3000);
+    });
+  </script>
 </body>
-</html
+</html>

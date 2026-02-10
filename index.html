@@ -1,563 +1,259 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>CONSIA LIVE</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CONSIA LIVE</title>
 
-  <style>
-    :root{
-      --glass: rgba(0,0,0,.45);
-      --stroke: rgba(255,255,255,.18);
-      --txt: rgba(255,255,255,.92);
-      --sub: rgba(255,255,255,.68);
-      --ok: rgba(120,255,190,.95);
-      --warn: rgba(255,200,120,.95);
-      --bad: rgba(255,120,120,.95);
-    }
+<style>
+html,body{
+margin:0;
+padding:0;
+background:#000;
+overflow:hidden;
+font-family:Arial,Helvetica,sans-serif;
+}
 
-    html, body { margin:0; padding:0; height:100%; background:#000; overflow:hidden; font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif; color: var(--txt); }
+/* VIDEO FULL */
+#avatarVideo{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+z-index:1;
+}
 
-    /* Fullscreen stage */
-    #stage{ position:fixed; inset:0; background:#000; }
+/* CANVAS FX */
+#faceFX{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+pointer-events:none;
+mix-blend-mode:screen;
+z-index:2;
+}
 
-    /* Video fills device */
-    #avatarVideo{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit: cover;
-      background:#000;
-    }
+/* UI */
+#ui{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+gap:10px;
+z-index:3;
+}
 
-    /* Subtle “alive” effect */
-    #aliveGlow{
-      position:absolute; inset:-20%;
-      background: radial-gradient(circle at 50% 40%, rgba(120,200,255,.10), transparent 55%);
-      filter: blur(18px);
-      opacity: 0;
-      transition: opacity .6s ease;
-      pointer-events:none;
-    }
-    #aliveGlow.on{ opacity: 1; }
+button{
+background:rgba(0,0,0,.6);
+border:1px solid rgba(255,255,255,.2);
+color:#fff;
+padding:12px 18px;
+border-radius:12px;
+backdrop-filter:blur(10px);
+cursor:pointer;
+}
 
-    /* Loader */
-    #loader{
-      position:fixed; inset:0; background:#000;
-      display:flex; align-items:center; justify-content:center;
-      z-index:9999;
-    }
-    #loader .brand{
-      letter-spacing: 14px;
-      font-weight: 300;
-      opacity: .0;
-      transform: translateY(6px);
-      animation: intro 2.1s ease forwards;
-      user-select:none;
-    }
-    @keyframes intro{
-      0%{opacity:0; transform:translateY(8px)}
-      30%{opacity:1}
-      70%{opacity:1}
-      100%{opacity:0; transform:translateY(-4px)}
-    }
+#chatBox{
+position:fixed;
+right:20px;
+bottom:100px;
+width:300px;
+height:260px;
+background:rgba(0,0,0,.55);
+backdrop-filter:blur(14px);
+border-radius:16px;
+padding:14px;
+color:#fff;
+overflow:auto;
+z-index:3;
+font-size:14px;
+}
 
-    /* Activation overlay (needed for iOS autoplay/audio) */
-    #gate{
-      position:fixed; inset:0;
-      background: radial-gradient(circle at 50% 45%, rgba(120,200,255,.08), rgba(0,0,0,.92) 55%, #000 100%);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      z-index:9000;
-      gap:16px;
-      padding: 24px;
-      text-align:center;
-    }
-    #gate .title{
-      letter-spacing: 12px;
-      font-weight: 300;
-      font-size: 18px;
-      margin-top: env(safe-area-inset-top);
-      user-select:none;
-    }
-    #gate .hint{
-      color: var(--sub);
-      font-size: 13px;
-      max-width: 360px;
-      line-height: 1.35;
-    }
-    .btn{
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.35);
-      color: var(--txt);
-      padding: 12px 14px;
-      border-radius: 14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      font-size: 14px;
-      cursor: pointer;
-      user-select:none;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-    }
-    .btn.primary{
-      border-color: rgba(120,200,255,.45);
-      background: rgba(20,60,90,.35);
-      box-shadow: 0 0 0 1px rgba(120,200,255,.12) inset;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+#inputArea{
+position:fixed;
+right:20px;
+bottom:20px;
+display:flex;
+gap:6px;
+z-index:3;
+}
 
-    /* UI layer */
-    #ui{ position:fixed; inset:0; z-index:20; pointer-events:none; }
-
-    #badge{
-      position:fixed; left: 12px; top: calc(12px + env(safe-area-inset-top));
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: var(--glass);
-      border: 1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      pointer-events:auto;
-      display:flex; align-items:center; gap:10px;
-      font-size: 13px;
-    }
-    #dot{
-      width:9px; height:9px; border-radius:999px;
-      background: rgba(255,255,255,.25);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
-    }
-    #dot.ok{ background: var(--ok); box-shadow: 0 0 0 4px rgba(120,255,190,.10); }
-    #dot.warn{ background: var(--warn); box-shadow: 0 0 0 4px rgba(255,200,120,.10); }
-    #dot.bad{ background: var(--bad); box-shadow: 0 0 0 4px rgba(255,120,120,.10); }
-
-    #modePills{
-      position:fixed; right: 12px; top: calc(12px + env(safe-area-inset-top));
-      display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
-      pointer-events:auto;
-      max-width: 56vw;
-    }
-    .pill{
-      padding: 9px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      font-size: 12px;
-      cursor:pointer;
-      user-select:none;
-      opacity: .92;
-    }
-    .pill.on{
-      border-color: rgba(120,200,255,.55);
-      background: rgba(20,60,90,.40);
-      box-shadow: 0 0 0 1px rgba(120,200,255,.12) inset;
-    }
-
-    /* Bottom console */
-    #console{
-      position:fixed;
-      left: 12px; right: 12px;
-      bottom: calc(12px + env(safe-area-inset-bottom));
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      pointer-events:auto;
-    }
-    #chatBox{
-      max-height: 30vh;
-      overflow:auto;
-      border-radius: 18px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.35);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 12px;
-      font-size: 14px;
-      line-height: 1.35;
-    }
-    .msg{ margin: 0 0 10px 0; }
-    .msg .who{ color: var(--sub); font-size: 12px; margin-bottom: 4px; }
-    .msg .txt{ white-space: pre-wrap; }
-    .msg.me .who{ color: rgba(160,220,255,.75); }
-    .msg.ai .who{ color: rgba(180,255,210,.75); }
-
-    #inputRow{
-      display:flex; gap:10px; align-items:center;
-    }
-    #textInput{
-      flex:1;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.35);
-      color: var(--txt);
-      outline:none;
-      font-size: 15px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    #sendBtn, #micBtn, #muteBtn{
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.35);
-      color: var(--txt);
-      cursor:pointer;
-      user-select:none;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      font-size: 14px;
-      min-width: 54px;
-      text-align:center;
-    }
-    #micBtn.on{
-      border-color: rgba(255,200,120,.65);
-      background: rgba(90,60,20,.40);
-    }
-    #muteBtn.on{
-      border-color: rgba(255,120,120,.65);
-      background: rgba(90,20,20,.40);
-    }
-
-    /* Small watermark */
-    #wm{
-      position:fixed;
-      left: 50%; transform: translateX(-50%);
-      top: calc(14px + env(safe-area-inset-top));
-      color: rgba(255,255,255,.28);
-      letter-spacing: 10px;
-      font-weight: 300;
-      font-size: 12px;
-      user-select:none;
-      pointer-events:none;
-    }
-  </style>
+input{
+padding:10px;
+border-radius:10px;
+border:none;
+width:220px;
+}
+</style>
 </head>
 
 <body>
-  <div id="stage">
-    <video id="avatarVideo" playsinline muted preload="auto"></video>
-    <div id="aliveGlow"></div>
-  </div>
 
-  <div id="loader"><div class="brand">CONSIA</div></div>
+<!-- VIDEO -->
+<video id="avatarVideo" autoplay muted loop playsinline>
+<source src="https://cdn.coverr.co/videos/coverr-water-human-5176/1080p.mp4" type="video/mp4">
+</video>
 
-  <div id="gate">
-    <div class="title">CONSIA</div>
-    <div class="hint">Tocá “Activar” para habilitar video + audio + voz (Safari/iOS requiere un toque).</div>
-    <div class="row">
-      <button class="btn primary" id="activateBtn">Activar CONSIA</button>
-      <button class="btn" id="activateSilentBtn">Entrar sin voz</button>
-    </div>
-  </div>
+<!-- FX -->
+<canvas id="faceFX"></canvas>
 
-  <div id="ui">
-    <div id="wm">CONSIA</div>
+<!-- CHAT -->
+<div id="chatBox">
+CONSIA: Sistema activo. Te escucho.
+</div>
 
-    <div id="badge">
-      <span id="dot"></span>
-      <span id="statusTxt">Conectando…</span>
-    </div>
+<!-- INPUT -->
+<div id="inputArea">
+<input id="chatInput" placeholder="Escribí…">
+<button onclick="sendChat()">Enviar</button>
+</div>
 
-    <div id="modePills">
-      <div class="pill on" id="modeD">D · Full</div>
-      <div class="pill" id="modeA">A · Video</div>
-      <div class="pill" id="modeB">B · Video+Voz</div>
-      <div class="pill" id="modeC">C · +Agua</div>
-    </div>
-
-    <div id="console">
-      <div id="chatBox" aria-live="polite"></div>
-      <div id="inputRow">
-        <input id="textInput" placeholder="Decime qué necesitás…" autocomplete="off" />
-        <button id="micBtn" title="Hablar">🎤</button>
-        <button id="muteBtn" title="Silencio">🔇</button>
-        <button id="sendBtn" title="Enviar">➤</button>
-      </div>
-    </div>
-  </div>
+<!-- BOTONES -->
+<div id="ui">
+<button onclick="startVoice()">Hablar</button>
+<button onclick="stopVoice()">Stop</button>
+<button onclick="consiaSpeak('Audio activo')">Audio</button>
+</div>
 
 <script>
-/* ====== CONFIG ====== */
-const API_PRIMARY = "https://api.consia.world/ask";
-const API_FALLBACK = "https://consia-api.jbdkb7r94d.workers.dev/ask";
-let API_URL = API_PRIMARY;
+/* =========================
+   AVATAR ENGINE
+========================= */
 
-const ASSETS = {
-  avatar: "avatar.mp4",
-  voice: "voice.wav",   // voz intro (opcional)
-  water: "water.wav"    // ambiente (opcional)
+const canvas = document.getElementById("faceFX");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+let speaking=false;
+
+/* PARPADEO */
+let blinkT=0;
+
+function blink(){
+blinkT+=0.05;
+if(Math.sin(blinkT)>0.995){
+ctx.fillStyle="rgba(180,220,255,.4)";
+ctx.fillRect(canvas.width/2-90,canvas.height/2-150,180,10);
+}
+}
+
+/* BOCA */
+let mouth=0;
+
+function mouthDraw(){
+if(speaking){mouth+=0.3}else{mouth*=0.9}
+const open=Math.abs(Math.sin(mouth))*20;
+
+ctx.beginPath();
+ctx.ellipse(
+canvas.width/2,
+canvas.height/2+140,
+60,
+8+open,
+0,0,Math.PI*2
+);
+ctx.strokeStyle="rgba(180,240,255,.6)";
+ctx.lineWidth=2;
+ctx.stroke();
+}
+
+/* RESPIRACIÓN */
+let breath=0;
+
+function breathDraw(){
+breath+=0.01;
+const glow=Math.sin(breath)*.15+.25;
+
+ctx.fillStyle=`rgba(120,200,255,${glow})`;
+ctx.beginPath();
+ctx.arc(canvas.width/2,canvas.height/2+60,160,0,Math.PI*2);
+ctx.fill();
+}
+
+/* LOOP */
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+breathDraw();
+blink();
+mouthDraw();
+requestAnimationFrame(animate);
+}
+animate();
+
+/* =========================
+   VOZ CONSIA
+========================= */
+
+function consiaSpeak(text){
+
+speaking=true;
+
+const u=new SpeechSynthesisUtterance(text);
+u.lang="es-ES";
+
+u.onend=()=>speaking=false;
+
+speechSynthesis.speak(u);
+
+addChat("CONSIA: "+text);
+}
+
+/* =========================
+   CHAT
+========================= */
+
+function addChat(t){
+const box=document.getElementById("chatBox");
+box.innerHTML+=`<br>${t}`;
+box.scrollTop=box.scrollHeight;
+}
+
+function sendChat(){
+const v=document.getElementById("chatInput").value;
+addChat("Usuario: "+v);
+consiaSpeak("Procesando. Dijiste "+v);
+}
+
+/* =========================
+   VOZ USUARIO
+========================= */
+
+let rec;
+
+function startVoice(){
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+rec=new SR();
+rec.lang="es-ES";
+
+rec.onresult=e=>{
+const txt=e.results[0][0].transcript;
+addChat("Usuario: "+txt);
+consiaSpeak("Te escuché decir "+txt);
 };
 
-const OWNER_BEARER = ""; // si tu worker exige OWNER_TOKEN, poné "Bearer TU_TOKEN". Si no, dejalo vacío.
-
-/* ====== STATE ====== */
-let mode = "D"; // A/B/C/D
-let started = false;
-let mutedAll = false;
-let micOn = false;
-let recognition = null;
-let recognizing = false;
-let ttsSpeaking = false;
-
-const els = {
-  loader: document.getElementById("loader"),
-  gate: document.getElementById("gate"),
-  activateBtn: document.getElementById("activateBtn"),
-  activateSilentBtn: document.getElementById("activateSilentBtn"),
-  video: document.getElementById("avatarVideo"),
-  aliveGlow: document.getElementById("aliveGlow"),
-  dot: document.getElementById("dot"),
-  statusTxt: document.getElementById("statusTxt"),
-  chatBox: document.getElementById("chatBox"),
-  textInput: document.getElementById("textInput"),
-  sendBtn: document.getElementById("sendBtn"),
-  micBtn: document.getElementById("micBtn"),
-  muteBtn: document.getElementById("muteBtn"),
-  modeA: document.getElementById("modeA"),
-  modeB: document.getElementById("modeB"),
-  modeC: document.getElementById("modeC"),
-  modeD: document.getElementById("modeD"),
-};
-
-const audio = {
-  voice: new Audio(ASSETS.voice),
-  water: new Audio(ASSETS.water),
-};
-
-/* ====== UTIL ====== */
-function setStatus(type, text){
-  els.dot.className = "";
-  if(type) els.dot.classList.add(type);
-  els.statusTxt.textContent = text;
+rec.start();
 }
 
-function addMsg(who, text){
-  const wrap = document.createElement("div");
-  wrap.className = "msg " + (who === "Yo" ? "me" : "ai");
-  const w = document.createElement("div");
-  w.className = "who";
-  w.textContent = who;
-  const t = document.createElement("div");
-  t.className = "txt";
-  t.textContent = text;
-  wrap.appendChild(w);
-  wrap.appendChild(t);
-  els.chatBox.appendChild(wrap);
-  els.chatBox.scrollTop = els.chatBox.scrollHeight;
+function stopVoice(){
+if(rec)rec.stop();
 }
 
-function setMode(newMode){
-  mode = newMode;
-  els.modeA.classList.toggle("on", mode==="A");
-  els.modeB.classList.toggle("on", mode==="B");
-  els.modeC.classList.toggle("on", mode==="C");
-  els.modeD.classList.toggle("on", mode==="D");
-  // D = full: video+voice+water
-  if(mode==="A"){ stopIntroAudio(); stopWater(); }
-  if(mode==="B"){ stopWater(); }
-  if(mode==="C"){ /* keep water */ }
-  if(mode==="D"){ /* keep all */ }
-}
+/* AUTO INIT */
+setTimeout(()=>{
+consiaSpeak("CONSIA activo. Podés hablar o escribir.");
+},2500);
 
-function stopIntroAudio(){ try{ audio.voice.pause(); audio.voice.currentTime=0; }catch(e){} }
-function stopWater(){ try{ audio.water.pause(); audio.water.currentTime=0; }catch(e){} }
+</script>
 
-function applyMute(){
-  const v = els.video;
-  v.muted = true; // keep muted for autoplay stability
-  try{ audio.voice.muted = mutedAll; audio.water.muted = mutedAll; }catch(e){}
-  els.muteBtn.classList.toggle("on", mutedAll);
-}
-
-async function pingAPI(){
-  // prefer custom domain, fallback to workers.dev
-  const candidates = [API_PRIMARY, API_FALLBACK];
-  for (const u of candidates){
-    try{
-      const r = await fetch(u.replace("/ask","/health"), { method:"GET" });
-      if(r.ok){
-        API_URL = u;
-        setStatus("ok", "CONSIA online");
-        return;
-      }
-    }catch(e){}
-  }
-  // still allow chat, but show warning
-  API_URL = API_FALLBACK;
-  setStatus("warn", "CONSIA: conexión parcial");
-}
-
-/* ====== VIDEO ====== */
-async function loadVideo(){
-  els.video.src = ASSETS.avatar;
-  els.video.loop = true;
-  els.video.playsInline = true;
-  els.video.muted = true;
-
-  // Start attempt
-  try{
-    await els.video.play();
-    els.aliveGlow.classList.add("on");
-  }catch(e){
-    // Will play after activation tap
-  }
-}
-
-/* ====== AUDIO ====== */
-async function startAudioLayers(withVoice){
-  applyMute();
-
-  // water ambience
-  audio.water.loop = true;
-  audio.water.volume = 0.25;
-
-  // voice intro
-  audio.voice.loop = false;
-  audio.voice.volume = 0.95;
-
-  if(!mutedAll){
-    if(mode==="C" || mode==="D"){
-      try{ await audio.water.play(); }catch(e){}
-    }
-    if(withVoice && (mode==="B" || mode==="D")){
-      try{ await audio.voice.play(); }catch(e){}
-    }
-  }
-}
-
-/* ====== SPEECH (STT + TTS) ====== */
-function initSpeech(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(SR){
-    recognition = new SR();
-    recognition.lang = "es-ES";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => { recognizing = true; els.micBtn.classList.add("on"); setStatus("ok", "Escuchando…"); };
-    recognition.onend = () => { recognizing = false; els.micBtn.classList.remove("on"); setStatus("ok", "CONSIA online"); if(micOn) safeStartRecognition(); };
-    recognition.onerror = () => { recognizing = false; els.micBtn.classList.remove("on"); setStatus("warn", "Voz no disponible, usá chat"); micOn=false; };
-    recognition.onresult = (e) => {
-      const text = (e.results?.[0]?.[0]?.transcript || "").trim();
-      if(text) handleUserMessage(text, true);
-    };
-  }
-}
-
-function safeStartRecognition(){
-  if(!recognition) return;
-  if(recognizing) return;
-  try{ recognition.start(); }catch(e){}
-}
-
-function speak(text){
-  if(mutedAll) return;
-  if(!("speechSynthesis" in window)) return;
-  try{
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "es-ES";
-    u.rate = 1.0;
-    u.pitch = 1.0;
-    u.volume = 1.0;
-    u.onstart = () => { ttsSpeaking = true; };
-    u.onend = () => { ttsSpeaking = false; };
-    window.speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-/* ====== CHAT -> API ====== */
-async function askConsia(message){
-  const headers = { "content-type":"application/json" };
-  if(OWNER_BEARER) headers["authorization"] = OWNER_BEARER;
-
-  const payload = { message, locale: "es-ES" };
-  const r = await fetch(API_URL, { method:"POST", headers, body: JSON.stringify(payload) });
-  const data = await r.json().catch(()=>({}));
-  return (data.text || "").toString().trim() || "CONSIA activo. Te escucho. Repetí tu consulta.";
-}
-
-async function handleUserMessage(text, fromMic=false){
-  addMsg("Yo", text);
-  els.textInput.value = "";
-  setStatus("ok", "Procesando…");
-
-  let reply = "";
-  try{
-    reply = await askConsia(text);
-    setStatus("ok", "CONSIA online");
-  }catch(e){
-    // fallback try
-    try{
-      API_URL = API_FALLBACK;
-      reply = await askConsia(text);
-      setStatus("warn", "CONSIA online (fallback)");
-    }catch(e2){
-      setStatus("bad", "Sin conexión");
-      reply = "No pude conectar. Probá de nuevo en 10 segundos.";
-    }
-  }
-
-  addMsg("CONSIA", reply);
-
-  // Auto-voice response in mode B/C/D (and if not muted)
-  if(mode==="B" || mode==="C" || mode==="D"){
-    speak(reply);
-  }
-}
-
-/* ====== UI EVENTS ====== */
-els.sendBtn.onclick = () => {
-  const t = els.textInput.value.trim();
-  if(!t) return;
-  handleUserMessage(t, false);
-};
-
-els.textInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter"){
-    const t = els.textInput.value.trim();
-    if(!t) return;
-    handleUserMessage(t, false);
-  }
-});
-
-els.muteBtn.onclick = () => {
-  mutedAll = !mutedAll;
-  applyMute();
-  if(mutedAll){
-    stopIntroAudio();
-    stopWater();
-    try{ window.speechSynthesis?.cancel?.(); }catch(e){}
-  }else{
-    if(started){
-      if(mode==="C" || mode==="D"){ try{ audio.water.play(); }catch(e){} }
-    }
-  }
-};
-
-els.micBtn.onclick = async () => {
-  micOn = !micOn;
-  if(!recognition){
-    setStatus("warn", "Voz no disponible, usá chat");
-    micOn = false;
-    return;
-  }
-  if(micOn){
-    safeStartRecognition();
-  }else{
-    try{ recognition.stop(); }catch(e){}
-    els.micBtn.classList.remove("on");
-    setStatus("ok", "CONSIA online");
-  }
-};
-
-els.modeA.onclick = () => setMode("A");
-els.modeB.onclick = () => setMode("B");
-els.modeC.onclick = () => setMode("C");
-els.modeD.onclick = () => setMode("D");
-
-/* ====== STARTUP ====== */
-async function startAll
+</body>
+</html>

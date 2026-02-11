@@ -1,236 +1,115 @@
-<!-- index.html — CONSIA (GitHub Pages) — FULL -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
-  <title>CONSIA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" href="./icon-192.png" />
-  <link rel="apple-touch-icon" href="./icon-512.png" />
+<title>CONSIA</title>
 
-  <style>
-    :root{
-      --bg:#000;
-      --glass: rgba(18,24,32,.55);
-      --glass2: rgba(10,12,16,.35);
-      --line: rgba(255,255,255,.08);
-      --txt: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.62);
-      --accent: rgba(160,210,255,.95);
-      --danger: rgba(255,120,120,.95);
-      --ok: rgba(140,255,200,.95);
-      --radius: 18px;
-    }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial;}
-    *{box-sizing:border-box}
-    .stage{
-      position:fixed; inset:0; overflow:hidden; background:#000;
-    }
-    video#avatar{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit:cover; object-position:center;
-      filter: contrast(1.03) saturate(1.05);
-      transform: translateZ(0);
-    }
-    .vignette{
-      position:absolute; inset:-2px;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,.00) 0%, rgba(0,0,0,.40) 60%, rgba(0,0,0,.65) 100%);
-      pointer-events:none;
-    }
-    .noise{
-      position:absolute; inset:0;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="220" height="220" filter="url(%23n)" opacity="0.12"/></svg>');
-      mix-blend-mode: overlay;
-      pointer-events:none;
-      opacity:.22;
-      animation: flicker 6s infinite linear;
-    }
-    @keyframes flicker{0%,100%{opacity:.18}50%{opacity:.28}}
-    .hud{
-      position:absolute; inset:0;
-      display:flex; flex-direction:column;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-      pointer-events:none;
-    }
-    .topbar{
-      pointer-events:none;
-      display:flex; justify-content:center; align-items:center;
-      padding:18px 16px;
-      gap:10px;
-    }
-    .brand{
-      pointer-events:none;
-      letter-spacing:.28em;
-      font-weight:500;
-      font-size:12px;
-      color: rgba(255,255,255,.72);
-      text-transform: uppercase;
-    }
-    .panel{
-      pointer-events:auto;
-      width:min(520px, calc(100% - 28px));
-      margin:auto 14px 14px auto;
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, var(--glass) 0%, rgba(8,10,14,.55) 100%);
-      backdrop-filter: blur(12px);
-      border-radius: var(--radius);
-      overflow:hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-    }
-    .panelHead{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.00));
-    }
-    .title{
-      font-weight:600;
-      font-size:13px;
-      color: rgba(255,255,255,.86);
-    }
-    .meta{font-size:12px;color:var(--muted)}
-    .actions{display:flex; gap:8px}
-    .btn{
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.25);
-      color: rgba(255,255,255,.86);
-      padding:8px 10px;
-      border-radius: 12px;
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .btn:active{transform: scale(.98)}
-    .btn.primary{border-color: rgba(160,210,255,.28); background: rgba(120,190,255,.12)}
-    .btn.danger{border-color: rgba(255,120,120,.25); background: rgba(255,80,80,.10)}
-    .log{
-      max-height: 46vh;
-      overflow:auto;
-      padding:12px 12px 6px 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .msg{
-      border:1px solid var(--line);
-      border-radius: 16px;
-      padding:10px 12px;
-      background: rgba(0,0,0,.22);
-    }
-    .msg .who{font-size:11px; color:var(--muted); margin-bottom:6px; letter-spacing:.02em}
-    .msg .txt{font-size:14px; line-height:1.35; white-space:pre-wrap}
-    .msg.user{align-self:flex-end; background: rgba(120,190,255,.10); border-color: rgba(160,210,255,.18)}
-    .msg.consia{align-self:flex-start}
-    .msg.err{border-color: rgba(255,120,120,.22); background: rgba(255,80,80,.08)}
-    .composer{
-      border-top:1px solid var(--line);
-      padding:10px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      background: rgba(0,0,0,.18);
-    }
-    .input{
-      flex:1;
-      display:flex; gap:10px; align-items:center;
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.22);
-      border-radius: 16px;
-      padding:10px 12px;
-    }
-    input[type="text"]{
-      width:100%;
-      border:0; outline:0;
-      background:transparent;
-      color:rgba(255,255,255,.9);
-      font-size:14px;
-    }
-    .iconBtn{
-      width:42px; height:42px;
-      border-radius: 14px;
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.22);
-      color: rgba(255,255,255,.9);
-      display:grid; place-items:center;
-      cursor:pointer;
-      user-select:none;
-    }
-    .pillrow{
-      display:flex; gap:8px;
-      padding:10px 12px 12px 12px;
-      border-top:1px solid var(--line);
-      background: rgba(0,0,0,.12);
-    }
-    .pill{
-      font-size:12px;
-      color: rgba(255,255,255,.75);
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      padding:8px 10px;
-      border-radius: 999px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .pill.on{border-color: rgba(140,255,200,.25); background: rgba(140,255,200,.10)}
-    .pill.off{border-color: rgba(255,120,120,.22); background: rgba(255,80,80,.08)}
-    .langPick{
-      display:flex; gap:8px; align-items:center;
-      padding:10px 12px;
-      border-top:1px solid var(--line);
-      background: rgba(0,0,0,.10);
-      justify-content:space-between;
-    }
-    select{
-      background: rgba(0,0,0,.25);
-      border:1px solid var(--line);
-      color: rgba(255,255,255,.86);
-      padding:8px 10px;
-      border-radius: 12px;
-      outline:none;
-      font-size:12px;
-    }
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-512.png">
 
-    /* Fullscreen centered panel on small screens */
-    @media (max-width: 760px){
-      .panel{ margin: auto 14px 14px 14px; width: calc(100% - 28px); }
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,system-ui;
+  background:#000;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+#chat{
+  flex:1;
+  overflow:auto;
+  padding:20px;
+}
+.msg{
+  margin:10px 0;
+  padding:12px 16px;
+  border-radius:16px;
+  max-width:80%;
+}
+.user{background:#1e1e1e;align-self:flex-end;}
+.ai{background:#111;border:1px solid #333;}
+#inputBar{
+  display:flex;
+  padding:10px;
+  background:#111;
+}
+input{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
+}
+button{
+  margin-left:10px;
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  background:#fff;
+  color:#000;
+  font-weight:bold;
+}
+</style>
 </head>
 
 <body>
-  <div class="stage">
-    <video id="avatar" autoplay muted playsinline loop preload="auto">
-      <source src="./avatar.mp4" type="video/mp4" />
-    </video>
-    <div class="vignette"></div>
-    <div class="noise"></div>
 
-    <div class="hud">
-      <div class="topbar">
-        <div class="brand">CONSIA</div>
-      </div>
+<div id="chat"></div>
 
-      <div class="panel" id="panel">
-        <div class="panelHead">
-          <div>
-            <div class="title">CONSIA · voz natural · multi-idioma (fijo)</div>
-            <div class="meta" id="status">Listo.</div>
-          </div>
-          <div class="actions">
-            <button class="btn primary" id="teleportBtn">Teleport</button>
-            <button class="btn danger" id="resetBtn">Reset</button>
-          </div>
-        </div>
+<div id="inputBar">
+  <input id="msg" placeholder="Hablar con CONSIA..." />
+  <button onclick="send()">Enviar</button>
+</div>
 
-        <div class="langPick">
-          <div class="meta">Idioma:</div>
-          <select id="lang">
-            <option value="es">Español</option>
-            <option value="en">English</option>
-            <option value="pt">Português</option>
-          </select>
-        </
+<script>
+const API="https://api.consia.world/ask";
+
+async function send(){
+  const input=document.getElementById("msg");
+  const text=input.value.trim();
+  if(!text)return;
+
+  addMsg(text,"user");
+  input.value="";
+
+  const res=await fetch(API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      message:text,
+      lang:"es",
+      audioWanted:true
+    })
+  });
+
+  const data=await res.json();
+  addMsg(data.text,"ai");
+
+  if(data.audio_b64){
+    const audio=new Audio(
+      "data:"+data.audio_mime+";base64,"+data.audio_b64
+    );
+    audio.play();
+  }
+}
+
+function addMsg(t,cls){
+  const d=document.createElement("div");
+  d.className="msg "+cls;
+  d.textContent=t;
+  document.getElementById("chat").appendChild(d);
+}
+</script>
+
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
+</body>
+</html>

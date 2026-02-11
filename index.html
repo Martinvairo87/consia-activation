@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>CONSIA LIVE · Teletransportación</title>
 
+<!-- PWA (si ya creaste manifest.webmanifest y sw.js, esto lo activa) -->
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,17 +38,17 @@
   #brand{color:rgba(255,255,255,.75);letter-spacing:.5em;font-size:18px;}
 
   #tap{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:40;background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
-    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));}
-  #tap .card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:380px;color:var(--txt);text-align:center;}
+    padding:max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));}
+  #tap .card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:390px;color:var(--txt);text-align:center;}
   #tap .hint{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.25;}
 
   button,select{background:rgba(0,0,0,.55);border:1px solid var(--line);color:var(--txt);padding:12px 14px;border-radius:14px;backdrop-filter:blur(12px);}
 
-  #ui{position:fixed;left:50%;transform:translateX(-50%);bottom: calc(14px + env(safe-area-inset-bottom));
+  #ui{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));
       display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center;padding:0 12px;}
 
-  #chat{position:fixed;right:14px;bottom: calc(84px + env(safe-area-inset-bottom));
-    width:min(440px,calc(100vw - 28px));height:min(380px,calc(100vh - 180px));
+  #chat{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));
+    width:min(460px,calc(100vw - 28px));height:min(390px,calc(100vh - 180px));
     z-index:30;background:var(--glass);border:1px solid var(--line);
     border-radius:18px;backdrop-filter:blur(16px);display:flex;flex-direction:column;overflow:hidden;}
   #chatHeader{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between;}
@@ -57,14 +58,17 @@
   #inputRow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
   #msg{flex:1;border:none;border-radius:12px;padding:10px 10px;background:rgba(255,255,255,.10);color:var(--txt);outline:none}
   #send{min-width:78px}
+
   .sys{color:var(--sys)} .me{color:rgba(255,255,255,.92)} .c{color:var(--ok)} .small{font-size:12px;color:var(--muted)}
 
-  #status{position:fixed;left:14px;bottom: calc(14px + env(safe-area-inset-bottom));z-index:30;
+  #status{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:30;
     padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);
     color:var(--muted);font-size:12px;backdrop-filter:blur(10px)}
-  #telePill{position:fixed;left:14px;top: calc(14px + env(safe-area-inset-top));z-index:30;
+
+  #telePill{position:fixed;left:14px;top:calc(14px + env(safe-area-inset-top));z-index:30;
     padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);
     color:var(--muted);font-size:12px;backdrop-filter:blur(10px)}
+
   @media (max-width: 640px){ #chat{left:14px;right:14px;width:auto} }
 </style>
 </head>
@@ -92,7 +96,7 @@
   <div class="card">
     <div style="font-size:16px;letter-spacing:.12em;margin-bottom:10px">CONSIA · LIVE</div>
     <button id="tapBtn">Un toque para iniciar</button>
-    <div class="hint">Después queda 1-click. (iPhone/iPad pueden bloquear audio/mic hasta el primer toque).</div>
+    <div class="hint">iPhone/iPad: audio/mic pueden requerir 1 toque. Después queda 1-click.</div>
   </div>
 </div>
 
@@ -102,7 +106,7 @@
   <div id="chatHeader">
     <div id="leftHead">
       <span class="sys">CONSIA</span>
-      <span id="mode">LIVE · Voz Natural · Teleport · Proactivo</span>
+      <span id="mode">LIVE · Voz natural · Teleport · Proactivo</span>
     </div>
     <select id="lang" title="Idioma">
       <option value="auto" selected>Auto</option>
@@ -135,11 +139,11 @@
 <div id="status">Inicializando…</div>
 
 <script>
-/* ========= CONFIG ========= */
+/* ===================== CONFIG ===================== */
 const API_URL   = "https://api.consia.world/ask";
 const SCENE_URL = "https://api.consia.world/scene";
 
-/* ========= ELEMENTS ========= */
+/* ===================== UI ===================== */
 const loader = document.getElementById("loader");
 const tap = document.getElementById("tap");
 const tapBtn = document.getElementById("tapBtn");
@@ -157,7 +161,7 @@ const avatarImg = document.getElementById("avatarImg");
 const teleBtn = document.getElementById("teleport");
 const teleStateEl = document.getElementById("teleState");
 
-/* ========= HELPERS ========= */
+/* ===================== Helpers ===================== */
 function setStatus(t){ statusEl.textContent = t; }
 function addLine(cls, text){
   const d = document.createElement("div");
@@ -183,14 +187,16 @@ function tz(){
   try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch(e){ return ""; }
 }
 
-/* ========= AUDIO PLAYER (server voice) ========= */
+/* ===================== Audio (server TTS preferred) ===================== */
 let voiceAudio = null;
 let speaking = false;
+
 function stopAllAudio(){
   try{ if(voiceAudio){ voiceAudio.pause(); voiceAudio=null; } }catch(e){}
   try{ speechSynthesis.cancel(); }catch(e){}
   speaking=false;
 }
+
 async function playB64Audio(audio_b64, audio_mime){
   stopAllAudio();
   speaking=true;
@@ -200,17 +206,10 @@ async function playB64Audio(audio_b64, audio_mime){
   voiceAudio.onerror = ()=>{ speaking=false; };
   await voiceAudio.play();
 }
-async function playUrlAudio(audio_url){
-  stopAllAudio();
-  speaking=true;
-  voiceAudio = new Audio(audio_url);
-  voiceAudio.onended = ()=>{ speaking=false; };
-  voiceAudio.onerror = ()=>{ speaking=false; };
-  await voiceAudio.play();
-}
-/* fallback si no llega audio desde server */
+
 function speakBrowser(text){
   speaking=true;
+  try{ speechSynthesis.cancel(); }catch(e){}
   const u=new SpeechSynthesisUtterance(text);
   const lang = pickTargetLang();
   u.lang = lang==="pt"?"pt-BR":lang==="en"?"en-US":lang==="fr"?"fr-FR":lang==="it"?"it-IT":lang==="de"?"de-DE":"es-ES";
@@ -220,7 +219,7 @@ function speakBrowser(text){
   speechSynthesis.speak(u);
 }
 
-/* ========= STT ========= */
+/* ===================== STT ===================== */
 let rec=null;
 function startSTT(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -237,7 +236,7 @@ function startSTT(){
   rec.start();
 }
 
-/* ========= AMBIENTE ========= */
+/* ===================== Ambiente ===================== */
 let ambient=null, ambientOn=false;
 async function toggleAmbient(){
   if(!ambient){ ambient=new Audio("./water.wav"); ambient.loop=true; ambient.volume=0.22; }
@@ -246,7 +245,7 @@ async function toggleAmbient(){
   catch(e){ tap.style.display="flex"; }
 }
 
-/* ========= PASSKEY “Face ID” ========= */
+/* ===================== Face ID (Passkey) ===================== */
 async function faceIdUnlock(){
   if(!window.PublicKeyCredential){ addLine("sys","CONSIA: Face ID no disponible acá."); return; }
   const have = localStorage.getItem("consia_passkey")==="1";
@@ -275,7 +274,7 @@ async function faceIdUnlock(){
   }
 }
 
-/* ========= TELEPORT ========= */
+/* ===================== Teleport ===================== */
 let teleportOn=true;
 function setTeleport(on){
   teleportOn=on;
@@ -310,23 +309,7 @@ function applyScene(scene){
   }catch(e){}
 }
 
-// escenas locales (si /scene no existe)
-const LOCAL_SCENES = [
-  { key:["playa","beach"], scene:{ bg:{type:"video",src:"./bg-beach.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } },
-  { key:["oficina","office"], scene:{ bg:{type:"video",src:"./bg-office.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } },
-  { key:["noche","night"], scene:{ bg:{type:"video",src:"./bg-night.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } },
-  { key:["espacio","space","cosmos"], scene:{ bg:{type:"video",src:"./bg-space.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } }
-];
-function localSceneFromText(t){
-  const x=t.toLowerCase();
-  for(const s of LOCAL_SCENES){
-    if(s.key.some(k=>x.includes(k))) return s.scene;
-  }
-  return null;
-}
-
 async function requestScene(userText){
-  // 1) intento server
   try{
     const res = await fetch(SCENE_URL, {
       method:"POST",
@@ -338,15 +321,16 @@ async function requestScene(userText){
       if(data?.scene) return data.scene;
     }
   }catch(e){}
-  // 2) fallback local
-  return localSceneFromText(userText);
+  return null;
 }
 
-/* ========= CONSIA ASK ========= */
+/* ===================== CONSIA Ask ===================== */
 let captionsOn=true;
+
 async function askConsia(userText){
   setStatus("Pensando…");
   const lang = pickTargetLang();
+
   try{
     const res = await fetch(API_URL, {
       method:"POST",
@@ -360,16 +344,12 @@ async function askConsia(userText){
       })
     });
     const data = await res.json().catch(()=>({}));
-    const reply = data?.text || data?.reply || data?.message || "CONSIA activo. Te escucho.";
-    const audio_b64 = data?.audio_b64;
-    const audio_mime = data?.audio_mime;
-    const audio_url = data?.audio_url;
 
+    const reply = data?.text || data?.reply || data?.message || "CONSIA activo. Te escucho.";
     if(captionsOn) addLine("c","CONSIA: "+reply);
 
-    // voz natural server
-    if(audio_b64) await playB64Audio(audio_b64, audio_mime);
-    else if(audio_url) await playUrlAudio(audio_url);
+    // Natural voice from server (Audio API speech endpoint)
+    if(data?.audio_b64) await playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
     else speakBrowser(reply);
 
     setStatus("Listo");
@@ -382,23 +362,22 @@ async function askConsia(userText){
   }
 }
 
-/* ========= “MAGIA” PROACTIVA: TELEPORT + RESPUESTA ========= */
+/* ===================== Proactividad (magia) ===================== */
 async function handleUserText(t){
-  // 1) teletransportación si está ON y detecta intención o descripción
+  // teleport si detecta intención de escena (o si describen entorno)
   if(teleportOn){
     const wantsTeleport = /teletransport|cambi(a|á) de fondo|cambi(a|á) el fondo|cambi(a|á) avatar|lleva(me)? a|vamos a|quiero estar en/i.test(t);
     if(wantsTeleport){
       addLine("sys","CONSIA: Activando teletransportación…");
       const sc = await requestScene(t);
       if(sc) applyScene(sc);
-      else addLine("sys","CONSIA: No encontré escena. (Agregá archivos bg-*.mp4)");
+      else addLine("sys","CONSIA: (Scene no respondió. Igual te contesto.)");
     }
   }
-  // 2) respuesta CONSIA siempre (proactiva)
   await askConsia(t);
 }
 
-/* ========= VISUAL FX (blink/breath/mouth) ========= */
+/* ===================== FX: blink/breath/mouth ===================== */
 const fx = document.getElementById("fx");
 const ctx = fx.getContext("2d");
 function resizeFx(){ fx.width = innerWidth; fx.height = innerHeight; }
@@ -443,12 +422,9 @@ function drawFX(){
 }
 drawFX();
 
-/* ========= AUTOPLAY SAFE ========= */
+/* ===================== Autoplay-safe boot ===================== */
 let started=false;
 function hideLoader(){ loader.classList.add("hidden"); setTimeout(()=> loader.style.display="none", 380); }
-function showTap(){ tap.style.display="flex"; }
-function hideTap(){ tap.style.display="none"; }
-
 async function tryPlayAll(){
   const p1 = bgVideo.play().catch(()=>false);
   const p2 = avatarVideo.play().catch(()=>false);
@@ -456,46 +432,38 @@ async function tryPlayAll(){
 }
 async function bootstrap(){
   setStatus("Cargando…");
-  // intento autoplay muted
   await tryPlayAll();
-  // si iOS bloquea audio/mic, pedimos 1 toque igual (pero video suele arrancar)
-  // fail-safe: nunca negro
-  setTimeout(()=>{
-    if(!started){
-      hideLoader();
-      started=true;
-      setStatus("Listo");
-      consiaIntro();
-    }
-  }, 1200);
 
-  // si videos fallan -> fallback imagen
+  // fail-safe: nunca pantalla negra
   setTimeout(()=>{
-    if(bgVideo.readyState < 2){
-      bgVideo.style.display="none"; bgImg.style.display="block";
-    }
-    if(avatarVideo.readyState < 2){
-      avatarVideo.style.display="none"; avatarImg.style.display="block";
-    }
     if(!started){
       hideLoader(); started=true; setStatus("Listo"); consiaIntro();
     }
-  }, 2500);
+  }, 1100);
+
+  // fallback imagen si un video no cargó
+  setTimeout(()=>{
+    if(bgVideo.readyState < 2){ bgVideo.style.display="none"; bgImg.style.display="block"; }
+    if(avatarVideo.readyState < 2){ avatarVideo.style.display="none"; avatarImg.style.display="block"; }
+    if(!started){ hideLoader(); started=true; setStatus("Listo"); consiaIntro(); }
+  }, 2400);
 }
+function showTap(){ tap.style.display="flex"; }
+function hideTap(){ tap.style.display="none"; }
+
 tapBtn.onclick = async ()=>{
   hideTap();
   await tryPlayAll();
   if(!started){ hideLoader(); started=true; setStatus("Listo"); consiaIntro(); }
 };
 
-/* ========= INTRO PROACTIVO ========= */
 function consiaIntro(){
   addLine("sys","CONSIA: Listo. Hablá o escribí. Decí ‘teletransportame a…’ y pasa la magia.");
-  // ping proactivo corto
-  setTimeout(()=>{ handleUserText("Hola CONSIA. Guiame proactivamente."); }, 600);
+  // primer mensaje proactivo
+  setTimeout(()=>{ handleUserText("Hola CONSIA. Guiame proactivamente y activá teletransportación cuando te lo describa."); }, 500);
 }
 
-/* ========= SHARE ========= */
+/* ===================== Share / WhatsApp ===================== */
 const LINK = "https://consia.world";
 document.getElementById("share").onclick = async ()=>{
   try{
@@ -508,10 +476,10 @@ document.getElementById("wa").onclick = ()=>{
   location.href = "https://wa.me/?text="+msg;
 };
 
-/* ========= UI EVENTS ========= */
-document.getElementById("talk").onclick = startSTT;
+/* ===================== Events ===================== */
+document.getElementById("talk").onclick = ()=>{ try{ startSTT(); }catch(e){ showTap(); } };
 document.getElementById("stop").onclick = ()=>{ try{ if(rec) rec.stop(); }catch(e){} stopAllAudio(); };
-document.getElementById("audio").onclick = toggleAmbient;
+document.getElementById("audio").onclick = ()=>{ try{ toggleAmbient(); }catch(e){ showTap(); } };
 teleBtn.onclick = ()=> setTeleport(!teleportOn);
 document.getElementById("unlock").onclick = faceIdUnlock;
 document.getElementById("captions").onclick = ()=>{ captionsOn=!captionsOn; addLine("sys", captionsOn?"(Subtítulos ON)":"(Subtítulos OFF)"); };
@@ -525,7 +493,6 @@ sendBtn.onclick = ()=>{
 };
 msgEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") sendBtn.click(); });
 
-/* ========= START ========= */
 bootstrap();
 </script>
 </body>

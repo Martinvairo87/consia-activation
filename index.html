@@ -4,6 +4,16 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>CONSIA LIVE · Teletransportación</title>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<script>
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+</script>
+
 <style>
   :root{
     --glass: rgba(0,0,0,.55);
@@ -16,112 +26,52 @@
   html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;}
   #stage{position:fixed;inset:0;background:#000;}
   .layer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  #bgVideo, #bgImg, #avatarVideo, #avatarImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  #bgVideo, #bgImg{filter:saturate(1.05) contrast(1.03);}
-  #avatarVideo, #avatarImg{filter:saturate(1.08) contrast(1.04);}
-  #bgImg, #avatarImg{display:none;}
+  #bgVideo,#bgImg,#avatarVideo,#avatarImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  #bgVideo,#bgImg{filter:saturate(1.05) contrast(1.03);}
+  #avatarVideo,#avatarImg{filter:saturate(1.08) contrast(1.04);}
+  #bgImg,#avatarImg{display:none;}
   #fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen;opacity:.95;}
 
-  /* transitions */
-  .fadeIn{animation:fadeIn .55s ease both;}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-  /* loader */
-  #loader{
-    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    background:#000;z-index:50;transition:opacity .35s ease;
-  }
+  #loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:50;transition:opacity .35s ease;}
   #loader.hidden{opacity:0;pointer-events:none;}
   #brand{color:rgba(255,255,255,.75);letter-spacing:.5em;font-size:18px;}
 
-  /* tap to start */
-  #tap{
-    position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:40;
-    background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
-    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
-  }
-  #tap .card{
-    background:var(--glass);border:1px solid var(--line);border-radius:18px;
-    padding:18px 18px;max-width:360px;color:var(--txt);text-align:center;
-  }
+  #tap{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:40;background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
+    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));}
+  #tap .card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:380px;color:var(--txt);text-align:center;}
   #tap .hint{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.25;}
 
-  button, select{
-    background:rgba(0,0,0,.55);border:1px solid var(--line);color:var(--txt);
-    padding:12px 14px;border-radius:14px;backdrop-filter:blur(12px);
-  }
+  button,select{background:rgba(0,0,0,.55);border:1px solid var(--line);color:var(--txt);padding:12px 14px;border-radius:14px;backdrop-filter:blur(12px);}
 
-  /* UI bar */
-  #ui{
-    position:fixed;left:50%;transform:translateX(-50%);
-    bottom: calc(14px + env(safe-area-inset-bottom));
-    display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center;
-    padding:0 12px;
-  }
+  #ui{position:fixed;left:50%;transform:translateX(-50%);bottom: calc(14px + env(safe-area-inset-bottom));
+      display:flex;gap:10px;z-index:30;flex-wrap:wrap;justify-content:center;padding:0 12px;}
 
-  /* chat */
-  #chat{
-    position:fixed;right:14px;
-    bottom: calc(84px + env(safe-area-inset-bottom));
-    width:min(420px,calc(100vw - 28px));
-    height:min(360px,calc(100vh - 180px));
+  #chat{position:fixed;right:14px;bottom: calc(84px + env(safe-area-inset-bottom));
+    width:min(440px,calc(100vw - 28px));height:min(380px,calc(100vh - 180px));
     z-index:30;background:var(--glass);border:1px solid var(--line);
-    border-radius:18px;backdrop-filter:blur(16px);display:flex;flex-direction:column;overflow:hidden;
-  }
-  #chatHeader{
-    padding:10px 12px;border-bottom:1px solid var(--line);
-    display:flex;gap:8px;align-items:center;justify-content:space-between;
-  }
+    border-radius:18px;backdrop-filter:blur(16px);display:flex;flex-direction:column;overflow:hidden;}
+  #chatHeader{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between;}
   #leftHead{display:flex;gap:8px;align-items:center}
   #mode{color:rgba(255,255,255,.55);font-size:12px}
   #log{padding:10px 12px;flex:1;overflow:auto;color:var(--txt);font-size:14px;line-height:1.3}
   #inputRow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
   #msg{flex:1;border:none;border-radius:12px;padding:10px 10px;background:rgba(255,255,255,.10);color:var(--txt);outline:none}
   #send{min-width:78px}
-  .sys{color:var(--sys)}
-  .me{color:rgba(255,255,255,.92)}
-  .c{color:var(--ok)}
-  .small{font-size:12px;color:var(--muted)}
+  .sys{color:var(--sys)} .me{color:rgba(255,255,255,.92)} .c{color:var(--ok)} .small{font-size:12px;color:var(--muted)}
 
-  /* status */
-  #status{
-    position:fixed;left:14px;bottom: calc(14px + env(safe-area-inset-bottom));z-index:30;
+  #status{position:fixed;left:14px;bottom: calc(14px + env(safe-area-inset-bottom));z-index:30;
     padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);
-    color:var(--muted);font-size:12px;backdrop-filter:blur(10px)
-  }
-
-  /* teleport pill */
-  #telePill{
-    position:fixed;left:14px;top: calc(14px + env(safe-area-inset-top));z-index:30;
+    color:var(--muted);font-size:12px;backdrop-filter:blur(10px)}
+  #telePill{position:fixed;left:14px;top: calc(14px + env(safe-area-inset-top));z-index:30;
     padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);
-    color:var(--muted);font-size:12px;backdrop-filter:blur(10px)
-  }
-
-  /* camera modal */
-  #camModal{
-    position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60;
-    background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
-    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
-  }
-  #camBox{
-    width:min(520px,calc(100vw - 28px));
-    background:rgba(0,0,0,.6);
-    border:1px solid var(--line);
-    border-radius:18px;
-    overflow:hidden;
-  }
-  #camTop{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
-  #camVid{width:100%;height:340px;object-fit:cover;background:#000}
-  @media (max-width: 640px){
-    #chat{left:14px;right:14px;width:auto}
-    #camVid{height:260px}
-  }
+    color:var(--muted);font-size:12px;backdrop-filter:blur(10px)}
+  @media (max-width: 640px){ #chat{left:14px;right:14px;width:auto} }
 </style>
 </head>
-<body>
 
+<body>
 <div id="stage">
-  <!-- BACKGROUND (teleport) -->
+  <!-- BACKGROUND -->
   <video id="bgVideo" class="layer" playsinline muted loop preload="auto">
     <source src="./bg.mp4" type="video/mp4">
   </video>
@@ -142,7 +92,7 @@
   <div class="card">
     <div style="font-size:16px;letter-spacing:.12em;margin-bottom:10px">CONSIA · LIVE</div>
     <button id="tapBtn">Un toque para iniciar</button>
-    <div class="hint">Después queda 1-click. (Audio / micrófono / cámara pueden requerir 1 toque).</div>
+    <div class="hint">Después queda 1-click. (iPhone/iPad pueden bloquear audio/mic hasta el primer toque).</div>
   </div>
 </div>
 
@@ -152,9 +102,9 @@
   <div id="chatHeader">
     <div id="leftHead">
       <span class="sys">CONSIA</span>
-      <span id="mode">LIVE · Voz Natural · Teleport</span>
+      <span id="mode">LIVE · Voz Natural · Teleport · Proactivo</span>
     </div>
-    <select id="lang" title="Idioma / Translate">
+    <select id="lang" title="Idioma">
       <option value="auto" selected>Auto</option>
       <option value="es">ES</option>
       <option value="en">EN</option>
@@ -166,7 +116,7 @@
   </div>
   <div id="log"></div>
   <div id="inputRow">
-    <input id="msg" placeholder="Escribí o decí: ‘teletransportame a…’" />
+    <input id="msg" placeholder="Decí o escribí: ‘teletransportame a…’" />
     <button id="send">Enviar</button>
   </div>
 </div>
@@ -176,38 +126,20 @@
   <button id="stop">Stop</button>
   <button id="audio">Ambiente</button>
   <button id="teleport">Teleport</button>
-  <button id="sign">Señas</button>
   <button id="unlock">Face ID</button>
   <button id="captions">Subtítulos</button>
+  <button id="share">Compartir</button>
+  <button id="wa">WhatsApp</button>
 </div>
 
 <div id="status">Inicializando…</div>
 
-<!-- Modo señas (cámara) -->
-<div id="camModal">
-  <div id="camBox">
-    <div id="camTop">
-      <div class="sys">CONSIA · Modo Señas</div>
-      <button id="camClose">Cerrar</button>
-    </div>
-    <video id="camVid" autoplay playsinline muted></video>
-    <div style="padding:10px 12px;border-top:1px solid var(--line)" class="small">
-      Mostrá señas o gestos. (La interpretación inteligente se activa vía tu API /scene cuando quieras.)
-    </div>
-  </div>
-</div>
-
 <script>
-/* =========================
-   CONFIG
-========================= */
-const API_URL = "https://api.consia.world/ask";
-const SCENE_URL = "https://api.consia.world/scene"; // opcional: si no existe, usamos escenas locales
-const AUDIO_PREFERRED = true;
+/* ========= CONFIG ========= */
+const API_URL   = "https://api.consia.world/ask";
+const SCENE_URL = "https://api.consia.world/scene";
 
-/* =========================
-   ELEMENTS
-========================= */
+/* ========= ELEMENTS ========= */
 const loader = document.getElementById("loader");
 const tap = document.getElementById("tap");
 const tapBtn = document.getElementById("tapBtn");
@@ -225,13 +157,7 @@ const avatarImg = document.getElementById("avatarImg");
 const teleBtn = document.getElementById("teleport");
 const teleStateEl = document.getElementById("teleState");
 
-const camModal = document.getElementById("camModal");
-const camVid = document.getElementById("camVid");
-const camClose = document.getElementById("camClose");
-
-/* =========================
-   STATUS / LOG
-========================= */
+/* ========= HELPERS ========= */
 function setStatus(t){ statusEl.textContent = t; }
 function addLine(cls, text){
   const d = document.createElement("div");
@@ -240,10 +166,6 @@ function addLine(cls, text){
   logEl.appendChild(d);
   logEl.scrollTop = logEl.scrollHeight;
 }
-
-/* =========================
-   LOCALE
-========================= */
 function deviceLocale(){
   const nav = (navigator.language || "es").toLowerCase();
   if(nav.startsWith("pt")) return "pt";
@@ -261,20 +183,350 @@ function tz(){
   try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch(e){ return ""; }
 }
 
-/* =========================
-   VOICE (best available)
-========================= */
-let VOICES = [];
-function refreshVoices(){ VOICES = speechSynthesis.getVoices() || []; }
-refreshVoices();
-speechSynthesis.onvoiceschanged = refreshVoices;
+/* ========= AUDIO PLAYER (server voice) ========= */
+let voiceAudio = null;
+let speaking = false;
+function stopAllAudio(){
+  try{ if(voiceAudio){ voiceAudio.pause(); voiceAudio=null; } }catch(e){}
+  try{ speechSynthesis.cancel(); }catch(e){}
+  speaking=false;
+}
+async function playB64Audio(audio_b64, audio_mime){
+  stopAllAudio();
+  speaking=true;
+  const src = `data:${audio_mime||"audio/mpeg"};base64,${audio_b64}`;
+  voiceAudio = new Audio(src);
+  voiceAudio.onended = ()=>{ speaking=false; };
+  voiceAudio.onerror = ()=>{ speaking=false; };
+  await voiceAudio.play();
+}
+async function playUrlAudio(audio_url){
+  stopAllAudio();
+  speaking=true;
+  voiceAudio = new Audio(audio_url);
+  voiceAudio.onended = ()=>{ speaking=false; };
+  voiceAudio.onerror = ()=>{ speaking=false; };
+  await voiceAudio.play();
+}
+/* fallback si no llega audio desde server */
+function speakBrowser(text){
+  speaking=true;
+  const u=new SpeechSynthesisUtterance(text);
+  const lang = pickTargetLang();
+  u.lang = lang==="pt"?"pt-BR":lang==="en"?"en-US":lang==="fr"?"fr-FR":lang==="it"?"it-IT":lang==="de"?"de-DE":"es-ES";
+  u.rate=1.0; u.pitch=1.0; u.volume=1.0;
+  u.onend=()=>speaking=false;
+  u.onerror=()=>speaking=false;
+  speechSynthesis.speak(u);
+}
 
-function scoreVoice(voice, lang){
-  const name = (voice.name || "").toLowerCase();
-  const vlang = (voice.lang || "").toLowerCase();
-  let s = 0;
-  if(vlang.startsWith(lang+"-")) s += 60;
-  if(vlang.startsWith(lang)) s += 55;
-  if(name.includes("neural")) s += 45;
-  if(name.includes("premium")) s += 35;
-  if
+/* ========= STT ========= */
+let rec=null;
+function startSTT(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ addLine("sys","CONSIA: Tu navegador no soporta voz. Usá chat."); return; }
+  if(rec){ try{rec.stop()}catch(e){} rec=null; }
+  rec=new SR();
+  const lang = pickTargetLang();
+  rec.lang = lang==="pt"?"pt-BR":lang==="en"?"en-US":lang==="fr"?"fr-FR":lang==="it"?"it-IT":lang==="de"?"de-DE":"es-ES";
+  rec.interimResults=false;
+  rec.onresult=e=>{
+    const t=e.results?.[0]?.[0]?.transcript||"";
+    if(t.trim()){ addLine("me","Usuario: "+t); handleUserText(t); }
+  };
+  rec.start();
+}
+
+/* ========= AMBIENTE ========= */
+let ambient=null, ambientOn=false;
+async function toggleAmbient(){
+  if(!ambient){ ambient=new Audio("./water.wav"); ambient.loop=true; ambient.volume=0.22; }
+  ambientOn=!ambientOn;
+  try{ if(ambientOn){ await ambient.play(); addLine("sys","(Ambiente ON)"); } else { ambient.pause(); addLine("sys","(Ambiente OFF)"); } }
+  catch(e){ tap.style.display="flex"; }
+}
+
+/* ========= PASSKEY “Face ID” ========= */
+async function faceIdUnlock(){
+  if(!window.PublicKeyCredential){ addLine("sys","CONSIA: Face ID no disponible acá."); return; }
+  const have = localStorage.getItem("consia_passkey")==="1";
+  const rp = { name:"CONSIA", id: location.hostname };
+  const user = { id:new TextEncoder().encode("consia-owner"), name:"owner@consia", displayName:"CONSIA Owner" };
+  try{
+    if(!have){
+      await navigator.credentials.create({ publicKey:{
+        rp,user,
+        pubKeyCredParams:[{type:"public-key",alg:-7}],
+        challenge:crypto.getRandomValues(new Uint8Array(32)),
+        authenticatorSelection:{userVerification:"required"},
+        timeout:60000, attestation:"none"
+      }});
+      localStorage.setItem("consia_passkey","1");
+      addLine("sys","CONSIA: Owner Mode habilitado (Face ID).");
+      return;
+    }
+    await navigator.credentials.get({ publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      timeout:60000, userVerification:"required"
+    }});
+    addLine("sys","CONSIA: Owner Mode OK.");
+  }catch(e){
+    addLine("sys","CONSIA: Face ID cancelado.");
+  }
+}
+
+/* ========= TELEPORT ========= */
+let teleportOn=true;
+function setTeleport(on){
+  teleportOn=on;
+  teleStateEl.textContent = on ? "ON" : "OFF";
+}
+setTeleport(true);
+
+function applyScene(scene){
+  // scene: { bg:{type:"video|image",src:"..."}, avatar:{type:"video|image",src:"..."} }
+  try{
+    if(scene?.bg?.type==="video"){
+      bgImg.style.display="none";
+      bgVideo.style.display="block";
+      bgVideo.querySelector("source").src = scene.bg.src;
+      bgVideo.load(); bgVideo.play().catch(()=>{});
+    }else if(scene?.bg?.type==="image"){
+      bgVideo.pause(); bgVideo.style.display="none";
+      bgImg.src = scene.bg.src;
+      bgImg.style.display="block";
+    }
+    if(scene?.avatar?.type==="video"){
+      avatarImg.style.display="none";
+      avatarVideo.style.display="block";
+      avatarVideo.querySelector("source").src = scene.avatar.src;
+      avatarVideo.load(); avatarVideo.play().catch(()=>{});
+    }else if(scene?.avatar?.type==="image"){
+      avatarVideo.pause(); avatarVideo.style.display="none";
+      avatarImg.src = scene.avatar.src;
+      avatarImg.style.display="block";
+    }
+    addLine("sys","(Teletransportación aplicada)");
+  }catch(e){}
+}
+
+// escenas locales (si /scene no existe)
+const LOCAL_SCENES = [
+  { key:["playa","beach"], scene:{ bg:{type:"video",src:"./bg-beach.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } },
+  { key:["oficina","office"], scene:{ bg:{type:"video",src:"./bg-office.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } },
+  { key:["noche","night"], scene:{ bg:{type:"video",src:"./bg-night.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } },
+  { key:["espacio","space","cosmos"], scene:{ bg:{type:"video",src:"./bg-space.mp4"}, avatar:{type:"video",src:"./avatar.mp4"} } }
+];
+function localSceneFromText(t){
+  const x=t.toLowerCase();
+  for(const s of LOCAL_SCENES){
+    if(s.key.some(k=>x.includes(k))) return s.scene;
+  }
+  return null;
+}
+
+async function requestScene(userText){
+  // 1) intento server
+  try{
+    const res = await fetch(SCENE_URL, {
+      method:"POST",
+      headers:{ "content-type":"application/json" },
+      body: JSON.stringify({ prompt:userText, lang: pickTargetLang(), timezone: tz() })
+    });
+    if(res.ok){
+      const data = await res.json();
+      if(data?.scene) return data.scene;
+    }
+  }catch(e){}
+  // 2) fallback local
+  return localSceneFromText(userText);
+}
+
+/* ========= CONSIA ASK ========= */
+let captionsOn=true;
+async function askConsia(userText){
+  setStatus("Pensando…");
+  const lang = pickTargetLang();
+  try{
+    const res = await fetch(API_URL, {
+      method:"POST",
+      headers:{ "content-type":"application/json" },
+      body: JSON.stringify({
+        message:userText,
+        lang,
+        locale:navigator.language||"",
+        timezone:tz(),
+        proactive:true
+      })
+    });
+    const data = await res.json().catch(()=>({}));
+    const reply = data?.text || data?.reply || data?.message || "CONSIA activo. Te escucho.";
+    const audio_b64 = data?.audio_b64;
+    const audio_mime = data?.audio_mime;
+    const audio_url = data?.audio_url;
+
+    if(captionsOn) addLine("c","CONSIA: "+reply);
+
+    // voz natural server
+    if(audio_b64) await playB64Audio(audio_b64, audio_mime);
+    else if(audio_url) await playUrlAudio(audio_url);
+    else speakBrowser(reply);
+
+    setStatus("Listo");
+    pulseMouthFor(Math.min(2800, 900 + reply.length * 10));
+  }catch(e){
+    if(captionsOn) addLine("sys","CONSIA: No pude conectar. Probá de nuevo.");
+    speakBrowser("No pude conectar. Probá de nuevo.");
+    setStatus("Sin conexión");
+    pulseMouthFor(1400);
+  }
+}
+
+/* ========= “MAGIA” PROACTIVA: TELEPORT + RESPUESTA ========= */
+async function handleUserText(t){
+  // 1) teletransportación si está ON y detecta intención o descripción
+  if(teleportOn){
+    const wantsTeleport = /teletransport|cambi(a|á) de fondo|cambi(a|á) el fondo|cambi(a|á) avatar|lleva(me)? a|vamos a|quiero estar en/i.test(t);
+    if(wantsTeleport){
+      addLine("sys","CONSIA: Activando teletransportación…");
+      const sc = await requestScene(t);
+      if(sc) applyScene(sc);
+      else addLine("sys","CONSIA: No encontré escena. (Agregá archivos bg-*.mp4)");
+    }
+  }
+  // 2) respuesta CONSIA siempre (proactiva)
+  await askConsia(t);
+}
+
+/* ========= VISUAL FX (blink/breath/mouth) ========= */
+const fx = document.getElementById("fx");
+const ctx = fx.getContext("2d");
+function resizeFx(){ fx.width = innerWidth; fx.height = innerHeight; }
+addEventListener("resize", resizeFx); resizeFx();
+
+let mouthAmp=0, blinkPhase=0, breath=0;
+function pulseMouthFor(ms){
+  const t0=performance.now();
+  function tick(t){
+    const p=Math.min(1,(t-t0)/ms);
+    mouthAmp=(1-p);
+    if(p<1) requestAnimationFrame(tick);
+  }
+  mouthAmp=1; requestAnimationFrame(tick);
+}
+function drawFX(){
+  ctx.clearRect(0,0,fx.width,fx.height);
+
+  breath += 0.012;
+  const glow = (Math.sin(breath)*0.10 + 0.18);
+
+  ctx.fillStyle = `rgba(120,200,255,${glow})`;
+  ctx.beginPath();
+  ctx.arc(fx.width*0.5, fx.height*0.56, Math.min(fx.width,fx.height)*0.20, 0, Math.PI*2);
+  ctx.fill();
+
+  blinkPhase += 0.018;
+  if(Math.sin(blinkPhase) > 0.996){
+    ctx.fillStyle="rgba(210,240,255,.28)";
+    ctx.fillRect(fx.width*0.5-100, fx.height*0.33, 200, 10);
+  }
+
+  const talking = speaking ? 1 : 0;
+  const open = talking*(8+18*Math.abs(Math.sin(performance.now()/95))) + (mouthAmp*10);
+  ctx.strokeStyle="rgba(190,245,255,.65)";
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.ellipse(fx.width*0.5, fx.height*0.72, 60, 10+open, 0, 0, Math.PI*2);
+  ctx.stroke();
+
+  requestAnimationFrame(drawFX);
+}
+drawFX();
+
+/* ========= AUTOPLAY SAFE ========= */
+let started=false;
+function hideLoader(){ loader.classList.add("hidden"); setTimeout(()=> loader.style.display="none", 380); }
+function showTap(){ tap.style.display="flex"; }
+function hideTap(){ tap.style.display="none"; }
+
+async function tryPlayAll(){
+  const p1 = bgVideo.play().catch(()=>false);
+  const p2 = avatarVideo.play().catch(()=>false);
+  await Promise.all([p1,p2]);
+}
+async function bootstrap(){
+  setStatus("Cargando…");
+  // intento autoplay muted
+  await tryPlayAll();
+  // si iOS bloquea audio/mic, pedimos 1 toque igual (pero video suele arrancar)
+  // fail-safe: nunca negro
+  setTimeout(()=>{
+    if(!started){
+      hideLoader();
+      started=true;
+      setStatus("Listo");
+      consiaIntro();
+    }
+  }, 1200);
+
+  // si videos fallan -> fallback imagen
+  setTimeout(()=>{
+    if(bgVideo.readyState < 2){
+      bgVideo.style.display="none"; bgImg.style.display="block";
+    }
+    if(avatarVideo.readyState < 2){
+      avatarVideo.style.display="none"; avatarImg.style.display="block";
+    }
+    if(!started){
+      hideLoader(); started=true; setStatus("Listo"); consiaIntro();
+    }
+  }, 2500);
+}
+tapBtn.onclick = async ()=>{
+  hideTap();
+  await tryPlayAll();
+  if(!started){ hideLoader(); started=true; setStatus("Listo"); consiaIntro(); }
+};
+
+/* ========= INTRO PROACTIVO ========= */
+function consiaIntro(){
+  addLine("sys","CONSIA: Listo. Hablá o escribí. Decí ‘teletransportame a…’ y pasa la magia.");
+  // ping proactivo corto
+  setTimeout(()=>{ handleUserText("Hola CONSIA. Guiame proactivamente."); }, 600);
+}
+
+/* ========= SHARE ========= */
+const LINK = "https://consia.world";
+document.getElementById("share").onclick = async ()=>{
+  try{
+    if(navigator.share) await navigator.share({title:"CONSIA", text:"Entrá a CONSIA LIVE", url: LINK});
+    else { await navigator.clipboard.writeText(LINK); alert("Link copiado: "+LINK); }
+  }catch(e){}
+};
+document.getElementById("wa").onclick = ()=>{
+  const msg = encodeURIComponent("Entrá a CONSIA LIVE: "+LINK);
+  location.href = "https://wa.me/?text="+msg;
+};
+
+/* ========= UI EVENTS ========= */
+document.getElementById("talk").onclick = startSTT;
+document.getElementById("stop").onclick = ()=>{ try{ if(rec) rec.stop(); }catch(e){} stopAllAudio(); };
+document.getElementById("audio").onclick = toggleAmbient;
+teleBtn.onclick = ()=> setTeleport(!teleportOn);
+document.getElementById("unlock").onclick = faceIdUnlock;
+document.getElementById("captions").onclick = ()=>{ captionsOn=!captionsOn; addLine("sys", captionsOn?"(Subtítulos ON)":"(Subtítulos OFF)"); };
+
+sendBtn.onclick = ()=>{
+  const t=msgEl.value.trim();
+  if(!t) return;
+  msgEl.value="";
+  addLine("me","Usuario: "+t);
+  handleUserText(t);
+};
+msgEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") sendBtn.click(); });
+
+/* ========= START ========= */
+bootstrap();
+</script>
+</body>
+</html>

@@ -1,330 +1,125 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f14" />
-  <title>CONSIA ∞</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>CONSIA ∞</title>
 
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" sizes="192x192" href="./icon-192.png" />
-  <link rel="apple-touch-icon" href="./icon-192.png" />
+<style>
+body{
+  margin:0;
+  background:#05070a;
+  font-family:-apple-system,system-ui;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
 
-  <style>
-    :root{
-      --bg:#070a0f; --panel:#0b0f14; --panel2:#0d131b;
-      --text:#eaf0ff; --muted:#93a4c7;
-      --line:#162131; --accent:#5df; --accent2:#8cf; --danger:#ff4d5a;
-      --ok:#16d47b;
-      --shadow: 0 10px 40px rgba(0,0,0,.55);
-      --r:18px;
-    }
-    *{box-sizing:border-box;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
-    body{
-      margin:0; background: radial-gradient(1200px 600px at 50% -10%, rgba(93,255,255,.10), transparent 60%),
-                       radial-gradient(900px 500px at 90% 10%, rgba(140,204,255,.10), transparent 55%),
-                       var(--bg);
-      color:var(--text);
-    }
-    .wrap{max-width:1040px;margin:0 auto;padding:22px 16px 44px;}
-    .top{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:14px 16px; border:1px solid var(--line); border-radius:var(--r);
-      background: rgba(11,15,20,.75); box-shadow: var(--shadow);
-      position: sticky; top: 10px; backdrop-filter: blur(10px); z-index: 4;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .dot{width:10px;height:10px;border-radius:99px;background:var(--danger);box-shadow:0 0 0 4px rgba(255,77,90,.15)}
-    .dot.ok{background:var(--ok);box-shadow:0 0 0 4px rgba(22,212,123,.15)}
-    .name{font-weight:800;letter-spacing:.18em}
-    .pill{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(13,19,27,.6);color:var(--muted);font-size:12px}
-    .row{display:grid;grid-template-columns: 1.1fr .9fr; gap:14px; margin-top:14px}
-    @media(max-width: 920px){.row{grid-template-columns:1fr}}
-    .card{border:1px solid var(--line);border-radius:var(--r);background:rgba(11,15,20,.75);box-shadow:var(--shadow);overflow:hidden}
-    .card h2{margin:0;padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .card .body{padding:14px 16px}
-    .chips{display:flex;flex-wrap:wrap;gap:10px}
-    .chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(13,19,27,.6);cursor:pointer;user-select:none}
-    .chip:hover{border-color:rgba(93,255,255,.35)}
-    .chip b{font-size:13px}
-    .chip span{font-size:12px;color:var(--muted)}
-    .chat{height:420px;overflow:auto;padding:10px 10px 18px;background:rgba(7,10,15,.35)}
-    .msg{max-width:78%;padding:10px 12px;border-radius:16px;margin:8px 6px;border:1px solid var(--line);white-space:pre-wrap}
-    .me{margin-left:auto;background:rgba(93,255,255,.08);border-color:rgba(93,255,255,.22)}
-    .ai{background:rgba(13,19,27,.7)}
-    .meta{font-size:11px;color:var(--muted);padding:0 10px 8px}
-    .composer{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:rgba(11,15,20,.85)}
-    input,textarea{
-      width:100%; outline:none; border:1px solid var(--line); border-radius:14px;
-      background:rgba(13,19,27,.6); color:var(--text); padding:12px 12px; font-size:14px;
-    }
-    button{
-      border:1px solid rgba(93,255,255,.28); background:rgba(93,255,255,.10); color:var(--text);
-      padding:12px 14px; border-radius:14px; cursor:pointer; font-weight:700;
-    }
-    button:hover{background:rgba(93,255,255,.16)}
-    .mini{font-size:12px;color:var(--muted)}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .preview{
-      width:100%; border-radius:16px; border:1px solid var(--line); background:rgba(13,19,27,.45);
-      overflow:hidden
-    }
-    .preview video{width:100%;display:block}
-    .preview img{width:100%;display:block}
-    .kbd{opacity:.85;font-size:12px}
-  </style>
+header{
+  padding:14px 20px;
+  background:#0a0f14;
+  border-bottom:1px solid #1e2a33;
+  display:flex;
+  justify-content:space-between;
+}
+
+.status{
+  color:#00ffa3;
+  font-weight:600;
+}
+
+.chat{
+  flex:1;
+  padding:20px;
+  overflow:auto;
+}
+
+.msg{
+  background:#0e151c;
+  padding:12px 16px;
+  border-radius:14px;
+  margin-bottom:12px;
+  max-width:70%;
+}
+
+.user{
+  background:#1b2b36;
+  margin-left:auto;
+}
+
+footer{
+  display:flex;
+  padding:12px;
+  background:#0a0f14;
+}
+
+input{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  background:#101820;
+  color:white;
+}
+
+button{
+  margin-left:10px;
+  padding:12px 18px;
+  border:none;
+  border-radius:10px;
+  background:#00ffa3;
+  font-weight:700;
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div id="statusDot" class="dot"></div>
-        <div>
-          <div class="name">CONSIA</div>
-          <div class="mini">One tap. Three options. Zero friction.</div>
-        </div>
-      </div>
-      <div class="pill">
-        <span id="statusText">OFFLINE</span>
-        <span class="kbd">Enter = enviar · “.” = magia</span>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="card">
-        <h2>CONSIA ∞ LIVE</h2>
-        <div class="body">
-          <div class="chips">
-            <div class="chip" onclick="quick('Guíame con 3 opciones cortas y claras.')"><b>🧭 Guíame</b><span>(3 opciones)</span></div>
-            <div class="chip" onclick="quick('Mostrame qué podés hacer en 6 bullets ultra cortos y luego dame 3 opciones.')"><b>🧠 ¿Qué podés hacer?</b><span>core</span></div>
-            <div class="chip" onclick="openHyper()"><b>🖼️ Hiperrealismo</b><span>(imagen/video/avatar)</span></div>
-            <div class="chip" onclick="toggleVoice()"><b>🎙️ Voz</b><span>activar</span></div>
-            <div class="chip" onclick="connectWS()"><b>⚡ Realtime</b><span>WS</span></div>
-          </div>
+<header>
+<div>CONSIA ∞</div>
+<div class="status">ONLINE</div>
+</header>
 
-          <div style="height:12px"></div>
+<div id="chat" class="chat"></div>
 
-          <div class="grid2">
-            <div class="preview">
-              <video id="avatarVid" src="./avatar.mp4" autoplay muted loop playsinline></video>
-            </div>
-            <div class="preview" id="imgBox" style="display:flex;align-items:center;justify-content:center;padding:18px;color:var(--muted)">
-              Hyperrealismo preview (9:16)
-            </div>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="chat" id="chat"></div>
-          <div class="meta" id="meta">Device: <span id="deviceId"></span> · API: <span id="apiUrl"></span></div>
-
-          <div class="composer">
-            <input id="input" placeholder='Decime qué querés… (o escribí ".")' />
-            <button onclick="send()">Enviar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>ASCEND ∞</h2>
-        <div class="body">
-          <div class="mini">
-            Esta UI ya está lista para el mundo.  
-            Solo depende de que el backend esté en <b>api.consia.world</b>.
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="chips">
-            <div class="chip" onclick="ascendPing()"><b>✅ Activate</b><span>/activate</span></div>
-            <div class="chip" onclick="quick('Hiperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.')"><b>🖼️ Hyper Options</b><span>3</span></div>
-            <div class="chip" onclick="quick('Realtime: activá modo realtime y decime 3 comandos ejemplo.')"><b>⚡ Realtime</b><span>commands</span></div>
-          </div>
-
-          <div style="height:14px"></div>
-
-          <div class="mini">
-            <b>Comandos rápidos</b><br/>
-            1) "." → magia (CONSIA decide) <br/>
-            2) "Hyper: imagen 9:16 de …" <br/>
-            3) "Voz: respondé con audio"
-          </div>
-
-          <div style="height:14px"></div>
-
-          <audio id="audio" controls style="width:100%"></audio>
-        </div>
-      </div>
-    </div>
-  </div>
+<footer>
+<input id="input" placeholder="Ask CONSIA…" />
+<button onclick="send()">Send</button>
+</footer>
 
 <script>
-  // ===== CONFIG =====
-  const API = "https://api.consia.world";
-  const ASK_URL = API + "/ask";
-  const IMG_URL = API + "/image";
-  const VOICE_URL = API + "/voice";
-  const ACT_URL = API + "/activate";
-  const WS_URL = API.replace("https://","wss://") + "/ws";
+const API="https://api.consia.world";
 
-  // Public mode: si querés cerrar con token, poné aquí un Bearer válido
-  // const AUTH = "Bearer " + "TU_USER_TOKEN";
-  const AUTH = ""; // abierto (si tu worker no exige user)
+function add(text,cls=""){
+  const d=document.createElement("div");
+  d.className="msg "+cls;
+  d.innerText=text;
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
+}
 
-  // Device id persistente
-  const DEVICE_ID = localStorage.getItem("consia_device") || ("dev_" + Math.random().toString(16).slice(2));
-  localStorage.setItem("consia_device", DEVICE_ID);
+async function send(){
+  const val=input.value;
+  if(!val)return;
+  add(val,"user");
+  input.value="";
 
-  // ===== UI =====
-  const chat = document.getElementById("chat");
-  const input = document.getElementById("input");
-  const statusDot = document.getElementById("statusDot");
-  const statusText = document.getElementById("statusText");
-  const meta = document.getElementById("meta");
-  const apiUrl = document.getElementById("apiUrl");
-  const deviceEl = document.getElementById("deviceId");
-  const audioEl = document.getElementById("audio");
-  const imgBox = document.getElementById("imgBox");
-
-  apiUrl.textContent = API;
-  deviceEl.textContent = DEVICE_ID;
-
-  let voiceOn = false;
-  let ws = null;
-
-  function addMsg(role, text){
-    const div = document.createElement("div");
-    div.className = "msg " + (role === "me" ? "me" : "ai");
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function setOnline(ok){
-    statusDot.classList.toggle("ok", !!ok);
-    statusText.textContent = ok ? "ONLINE" : "OFFLINE";
-  }
-
-  async function ping(){
-    try{
-      const r = await fetch(API + "/health", { headers: baseHeaders() });
-      setOnline(r.ok);
-    }catch{ setOnline(false); }
-  }
-
-  function baseHeaders(){
-    const h = {
-      "content-type": "application/json",
-      "x-consia-device": DEVICE_ID
-    };
-    if (AUTH) h["authorization"] = AUTH;
-    return h;
-  }
-
-  // ===== ACTIONS =====
-  async function send(){
-    const txt = input.value.trim();
-    if(!txt) return;
-    input.value = "";
-    addMsg("me", txt);
-
-    // “.” trigger
-    const message = (txt === ".")
-      ? "Activá modo CONSIA ∞: dame 3 opciones top (Realtime / Hyperrealismo / Control iPhone) y pedime lo mínimo."
-      : txt;
-
-    // Si hay WS, preferimos WS
-    if(ws && ws.readyState === 1){
-      ws.send(JSON.stringify({ message, lang: "es" }));
-      return;
-    }
-
-    // HTTP
-    const payload = { message, lang: "es", audioWanted: voiceOn };
-    const r = await fetch(ASK_URL, { method:"POST", headers: baseHeaders(), body: JSON.stringify(payload) });
-    const data = await r.json().catch(()=>({}));
-    addMsg("ai", data.text || "Algo falló. Probá de nuevo.");
-
-    if(voiceOn && data.audio_b64){
-      playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
-    }
-    setOnline(true);
-  }
-
-  function quick(text){ input.value = text; send(); }
-
-  async function ascendPing(){
-    addMsg("me","ASCEND ∞ /activate");
-    const r = await fetch(ACT_URL, { headers: baseHeaders() });
-    const data = await r.json().catch(()=>({}));
-    addMsg("ai", JSON.stringify(data, null, 2));
-  }
-
-  function toggleVoice(){
-    voiceOn = !voiceOn;
-    addMsg("ai", voiceOn ? "Voz: ACTIVADA" : "Voz: DESACTIVADA");
-  }
-
-  async function openHyper(){
-    // Modo hiperrealismo: pide mínimo
-    quick("Hiperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.");
-  }
-
-  async function renderHyper(prompt){
-    addMsg("me","Hyper: " + prompt);
-    const r = await fetch(IMG_URL, {
-      method:"POST",
-      headers: baseHeaders(),
-      body: JSON.stringify({ prompt, lang: "es" })
-    });
-    const data = await r.json().catch(()=>({}));
-    if(!data.image_b64){
-      addMsg("ai","No pude generar imagen. Revisá token/seguridad.");
-      return;
-    }
-    const img = new Image();
-    img.src = "data:" + (data.content_type || "image/png") + ";base64," + data.image_b64;
-    imgBox.innerHTML = "";
-    imgBox.appendChild(img);
-    addMsg("ai","Hyperrealismo listo (9:16).");
-  }
-
-  function playB64Audio(b64, mime){
-    const url = "data:" + mime + ";base64," + b64;
-    audioEl.src = url;
-    audioEl.play().catch(()=>{});
-  }
-
-  function connectWS(){
-    if(ws && ws.readyState === 1){
-      addMsg("ai","Realtime ya está conectado.");
-      return;
-    }
-    ws = new WebSocket(WS_URL);
-    ws.onopen = () => { addMsg("ai","Realtime WS: conectado."); setOnline(true); };
-    ws.onmessage = (ev) => {
-      let data = null;
-      try{ data = JSON.parse(ev.data); }catch{ data = { text: String(ev.data||"") }; }
-      if(data.text) addMsg("ai", data.text);
-      if(data.audio_b64 && voiceOn) playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
-    };
-    ws.onclose = () => addMsg("ai","Realtime WS: desconectado.");
-    ws.onerror = () => addMsg("ai","Realtime WS: error.");
-  }
-
-  // Enter = send
-  input.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter"){ e.preventDefault(); send(); }
+  const r=await fetch(API+"/ask",{
+    method:"POST",
+    headers:{ "content-type":"application/json"},
+    body:JSON.stringify({message:val})
   });
 
-  // PWA SW
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
-  }
+  const j=await r.json();
+  add(j.text);
+}
 
-  ping();
-  setInterval(ping, 8000);
+/* REALTIME CORE */
+const ws=new WebSocket("wss://api.consia.world/realtime");
+ws.onmessage=e=>console.log("Realtime:",e.data);
 </script>
+
 </body>
 </html>

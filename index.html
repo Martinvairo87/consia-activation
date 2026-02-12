@@ -8,397 +8,527 @@
 
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon-192.png" />
-  <link rel="apple-touch-icon" href="./icon-192.png" />
-
   <style>
-    :root {
-      --bg:#07090c;
-      --panel:rgba(18,22,30,.62);
-      --stroke:rgba(255,255,255,.10);
-      --txt:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.60);
-      --glow:rgba(120,220,255,.35);
-      --ok:rgba(60,255,170,.9);
-      --bad:rgba(255,90,90,.9);
-      --chip:rgba(255,255,255,.08);
+    :root{
+      --bg:#000;
+      --glass: rgba(18,22,30,.55);
+      --glass2: rgba(18,22,30,.35);
+      --stroke: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --accent: rgba(120,180,255,.95);
+      --danger: rgba(255,90,90,.92);
+      --ok: rgba(90,255,170,.85);
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      background: radial-gradient(1200px 900px at 60% 20%, rgba(70,140,255,.10), transparent 50%),
-                  radial-gradient(900px 700px at 30% 70%, rgba(80,255,200,.08), transparent 55%),
-                  var(--bg);
-      color:var(--txt);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      height:100svh;
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+    .bg {
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
       overflow:hidden;
     }
-    .wrap{
-      height:100svh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
+    video#avatar {
+      width:100%; height:100%; object-fit:cover;
+      filter: contrast(1.05) saturate(1.05);
+      opacity:.95;
     }
-    .stage{
-      width:min(980px, 96vw);
-      height:min(740px, 92svh);
-      border:1px solid var(--stroke);
-      border-radius:22px;
-      overflow:hidden;
-      position:relative;
-      background: rgba(0,0,0,.35);
-      box-shadow: 0 20px 80px rgba(0,0,0,.55);
-    }
-    .bgvid{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit:cover;
-      filter: contrast(1.05) saturate(1.06);
-      opacity:.86;
-    }
-    .topbar{
-      position:absolute; inset:14px 14px auto 14px;
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      z-index:5;
+    .shade{
+      position:fixed; inset:0;
+      background: radial-gradient(ellipse at 50% 35%, rgba(0,0,0,.25), rgba(0,0,0,.75) 60%, rgba(0,0,0,.92));
       pointer-events:none;
     }
-    .brand{
-      display:flex; gap:10px; align-items:center;
-      pointer-events:auto;
-      background: rgba(0,0,0,.35);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(14px);
-      padding:10px 12px;
-      border-radius:14px;
+    .wrap{
+      position:fixed; inset:0;
+      display:flex; align-items:flex-end; justify-content:center;
+      padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
     }
-    .dot{ width:10px; height:10px; border-radius:999px; background:var(--ok); box-shadow:0 0 18px var(--glow);}
-    .title{ letter-spacing:.22em; font-size:12px; opacity:.92; font-weight:600;}
-    .status{
-      pointer-events:auto;
-      display:flex; gap:8px; align-items:center;
-      background: rgba(0,0,0,.35);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(14px);
-      padding:10px 12px;
-      border-radius:14px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .pill{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      display:flex; gap:7px; align-items:center;
-    }
-    .pill .s{ width:8px; height:8px; border-radius:99px; background:var(--bad);}
-    .pill.ok .s{ background:var(--ok);}
     .panel{
-      position:absolute;
-      left:50%; transform:translateX(-50%);
-      bottom:18px;
-      width:min(880px, calc(100% - 22px));
-      background: var(--panel);
+      width:min(920px, 100%);
       border:1px solid var(--stroke);
-      backdrop-filter: blur(18px);
-      border-radius:18px;
-      padding:14px;
-      z-index:6;
+      border-radius: 18px;
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      overflow:hidden;
     }
-    .chips{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px;}
-    .chip{
-      background: var(--chip);
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding: 14px 14px;
+      border-bottom:1px solid var(--stroke);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:700; letter-spacing:.22em;
+    }
+    .status{
+      display:flex; align-items:center; gap:10px;
+      font-size:12px; color:var(--muted);
+    }
+    .dot{ width:8px; height:8px; border-radius:50%; background:var(--danger); box-shadow:0 0 18px rgba(255,90,90,.55); }
+    .dot.ok{ background:var(--ok); box-shadow:0 0 18px rgba(90,255,170,.45); }
+
+    .controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .pill{
       border:1px solid var(--stroke);
-      color:var(--txt);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      border-radius: 999px;
       padding:10px 12px;
-      border-radius:999px;
       font-size:13px;
       cursor:pointer;
       user-select:none;
     }
-    .chip:active{ transform:scale(.98); }
-    .row{ display:flex; gap:10px; align-items:center;}
-    select, input, button{
-      border-radius:14px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.35);
-      color:var(--txt);
-      padding:12px 12px;
-      font-size:14px;
-      outline:none;
+    .pill:active{ transform: translateY(1px); }
+    select.pill{ padding:10px 10px; }
+
+    .body{
+      padding: 14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
-    input{ flex:1; }
-    button{
-      cursor:pointer;
-      padding:12px 14px;
-      font-weight:600;
+    .quick{
+      display:flex; gap:10px; flex-wrap:wrap;
     }
-    button.primary{
-      background: rgba(80,180,255,.22);
-      box-shadow: 0 0 0 1px rgba(120,220,255,.18) inset;
-    }
-    button.ghost{
-      background: rgba(255,255,255,.06);
-    }
-    .log{
-      height:300px;
+    .chat{
+      height: 360px;
       overflow:auto;
-      padding:10px 8px 0 8px;
-      margin-bottom:10px;
+      border:1px solid var(--stroke);
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      padding: 12px;
     }
-    .msg{
-      max-width:92%;
-      margin:10px 0;
-      padding:12px 12px;
-      border-radius:16px;
+    .msg{ display:flex; margin: 10px 0; }
+    .msg .bubble{
+      max-width: 85%;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.20);
+      padding: 10px 12px;
+      border-radius: 14px;
+      line-height:1.35;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .me{ justify-content:flex-end; }
+    .me .bubble{
+      background: rgba(120,180,255,.12);
+      border-color: rgba(120,180,255,.22);
+    }
+    .sys .bubble{
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+    }
+    .err .bubble{
+      border-color: rgba(255,90,90,.35);
+      background: rgba(255,90,90,.10);
+    }
+
+    .composer{
+      display:flex; gap:10px; align-items:center;
+      border:1px solid var(--stroke);
+      border-radius: 14px;
+      padding:10px;
+      background: rgba(0,0,0,.22);
+    }
+    input#input{
+      flex:1;
+      border:0; outline:0;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+      padding: 10px 8px;
+    }
+    .btn{
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.30);
-      white-space:pre-wrap;
-      line-height:1.35;
-      font-size:14px;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor:pointer;
+      user-select:none;
+      font-size: 14px;
+      min-width: 44px;
+      text-align:center;
     }
-    .me{ margin-left:auto; background: rgba(80,180,255,.16); }
-    .ai{ margin-right:auto; }
-    .small{
-      font-size:12px; color:var(--muted);
-      margin-top:8px;
-      display:flex; gap:10px; flex-wrap:wrap;
+    .btn.primary{
+      border-color: rgba(120,180,255,.30);
+      background: rgba(120,180,255,.14);
+    }
+    .row{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      color: var(--muted); font-size: 12px;
+    }
+    .tog{ display:flex; gap:10px; align-items:center; }
+    .mini{ opacity:.9; }
+    .imgbox{
+      display:none;
+      border:1px solid var(--stroke);
+      border-radius: 14px;
+      overflow:hidden;
+      background: rgba(0,0,0,.22);
+    }
+    .imgbox img{ width:100%; display:block; }
+    @media (max-width:520px){
+      .chat{ height: 48vh; }
     }
   </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="stage">
-    <video class="bgvid" autoplay muted loop playsinline>
+  <div class="bg">
+    <video id="avatar" autoplay muted loop playsinline>
       <source src="./avatar.mp4" type="video/mp4" />
     </video>
+  </div>
+  <div class="shade"></div>
 
-    <div class="topbar">
-      <div class="brand">
-        <div class="dot"></div>
-        <div class="title">CONSIA</div>
-      </div>
-
-      <div class="status">
-        <div class="pill" id="apiPill"><div class="s"></div><span id="apiText">OFFLINE</span></div>
-        <div class="pill ok"><div class="s"></div><span id="langText">IDIOMA FIJO</span></div>
-      </div>
-    </div>
-
+  <div class="wrap">
     <div class="panel">
-      <div class="chips">
-        <div class="chip" onclick="quick('Guíame con 3 opciones cortas y claras.')">🧭 Guíame (3 opciones)</div>
-        <div class="chip" onclick="quick('Mostrame qué podés hacer en 6 bullets ultra cortos y luego dame 3 opciones.')">🧠 ¿Qué podés hacer?</div>
-        <div class="chip" onclick="quick('Hiperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.')">🖼️ Hiperrealismo</div>
-        <div class="chip" onclick="toggleVoice()">🎙️ Voz (push-to-talk)</div>
-        <div class="chip" onclick="resetChat()">♻️ Reset</div>
+      <div class="topbar">
+        <div class="brand">CONSIA</div>
+
+        <div class="controls">
+          <select id="lang" class="pill" title="Idioma (queda fijo, no se mezcla)">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+          </select>
+
+          <div class="pill" id="btnRealtime">Realtime</div>
+          <div class="pill" id="btnHyper">Hyperrealismo</div>
+          <div class="pill" id="btnIphone">Control iPhone</div>
+        </div>
+
+        <div class="status">
+          <span class="dot" id="dot"></span>
+          <span id="st">OFFLINE</span>
+        </div>
       </div>
 
-      <div class="log" id="log"></div>
+      <div class="body">
+        <div class="quick">
+          <div class="pill" id="qGuide">Guiame (3 opciones)</div>
+          <div class="pill" id="qWhat">¿Qué puedo hacer?</div>
+          <div class="pill" id="qMagic">“.” magia</div>
+          <div class="pill" id="qVoice">Voz (activar)</div>
+        </div>
 
-      <div class="row">
-        <select id="lang">
-          <option value="es">ES</option>
-          <option value="en">EN</option>
-          <option value="pt">PT</option>
-          <option value="fr">FR</option>
-          <option value="it">IT</option>
-          <option value="de">DE</option>
-        </select>
+        <div class="chat" id="chat"></div>
 
-        <input id="msg" placeholder='Decime qué querés. (o escribí ".")' autocomplete="off" />
-        <button class="ghost" id="voiceBtn" onclick="voiceHold()">🎙️</button>
-        <button class="primary" onclick="send()">Enviar</button>
-      </div>
+        <div class="imgbox" id="imgbox">
+          <img id="img" alt="CONSIA render" />
+        </div>
 
-      <div class="small">
-        <span>Audio: <b id="audioState">ON</b></span>
-        <span>Idioma: <b id="fixedLang">—</b></span>
-        <span>Tip: elegí idioma 1 vez y no mezcla.</span>
+        <div class="composer">
+          <div class="btn" id="mic" title="Hablar">🎙️</div>
+          <input id="input" placeholder='Decime qué querés. (o escribí ".")' />
+          <div class="btn primary" id="send">Enviar</div>
+        </div>
+
+        <div class="row">
+          <div class="tog">
+            <span class="mini">Audio:</span>
+            <div class="btn" id="audioToggle">ON</div>
+            <span class="mini">Voz:</span>
+            <div class="btn" id="voiceToggle">ON</div>
+          </div>
+          <div class="mini" id="hint">Un toque. Tres opciones. Cero fricción.</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 <script>
-  // ===== CONFIG =====
-  const API_BASE = "https://api.consia.world"; // tu dominio
-  const ASK_URL  = API_BASE + "/ask";
+(() => {
+  // === CONFIG ===
+  // Your API domain:
+  const API = "https://api.consia.world";
+  const DEVICE = (localStorage.getItem("consia_device") || crypto.randomUUID());
+  localStorage.setItem("consia_device", DEVICE);
 
-  // ===== Identity / session =====
-  const deviceId = localStorage.getItem("consia_deviceId") || crypto.randomUUID();
-  localStorage.setItem("consia_deviceId", deviceId);
+  // === STATE ===
+  const el = (id) => document.getElementById(id);
+  const chat = el("chat");
+  const dot = el("dot");
+  const st  = el("st");
+  const input = el("input");
+  const langSel = el("lang");
 
-  let sessionId = localStorage.getItem("consia_sessionId") || crypto.randomUUID();
-  localStorage.setItem("consia_sessionId", sessionId);
+  let AUDIO_ON = true;
+  let VOICE_ON = true;
 
-  // ===== Language lock (UI + header) =====
-  const langSel = document.getElementById("lang");
-  const fixedLangEl = document.getElementById("fixedLang");
-  const langText = document.getElementById("langText");
-
-  const savedLang = localStorage.getItem("consia_lang") || "es";
-  langSel.value = savedLang;
-  fixedLangEl.textContent = savedLang.toUpperCase();
-
+  // Lock language (never mix)
+  const savedLang = localStorage.getItem("consia_lang");
+  if (savedLang) langSel.value = savedLang;
   langSel.addEventListener("change", () => {
     localStorage.setItem("consia_lang", langSel.value);
-    fixedLangEl.textContent = langSel.value.toUpperCase();
+    sysMsg(msgFor("Idioma fijado: ") + labelLang(langSel.value));
+    ping();
   });
 
-  // ===== UI =====
-  const log = document.getElementById("log");
-  const msg = document.getElementById("msg");
-  const apiPill = document.getElementById("apiPill");
-  const apiText = document.getElementById("apiText");
-  const audioState = document.getElementById("audioState");
+  el("audioToggle").onclick = () => {
+    AUDIO_ON = !AUDIO_ON;
+    el("audioToggle").textContent = AUDIO_ON ? "ON" : "OFF";
+  };
+  el("voiceToggle").onclick = () => {
+    VOICE_ON = !VOICE_ON;
+    el("voiceToggle").textContent = VOICE_ON ? "ON" : "OFF";
+  };
 
-  let audioWanted = true;
-
-  function addBubble(text, who="ai") {
-    const d = document.createElement("div");
-    d.className = "msg " + (who==="me" ? "me" : "ai");
-    d.textContent = text;
-    log.appendChild(d);
-    log.scrollTop = log.scrollHeight;
+  function labelLang(v){
+    if (v==="en") return "English";
+    if (v==="pt") return "Português";
+    return "Español";
   }
 
-  function setApi(ok) {
-    apiPill.classList.toggle("ok", !!ok);
-    apiText.textContent = ok ? "ONLINE" : "OFFLINE";
+  function msgFor(es){
+    if (langSel.value==="en") {
+      if (es==="Decime qué querés. Yo me encargo.") return "Tell me what you want. I’ll handle it.";
+      if (es==="Un toque. Tres opciones. Cero fricción.") return "One tap. Three options. Zero friction.";
+      if (es==="Idioma fijado: ") return "Language locked: ";
+      if (es==="OFFLINE") return "OFFLINE";
+      if (es==="ONLINE") return "ONLINE";
+      if (es==="No pude responder. Probá de nuevo.") return "I couldn’t respond. Try again.";
+      if (es==="Listo. Podés hablar (🎙️) o escribir en el chat.") return "Ready. You can speak (🎙️) or type in chat.";
+      if (es==="Dame 3 opciones cortas y pedime lo mínimo.") return "Give me 3 short options and ask for the minimum.";
+      if (es==="¿Qué podés hacer? En 6 bullets ultra cortos y 3 opciones.") return "What can you do? 6 ultra-short bullets then 3 options.";
+      if (es==="Hyperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.") return "Hyperrealism: offer 3 options (image, video, avatar) and ask minimum.";
+      if (es==="Realtime: activalo con 1 toque y decime 3 comandos ejemplo.") return "Realtime: enable in 1 tap and give 3 example commands.";
+      if (es==="Control iPhone: decime cómo lo hago con Atajos en 3 pasos.") return "iPhone control: tell me how with Shortcuts in 3 steps.";
+      if (es==="Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')") return "Type your hyperrealism request (e.g. 'premium apartment, warm light, river in background').";
+      return es;
+    }
+    if (langSel.value==="pt") {
+      if (es==="Decime qué querés. Yo me encargo.") return "Diga o que você quer. Eu cuido disso.";
+      if (es==="Un toque. Tres opciones. Cero fricción.") return "Um toque. Três opções. Zero fricção.";
+      if (es==="Idioma fijado: ") return "Idioma fixado: ";
+      if (es==="OFFLINE") return "OFFLINE";
+      if (es==="ONLINE") return "ONLINE";
+      if (es==="No pude responder. Probá de nuevo.") return "Não consegui responder. Tente novamente.";
+      if (es==="Listo. Podés hablar (🎙️) o escribir en el chat.") return "Pronto. Você pode falar (🎙️) ou digitar no chat.";
+      if (es==="Dame 3 opciones cortas y pedime lo mínimo.") return "Me dê 3 opções curtas e peça o mínimo.";
+      if (es==="¿Qué podés hacer? En 6 bullets ultra cortos y 3 opciones.") return "O que você pode fazer? 6 bullets bem curtos e 3 opções.";
+      if (es==="Hyperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.") return "Hiperrealismo: ofereça 3 opções (imagem, vídeo, avatar) e peça o mínimo.";
+      if (es==="Realtime: activalo con 1 toque y decime 3 comandos ejemplo.") return "Realtime: ative com 1 toque e me dê 3 comandos de exemplo.";
+      if (es==="Control iPhone: decime cómo lo hago con Atajos en 3 pasos.") return "Controle iPhone: como fazer com Atalhos em 3 passos.";
+      if (es==="Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')") return "Digite seu pedido de hiperrealismo (ex: 'apartamento premium, luz quente, rio ao fundo').";
+      return es;
+    }
+    return es;
   }
+
+  function addMsg(who, text, cls="") {
+    const row = document.createElement("div");
+    row.className = `msg ${who==="me"?"me":who==="sys"?"sys":""} ${cls}`;
+    const b = document.createElement("div");
+    b.className = "bubble";
+    b.textContent = text;
+    row.appendChild(b);
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+  const sysMsg = (t) => addMsg("sys", t);
+  const meMsg  = (t) => addMsg("me", t);
+  const aiMsg  = (t) => addMsg("ai", t);
+  const errMsg = (t) => addMsg("ai", t, "err");
 
   async function ping() {
     try {
-      const r = await fetch(API_BASE + "/health", { cache:"no-store" });
-      setApi(r.ok);
-    } catch(e) {
-      setApi(false);
+      const r = await fetch(API + "/", { method:"GET" });
+      if (!r.ok) throw 0;
+      dot.classList.add("ok");
+      st.textContent = msgFor("ONLINE");
+    } catch {
+      dot.classList.remove("ok");
+      st.textContent = msgFor("OFFLINE");
     }
   }
-  ping();
-  setInterval(ping, 6000);
 
-  // ===== Audio playback =====
-  async function playB64Mp3(b64) {
-    if (!b64) return;
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
-    const blob = new Blob([bytes], { type:"audio/mpeg" });
-    const url = URL.createObjectURL(blob);
-    const a = new Audio(url);
-    a.play().catch(()=>{});
-    a.onended = () => URL.revokeObjectURL(url);
-  }
-
-  // ===== Send =====
-  async function send(textOverride=null) {
-    const text = (textOverride ?? msg.value).trim();
-    if (!text) return;
-
-    msg.value = "";
-    addBubble(text, "me");
-
-    const lang = localStorage.getItem("consia_lang") || "es";
-
+  async function ask(message, opts={}) {
     try {
-      const r = await fetch(ASK_URL, {
+      const payload = {
+        message,
+        lang: langSel.value,
+        audioWanted: (AUDIO_ON && VOICE_ON && !opts.noAudio) ? true : false,
+        device: DEVICE
+      };
+
+      const r = await fetch(API + "/ask", {
         method:"POST",
         headers:{
-          "content-type":"application/json",
-          "x-consia-device": deviceId,
-          "x-consia-session": sessionId,
-          "x-consia-lang": lang
+          "Content-Type":"application/json",
+          "x-consia-device": DEVICE,
+          "x-consia-lang": langSel.value
         },
-        body: JSON.stringify({
-          message: text,
-          lang,
-          audioWanted
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await r.json().catch(()=> ({}));
-      if (!r.ok || data.error) throw new Error(data.detail || data.error || "request_failed");
+      if (!r.ok || data.error) throw new Error(data.detail || data.error || "error");
 
-      // enforce fixed language UI
-      fixedLangEl.textContent = (data.lang || lang).toUpperCase();
-
-      addBubble(data.text || "—", "ai");
-      if (audioWanted && data.audio_b64) playB64Mp3(data.audio_b64);
-
+      if (data.text) aiMsg(data.text);
+      if (data.audio_b64 && AUDIO_ON) playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
     } catch(e) {
-      addBubble("Algo falló. Probá de nuevo.", "ai");
-      setApi(false);
+      errMsg(msgFor("No pude responder. Probá de nuevo."));
     }
   }
 
-  function quick(t){ send(t); }
-
-  function resetChat() {
-    log.innerHTML = "";
-    sessionId = crypto.randomUUID();
-    localStorage.setItem("consia_sessionId", sessionId);
-    const lang = localStorage.getItem("consia_lang") || "es";
-    addBubble(lang === "es" ? "CONSIA activo. Decime qué querés." : "CONSIA active. Tell me what you want.", "ai");
+  async function tts(text) {
+    const r = await fetch(API + "/tts", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-consia-device": DEVICE,
+        "x-consia-lang": langSel.value
+      },
+      body: JSON.stringify({ text, lang: langSel.value, device: DEVICE })
+    });
+    const data = await r.json().catch(()=> ({}));
+    if (!r.ok || data.error) throw new Error(data.detail || data.error || "tts_error");
+    if (data.audio_b64 && AUDIO_ON) playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
   }
 
-  // ===== Push-to-talk (simple) =====
-  // Nota: iOS Safari limita SpeechRecognition. Esto es botón + texto.
-  // Realtime streaming se agrega después (fase Realtime).
-  let voiceEnabled = false;
-  function toggleVoice(){
-    voiceEnabled = !voiceEnabled;
-    audioWanted = true;
-    audioState.textContent = voiceEnabled ? "ON" : "ON";
-    addBubble( (langSel.value==="es")
-      ? (voiceEnabled ? "Voz lista (push-to-talk). Mantené 🎙️ y hablá." : "Voz pausada.")
-      : (voiceEnabled ? "Voice ready (push-to-talk). Hold 🎙️ and speak." : "Voice paused.")
-    , "ai");
+  function playB64Audio(b64, mime) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const blob = new Blob([bytes], { type:mime });
+    const url = URL.createObjectURL(blob);
+    const a = new Audio(url);
+    a.onended = () => URL.revokeObjectURL(url);
+    a.play().catch(()=>{});
   }
 
-  // Minimal: use Web Speech API if available; fallback to manual typing
-  let rec=null;
-  function voiceHold(){
-    if (!voiceEnabled) { toggleVoice(); return; }
+  async function hyperImage(prompt) {
+    try {
+      sysMsg(msgFor("Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')"));
+      const r = await fetch(API + "/image", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-consia-device": DEVICE,
+          "x-consia-lang": langSel.value
+        },
+        body: JSON.stringify({ prompt, style:"reels", lang: langSel.value, device: DEVICE })
+      });
+      const data = await r.json().catch(()=> ({}));
+      if (!r.ok || data.error) throw new Error(data.detail || data.error || "image_error");
 
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      addBubble("Este navegador no permite dictado directo. Escribí o probá en Chrome/Android. (Realtime se agrega luego).", "ai");
-      return;
+      const imgbox = el("imgbox");
+      const img = el("img");
+      img.src = `data:${data.image_mime||"image/png"};base64,${data.image_b64}`;
+      imgbox.style.display = "block";
+      chat.scrollTop = chat.scrollHeight;
+      aiMsg("✅");
+    } catch(e) {
+      errMsg(msgFor("No pude responder. Probá de nuevo."));
     }
+  }
 
-    if (rec) { try{rec.stop()}catch{} rec=null; return; }
-
-    rec = new SR();
-    rec.lang = (localStorage.getItem("consia_lang") || "es");
+  // ==== Voice input (Web Speech API) ====
+  let rec = null;
+  function startSTT(){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { errMsg("STT no disponible en este navegador."); return; }
+    rec = new SpeechRecognition();
+    rec.lang = (langSel.value==="en") ? "en-US" : (langSel.value==="pt") ? "pt-BR" : "es-AR";
     rec.interimResults = false;
     rec.maxAlternatives = 1;
-
     rec.onresult = (ev) => {
       const t = ev.results?.[0]?.[0]?.transcript || "";
-      if (t) send(t);
+      if (t.trim()) {
+        meMsg(t.trim());
+        ask(t.trim());
+      }
     };
-    rec.onerror = () => { rec=null; };
-    rec.onend = () => { rec=null; };
-
+    rec.onerror = () => {};
+    rec.onend = () => {};
     rec.start();
   }
 
-  // Boot message
-  addBubble("Listo. Elegí idioma (queda fijo) y hablá o escribí.", "ai");
+  // ==== Realtime (Phase A) minimal: get token only ====
+  async function realtimeToken(){
+    try{
+      const r = await fetch(API + "/realtime-token", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-consia-device": DEVICE,
+          "x-consia-lang": langSel.value
+        },
+        body: JSON.stringify({ lang: langSel.value, device: DEVICE })
+      });
+      const data = await r.json().catch(()=> ({}));
+      if (!r.ok || data.error) throw new Error(data.detail || data.error || "realtime_token_error");
+      sysMsg("Realtime token OK ✅");
+      // We keep it simple: Phase 2 can wire WebRTC client fully.
+      // (Token is the hard part for browser security.)
+      return data.client_secret;
+    }catch(e){
+      errMsg("Realtime token falló.");
+      return null;
+    }
+  }
 
-  // Service worker
+  // ==== iPhone Control (Phase C) ====
+  function iphoneControl(){
+    // Best practical: iOS Shortcuts + share sheet + URL scheme
+    const url = "shortcuts://";
+    sysMsg("iPhone: Usá Atajos (Shortcuts). Te dejo lo mínimo:");
+    aiMsg("1) Creá un Atajo: 'CONSIA' (Entrada: Texto). \n2) En el Atajo: Abrir URL → " + API + "/ (o tu app). \n3) Ejecutá por Siri / Back Tap / Widget.");
+    // Copy helper
+    navigator.clipboard?.writeText(url).catch(()=>{});
+  }
+
+  // ==== UI actions ====
+  el("send").onclick = () => {
+    const t = input.value.trim();
+    if (!t) return;
+    input.value = "";
+    meMsg(t);
+    if (t === ".") {
+      ask("Guiame con 3 opciones cortas y claras.");
+    } else {
+      ask(t);
+    }
+  };
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") el("send").click();
+  });
+
+  el("mic").onclick = () => startSTT();
+
+  el("qGuide").onclick = () => ask(msgFor("Dame 3 opciones cortas y pedime lo mínimo."));
+  el("qWhat").onclick  = () => ask(msgFor("¿Qué podés hacer? En 6 bullets ultra cortos y 3 opciones."));
+  el("qMagic").onclick = () => ask("Activá modo '.' y guiame con 3 opciones.");
+  el("qVoice").onclick = () => ask(msgFor("Listo. Podés hablar (🎙️) o escribir en el chat."), { noAudio:true });
+
+  el("btnHyper").onclick = async () => {
+    const p = prompt(msgFor("Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')"));
+    if (p && p.trim()) hyperImage(p.trim());
+  };
+  el("btnRealtime").onclick = async () => {
+    sysMsg("Realtime: preparando…");
+    await realtimeToken();
+    aiMsg(msgFor("Realtime: activalo con 1 toque y decime 3 comandos ejemplo."));
+    // In Phase 2 we wire full WebRTC session with OpenAI calls endpoint.
+  };
+  el("btnIphone").onclick = () => iphoneControl();
+
+  // init
+  sysMsg(msgFor("Decime qué querés. Yo me encargo."));
+  sysMsg(msgFor("Un toque. Tres opciones. Cero fricción."));
+  ping();
+})();
+</script>
+
+<script>
+  // Service worker (optional)
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(()=>{});
   }
-
-  // Enter to send
-  msg.addEventListener("keydown", (e)=> {
-    if (e.key === "Enter") send();
-  });
 </script>
 </body>
 </html>

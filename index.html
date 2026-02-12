@@ -6,91 +6,138 @@
   <meta name="theme-color" content="#000000" />
   <title>CONSIA</title>
 
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" href="./icon-192.png" />
+  <!-- Si ya tenés PWA -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon-192.png">
+
   <style>
     :root{
       --bg:#000;
-      --glass: rgba(18,22,30,.55);
-      --glass2: rgba(18,22,30,.35);
+      --glass: rgba(18,22,30,.62);
+      --glass2: rgba(18,22,30,.34);
       --stroke: rgba(255,255,255,.10);
       --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --accent: rgba(120,180,255,.95);
-      --danger: rgba(255,90,90,.92);
+      --muted: rgba(255,255,255,.64);
       --ok: rgba(90,255,170,.85);
+      --warn: rgba(255,190,90,.92);
+      --bad: rgba(255,90,90,.92);
+      --acc: rgba(120,180,255,.95);
     }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
-    .bg {
-      position:fixed; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      overflow:hidden;
-    }
-    video#avatar {
-      width:100%; height:100%; object-fit:cover;
-      filter: contrast(1.05) saturate(1.05);
-      opacity:.95;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    button, input, select {font:inherit}
+
+    /* Background video full screen */
+    .bg { position:fixed; inset:0; overflow:hidden; }
+    #avatarVideo{
+      width:100%; height:100%;
+      object-fit:cover;
+      transform: translateZ(0);
+      filter: contrast(1.06) saturate(1.06);
+      background:#000;
     }
     .shade{
       position:fixed; inset:0;
-      background: radial-gradient(ellipse at 50% 35%, rgba(0,0,0,.25), rgba(0,0,0,.75) 60%, rgba(0,0,0,.92));
+      background: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,.18), rgba(0,0,0,.68) 55%, rgba(0,0,0,.92));
       pointer-events:none;
     }
+
+    /* Splash */
+    .splash{
+      position:fixed; inset:0;
+      display:flex; align-items:flex-start; justify-content:flex-start;
+      padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+      pointer-events:none;
+      z-index:50;
+    }
+    .logo{
+      font-weight:800;
+      letter-spacing:.22em;
+      font-size:14px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.38);
+      backdrop-filter: blur(12px);
+      opacity:0;
+      transform: translateY(-6px);
+      animation: splashIn .55s ease forwards;
+    }
+    @keyframes splashIn{ to{opacity:1; transform:translateY(0)} }
+    .splash.hide{ display:none; }
+
+    /* UI panel */
     .wrap{
       position:fixed; inset:0;
       display:flex; align-items:flex-end; justify-content:center;
       padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+      z-index:40;
     }
     .panel{
-      width:min(920px, 100%);
+      width:min(980px,100%);
       border:1px solid var(--stroke);
       border-radius: 18px;
       background: linear-gradient(180deg, var(--glass), var(--glass2));
-      backdrop-filter: blur(16px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 70px rgba(0,0,0,.60);
       overflow:hidden;
     }
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
-      padding: 14px 14px;
+      padding: 12px 14px;
       border-bottom:1px solid var(--stroke);
     }
     .brand{
       display:flex; align-items:center; gap:10px;
-      font-weight:700; letter-spacing:.22em;
+      font-weight:800; letter-spacing:.22em;
+      user-select:none;
     }
     .status{
       display:flex; align-items:center; gap:10px;
       font-size:12px; color:var(--muted);
     }
-    .dot{ width:8px; height:8px; border-radius:50%; background:var(--danger); box-shadow:0 0 18px rgba(255,90,90,.55); }
-    .dot.ok{ background:var(--ok); box-shadow:0 0 18px rgba(90,255,170,.45); }
+    .dot{ width:8px; height:8px; border-radius:50%; background:var(--bad); box-shadow:0 0 18px rgba(255,90,90,.45); }
+    .dot.ok{ background:var(--ok); box-shadow:0 0 18px rgba(90,255,170,.35); }
 
-    .controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
     .pill{
       border:1px solid var(--stroke);
-      background: rgba(0,0,0,.25);
+      background: rgba(0,0,0,.22);
       color: var(--text);
       border-radius: 999px;
-      padding:10px 12px;
+      padding: 10px 12px;
       font-size:13px;
       cursor:pointer;
       user-select:none;
+      white-space:nowrap;
     }
     .pill:active{ transform: translateY(1px); }
+    .pill.primary{
+      border-color: rgba(120,180,255,.30);
+      background: rgba(120,180,255,.14);
+    }
+    .pill.warn{
+      border-color: rgba(255,190,90,.28);
+      background: rgba(255,190,90,.10);
+    }
+    .pill.tog.on{
+      border-color: rgba(90,255,170,.28);
+      background: rgba(90,255,170,.10);
+    }
+    .pill.tog.off{
+      border-color: rgba(255,90,90,.25);
+      background: rgba(255,90,90,.08);
+    }
     select.pill{ padding:10px 10px; }
 
     .body{
       padding: 14px;
       display:grid;
-      grid-template-columns: 1fr;
       gap: 12px;
     }
-    .quick{
-      display:flex; gap:10px; flex-wrap:wrap;
-    }
+    .quick{ display:flex; gap:10px; flex-wrap:wrap; }
+
     .chat{
       height: 360px;
       overflow:auto;
@@ -101,13 +148,12 @@
     }
     .msg{ display:flex; margin: 10px 0; }
     .msg .bubble{
-      max-width: 85%;
+      max-width: 88%;
       border:1px solid var(--stroke);
-      background: rgba(0,0,0,.20);
+      background: rgba(0,0,0,.22);
       padding: 10px 12px;
       border-radius: 14px;
       line-height:1.35;
-      color: var(--text);
       white-space: pre-wrap;
       word-wrap: break-word;
     }
@@ -132,7 +178,7 @@
       padding:10px;
       background: rgba(0,0,0,.22);
     }
-    input#input{
+    #input{
       flex:1;
       border:0; outline:0;
       background: transparent;
@@ -148,20 +194,21 @@
       padding: 10px 12px;
       cursor:pointer;
       user-select:none;
-      font-size: 14px;
       min-width: 44px;
       text-align:center;
+      white-space:nowrap;
     }
     .btn.primary{
       border-color: rgba(120,180,255,.30);
       background: rgba(120,180,255,.14);
     }
+
     .row{
       display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
       color: var(--muted); font-size: 12px;
     }
-    .tog{ display:flex; gap:10px; align-items:center; }
-    .mini{ opacity:.9; }
+
+    /* Image box (hyperrealismo) */
     .imgbox{
       display:none;
       border:1px solid var(--stroke);
@@ -170,6 +217,41 @@
       background: rgba(0,0,0,.22);
     }
     .imgbox img{ width:100%; display:block; }
+
+    /* Hologram canvas overlay */
+    #holoWrap{
+      position:fixed; inset:0;
+      display:none;
+      z-index:45;
+      pointer-events:none;
+    }
+    #holo{
+      width:100%; height:100%;
+    }
+    .holoOn #holoWrap{ display:block; }
+
+    /* Tap-to-enable audio */
+    .gate{
+      position:fixed; inset:0;
+      display:none;
+      align-items:flex-end; justify-content:center;
+      padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+      z-index:60;
+    }
+    .gateCard{
+      width:min(720px, 100%);
+      border:1px solid var(--stroke);
+      border-radius: 16px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
+      padding: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .gateTitle{ font-weight:700; }
+    .gateHint{ font-size:12px; color:var(--muted); margin-top:4px; }
     @media (max-width:520px){
       .chat{ height: 48vh; }
     }
@@ -177,28 +259,50 @@
 </head>
 
 <body>
+  <!-- Background video -->
   <div class="bg">
-    <video id="avatar" autoplay muted loop playsinline>
+    <video id="avatarVideo" autoplay muted loop playsinline preload="auto">
       <source src="./avatar.mp4" type="video/mp4" />
     </video>
   </div>
   <div class="shade"></div>
 
+  <!-- Optional Hologram (3D overlay) -->
+  <div id="holoWrap">
+    <canvas id="holo"></canvas>
+  </div>
+
+  <!-- Splash -->
+  <div class="splash" id="splash">
+    <div class="logo">CONSIA</div>
+  </div>
+
+  <!-- Tap-to-enable audio gate -->
+  <div class="gate" id="gate">
+    <div class="gateCard">
+      <div>
+        <div class="gateTitle">Activar audio</div>
+        <div class="gateHint">Un toque para habilitar voz en iPhone.</div>
+      </div>
+      <button class="btn primary" id="enableAudio">Activar</button>
+    </div>
+  </div>
+
+  <!-- UI -->
   <div class="wrap">
     <div class="panel">
       <div class="topbar">
         <div class="brand">CONSIA</div>
 
         <div class="controls">
-          <select id="lang" class="pill" title="Idioma (queda fijo, no se mezcla)">
-            <option value="es">Español</option>
-            <option value="en">English</option>
-            <option value="pt">Português</option>
+          <select id="lang" class="pill" title="Idioma (fijo)">
+            <option value="es" selected>Español</option>
           </select>
 
-          <div class="pill" id="btnRealtime">Realtime</div>
+          <div class="pill tog on" id="togVoice">Voz: ON</div>
+          <div class="pill tog on" id="togWS">Realtime: ON</div>
           <div class="pill" id="btnHyper">Hyperrealismo</div>
-          <div class="pill" id="btnIphone">Control iPhone</div>
+          <div class="pill warn" id="btnHolo">Holograma</div>
         </div>
 
         <div class="status">
@@ -210,9 +314,8 @@
       <div class="body">
         <div class="quick">
           <div class="pill" id="qGuide">Guiame (3 opciones)</div>
-          <div class="pill" id="qWhat">¿Qué puedo hacer?</div>
+          <div class="pill" id="qWhat">¿Qué podés hacer?</div>
           <div class="pill" id="qMagic">“.” magia</div>
-          <div class="pill" id="qVoice">Voz (activar)</div>
         </div>
 
         <div class="chat" id="chat"></div>
@@ -222,19 +325,14 @@
         </div>
 
         <div class="composer">
-          <div class="btn" id="mic" title="Hablar">🎙️</div>
+          <button class="btn" id="mic" title="Hablar">🎙️</button>
           <input id="input" placeholder='Decime qué querés. (o escribí ".")' />
-          <div class="btn primary" id="send">Enviar</div>
+          <button class="btn primary" id="send">Enviar</button>
         </div>
 
         <div class="row">
-          <div class="tog">
-            <span class="mini">Audio:</span>
-            <div class="btn" id="audioToggle">ON</div>
-            <span class="mini">Voz:</span>
-            <div class="btn" id="voiceToggle">ON</div>
-          </div>
-          <div class="mini" id="hint">Un toque. Tres opciones. Cero fricción.</div>
+          <div id="hint">Un toque. Tres opciones. Sin mezclar idiomas.</div>
+          <div id="apiHint"></div>
         </div>
       </div>
     </div>
@@ -242,86 +340,41 @@
 
 <script>
 (() => {
-  // === CONFIG ===
-  // Your API domain:
-  const API = "https://api.consia.world";
-  const DEVICE = (localStorage.getItem("consia_device") || crypto.randomUUID());
-  localStorage.setItem("consia_device", DEVICE);
+  /* =========================
+     CONFIG (EDITAR SOLO ESTO)
+  ========================= */
+  // Si usás api.consia.world:
+  const API_BASE = "https://api.consia.world"; // <-- CAMBIÁ si tu API es otro dominio
+  // WebSocket (ideal: mismo dominio con /ws):
+  const WS_URL   = "wss://api.consia.world/ws"; // <-- CAMBIÁ si tu WS es otro
 
-  // === STATE ===
+  // Identidad dispositivo (para idioma fijo / vault)
+  const DEVICE_ID = (localStorage.getItem("consia_device") || crypto.randomUUID());
+  localStorage.setItem("consia_device", DEVICE_ID);
+
+  /* =========================
+     STATE
+  ========================= */
   const el = (id) => document.getElementById(id);
   const chat = el("chat");
   const dot = el("dot");
   const st  = el("st");
   const input = el("input");
-  const langSel = el("lang");
+  const splash = el("splash");
+  const gate = el("gate");
+  const avatarVideo = el("avatarVideo");
 
-  let AUDIO_ON = true;
   let VOICE_ON = true;
+  let WS_ON = true;
+  let HOLO_ON = false;
 
-  // Lock language (never mix)
-  const savedLang = localStorage.getItem("consia_lang");
-  if (savedLang) langSel.value = savedLang;
-  langSel.addEventListener("change", () => {
-    localStorage.setItem("consia_lang", langSel.value);
-    sysMsg(msgFor("Idioma fijado: ") + labelLang(langSel.value));
-    ping();
-  });
+  // En este build, idioma fijo ES (no mezclar)
+  const LANG = "es";
 
-  el("audioToggle").onclick = () => {
-    AUDIO_ON = !AUDIO_ON;
-    el("audioToggle").textContent = AUDIO_ON ? "ON" : "OFF";
-  };
-  el("voiceToggle").onclick = () => {
-    VOICE_ON = !VOICE_ON;
-    el("voiceToggle").textContent = VOICE_ON ? "ON" : "OFF";
-  };
-
-  function labelLang(v){
-    if (v==="en") return "English";
-    if (v==="pt") return "Português";
-    return "Español";
-  }
-
-  function msgFor(es){
-    if (langSel.value==="en") {
-      if (es==="Decime qué querés. Yo me encargo.") return "Tell me what you want. I’ll handle it.";
-      if (es==="Un toque. Tres opciones. Cero fricción.") return "One tap. Three options. Zero friction.";
-      if (es==="Idioma fijado: ") return "Language locked: ";
-      if (es==="OFFLINE") return "OFFLINE";
-      if (es==="ONLINE") return "ONLINE";
-      if (es==="No pude responder. Probá de nuevo.") return "I couldn’t respond. Try again.";
-      if (es==="Listo. Podés hablar (🎙️) o escribir en el chat.") return "Ready. You can speak (🎙️) or type in chat.";
-      if (es==="Dame 3 opciones cortas y pedime lo mínimo.") return "Give me 3 short options and ask for the minimum.";
-      if (es==="¿Qué podés hacer? En 6 bullets ultra cortos y 3 opciones.") return "What can you do? 6 ultra-short bullets then 3 options.";
-      if (es==="Hyperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.") return "Hyperrealism: offer 3 options (image, video, avatar) and ask minimum.";
-      if (es==="Realtime: activalo con 1 toque y decime 3 comandos ejemplo.") return "Realtime: enable in 1 tap and give 3 example commands.";
-      if (es==="Control iPhone: decime cómo lo hago con Atajos en 3 pasos.") return "iPhone control: tell me how with Shortcuts in 3 steps.";
-      if (es==="Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')") return "Type your hyperrealism request (e.g. 'premium apartment, warm light, river in background').";
-      return es;
-    }
-    if (langSel.value==="pt") {
-      if (es==="Decime qué querés. Yo me encargo.") return "Diga o que você quer. Eu cuido disso.";
-      if (es==="Un toque. Tres opciones. Cero fricción.") return "Um toque. Três opções. Zero fricção.";
-      if (es==="Idioma fijado: ") return "Idioma fixado: ";
-      if (es==="OFFLINE") return "OFFLINE";
-      if (es==="ONLINE") return "ONLINE";
-      if (es==="No pude responder. Probá de nuevo.") return "Não consegui responder. Tente novamente.";
-      if (es==="Listo. Podés hablar (🎙️) o escribir en el chat.") return "Pronto. Você pode falar (🎙️) ou digitar no chat.";
-      if (es==="Dame 3 opciones cortas y pedime lo mínimo.") return "Me dê 3 opções curtas e peça o mínimo.";
-      if (es==="¿Qué podés hacer? En 6 bullets ultra cortos y 3 opciones.") return "O que você pode fazer? 6 bullets bem curtos e 3 opções.";
-      if (es==="Hyperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.") return "Hiperrealismo: ofereça 3 opções (imagem, vídeo, avatar) e peça o mínimo.";
-      if (es==="Realtime: activalo con 1 toque y decime 3 comandos ejemplo.") return "Realtime: ative com 1 toque e me dê 3 comandos de exemplo.";
-      if (es==="Control iPhone: decime cómo lo hago con Atajos en 3 pasos.") return "Controle iPhone: como fazer com Atalhos em 3 passos.";
-      if (es==="Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')") return "Digite seu pedido de hiperrealismo (ex: 'apartamento premium, luz quente, rio ao fundo').";
-      return es;
-    }
-    return es;
-  }
-
-  function addMsg(who, text, cls="") {
+  // UI helpers
+  function addMsg(kind, text, cls=""){
     const row = document.createElement("div");
-    row.className = `msg ${who==="me"?"me":who==="sys"?"sys":""} ${cls}`;
+    row.className = `msg ${kind==="me"?"me":kind==="sys"?"sys":""} ${cls}`;
     const b = document.createElement("div");
     b.className = "bubble";
     b.textContent = text;
@@ -329,206 +382,358 @@
     chat.appendChild(row);
     chat.scrollTop = chat.scrollHeight;
   }
-  const sysMsg = (t) => addMsg("sys", t);
-  const meMsg  = (t) => addMsg("me", t);
-  const aiMsg  = (t) => addMsg("ai", t);
-  const errMsg = (t) => addMsg("ai", t, "err");
+  const sys = (t)=>addMsg("sys", t);
+  const me  = (t)=>addMsg("me", t);
+  const ai  = (t)=>addMsg("ai", t);
+  const err = (t)=>addMsg("ai", t, "err");
 
-  async function ping() {
-    try {
-      const r = await fetch(API + "/", { method:"GET" });
-      if (!r.ok) throw 0;
+  el("apiHint").textContent = API_BASE.replace("https://","");
+
+  // Splash 3s
+  setTimeout(() => { splash.classList.add("hide"); }, 3000);
+
+  /* =========================
+     AUDIO GATE (iOS)
+  ========================= */
+  function showGate(){
+    gate.style.display = "flex";
+  }
+  function hideGate(){
+    gate.style.display = "none";
+  }
+
+  // iOS suele bloquear audio hasta interacción
+  // Mostramos gate si el usuario quiere VOZ ON.
+  showGate();
+
+  el("enableAudio").onclick = async () => {
+    hideGate();
+    try{
+      // “desbloquear” audio
+      const a = new Audio();
+      a.src = "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAA==";
+      await a.play().catch(()=>{});
+    }catch{}
+    // Permitimos unmute manual del video si quisieras
+    avatarVideo.muted = true; // mantenemos mute por autoplay; voz va por TTS
+    sys("Audio habilitado. Te escucho.");
+  };
+
+  /* =========================
+     HEALTH
+  ========================= */
+  async function ping(){
+    try{
+      const r = await fetch(API_BASE + "/", { method:"GET" });
+      if(!r.ok) throw 0;
       dot.classList.add("ok");
-      st.textContent = msgFor("ONLINE");
-    } catch {
+      st.textContent = "ONLINE";
+    }catch{
       dot.classList.remove("ok");
-      st.textContent = msgFor("OFFLINE");
+      st.textContent = "OFFLINE";
     }
   }
 
-  async function ask(message, opts={}) {
-    try {
+  /* =========================
+     ASK + VOICE
+  ========================= */
+  async function ask(message){
+    try{
       const payload = {
         message,
-        lang: langSel.value,
-        audioWanted: (AUDIO_ON && VOICE_ON && !opts.noAudio) ? true : false,
-        device: DEVICE
+        lang: LANG,
+        deviceId: DEVICE_ID,
+        audioWanted: false
       };
 
-      const r = await fetch(API + "/ask", {
+      const r = await fetch(API_BASE + "/ask", {
         method:"POST",
         headers:{
           "Content-Type":"application/json",
-          "x-consia-device": DEVICE,
-          "x-consia-lang": langSel.value
+          "x-consia-device": DEVICE_ID
         },
         body: JSON.stringify(payload)
       });
 
-      const data = await r.json().catch(()=> ({}));
-      if (!r.ok || data.error) throw new Error(data.detail || data.error || "error");
+      const data = await r.json().catch(()=>({}));
+      if(!r.ok || data.error) throw new Error(data.detail || data.error || "ask_error");
 
-      if (data.text) aiMsg(data.text);
-      if (data.audio_b64 && AUDIO_ON) playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
-    } catch(e) {
-      errMsg(msgFor("No pude responder. Probá de nuevo."));
+      const text = (data.text || "").trim() || "OK";
+      ai(text);
+
+      if(VOICE_ON){
+        await speak(text);
+      }
+
+      // Realtime echo (si WS está ON)
+      if(WS_ON && socket && socket.readyState === 1){
+        socket.send(JSON.stringify({ type:"user_ack", text, ts:Date.now() }));
+      }
+    }catch(e){
+      err("No pude responder. Probá de nuevo.");
     }
   }
 
-  async function tts(text) {
-    const r = await fetch(API + "/tts", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-consia-device": DEVICE,
-        "x-consia-lang": langSel.value
-      },
-      body: JSON.stringify({ text, lang: langSel.value, device: DEVICE })
-    });
-    const data = await r.json().catch(()=> ({}));
-    if (!r.ok || data.error) throw new Error(data.detail || data.error || "tts_error");
-    if (data.audio_b64 && AUDIO_ON) playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
-  }
-
-  function playB64Audio(b64, mime) {
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-    const blob = new Blob([bytes], { type:mime });
-    const url = URL.createObjectURL(blob);
-    const a = new Audio(url);
-    a.onended = () => URL.revokeObjectURL(url);
-    a.play().catch(()=>{});
-  }
-
-  async function hyperImage(prompt) {
-    try {
-      sysMsg(msgFor("Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')"));
-      const r = await fetch(API + "/image", {
+  async function speak(text){
+    try{
+      const r = await fetch(API_BASE + "/voice",{
         method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-consia-device": DEVICE,
-          "x-consia-lang": langSel.value
-        },
-        body: JSON.stringify({ prompt, style:"reels", lang: langSel.value, device: DEVICE })
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ text, lang: LANG, deviceId: DEVICE_ID })
       });
-      const data = await r.json().catch(()=> ({}));
-      if (!r.ok || data.error) throw new Error(data.detail || data.error || "image_error");
 
+      // /voice puede devolver mp3 directo
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.onended = ()=>URL.revokeObjectURL(url);
+      await audio.play().catch(()=>{ showGate(); });
+    }catch{
+      // si falla, no rompemos UX
+    }
+  }
+
+  /* =========================
+     HYPERREALISMO
+  ========================= */
+  async function hyper(prompt){
+    try{
+      sys("Generando…");
+      const r = await fetch(API_BASE + "/render",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ prompt, lang: LANG, deviceId: DEVICE_ID })
+      });
+      const data = await r.json().catch(()=>({}));
+      if(!r.ok || data.error) throw new Error(data.detail || data.error || "render_error");
+
+      // soporta image_b64 o image/url
       const imgbox = el("imgbox");
       const img = el("img");
-      img.src = `data:${data.image_mime||"image/png"};base64,${data.image_b64}`;
+
+      if(data.image_b64){
+        img.src = `data:image/png;base64,${data.image_b64}`;
+      }else if(data.image){
+        img.src = data.image;
+      }else if(data.url){
+        img.src = data.url;
+      }else{
+        throw new Error("no_image");
+      }
+
       imgbox.style.display = "block";
-      chat.scrollTop = chat.scrollHeight;
-      aiMsg("✅");
-    } catch(e) {
-      errMsg(msgFor("No pude responder. Probá de nuevo."));
+      ai("Listo.");
+    }catch{
+      err("No pude generar el render.");
     }
   }
 
-  // ==== Voice input (Web Speech API) ====
-  let rec = null;
+  /* =========================
+     MIC (STT)
+  ========================= */
   function startSTT(){
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) { errMsg("STT no disponible en este navegador."); return; }
-    rec = new SpeechRecognition();
-    rec.lang = (langSel.value==="en") ? "en-US" : (langSel.value==="pt") ? "pt-BR" : "es-AR";
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){
+      err("STT no disponible en este navegador.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "es-AR";
     rec.interimResults = false;
     rec.maxAlternatives = 1;
-    rec.onresult = (ev) => {
+    rec.onresult = (ev)=>{
       const t = ev.results?.[0]?.[0]?.transcript || "";
-      if (t.trim()) {
-        meMsg(t.trim());
+      if(t.trim()){
+        me(t.trim());
         ask(t.trim());
       }
     };
-    rec.onerror = () => {};
-    rec.onend = () => {};
     rec.start();
   }
 
-  // ==== Realtime (Phase A) minimal: get token only ====
-  async function realtimeToken(){
+  /* =========================
+     REALTIME WS
+  ========================= */
+  let socket = null;
+
+  function connectWS(){
+    if(!WS_ON) return;
     try{
-      const r = await fetch(API + "/realtime-token", {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-consia-device": DEVICE,
-          "x-consia-lang": langSel.value
-        },
-        body: JSON.stringify({ lang: langSel.value, device: DEVICE })
-      });
-      const data = await r.json().catch(()=> ({}));
-      if (!r.ok || data.error) throw new Error(data.detail || data.error || "realtime_token_error");
-      sysMsg("Realtime token OK ✅");
-      // We keep it simple: Phase 2 can wire WebRTC client fully.
-      // (Token is the hard part for browser security.)
-      return data.client_secret;
-    }catch(e){
-      errMsg("Realtime token falló.");
-      return null;
+      socket = new WebSocket(WS_URL);
+
+      socket.onopen = ()=>{
+        sys("Realtime conectado.");
+        // handshake
+        socket.send(JSON.stringify({ type:"hello", deviceId: DEVICE_ID, ts:Date.now() }));
+      };
+
+      socket.onmessage = (e)=>{
+        // Si tu WS devuelve JSON con {text: "..."} lo hablamos y lo mostramos
+        try{
+          const data = JSON.parse(e.data);
+
+          if(typeof data === "string"){
+            ai(data);
+            if(VOICE_ON) speak(data);
+            return;
+          }
+
+          if(data && data.text){
+            ai(data.text);
+            if(VOICE_ON) speak(data.text);
+          }
+        }catch{
+          // fallback texto plano
+          const t = String(e.data || "");
+          if(t){
+            ai(t);
+            if(VOICE_ON) speak(t);
+          }
+        }
+      };
+
+      socket.onerror = ()=>{};
+      socket.onclose = ()=>{
+        // auto-reconnect suave
+        if(WS_ON) setTimeout(connectWS, 900);
+      };
+    }catch{}
+  }
+
+  /* =========================
+     HOLOGRAMA (Three.js on-demand)
+  ========================= */
+  async function toggleHolo(){
+    HOLO_ON = !HOLO_ON;
+    document.body.classList.toggle("holoOn", HOLO_ON);
+
+    if(!HOLO_ON) return;
+
+    // Load Three.js only when needed
+    if(!window.THREE){
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js");
     }
+    startHologram();
   }
 
-  // ==== iPhone Control (Phase C) ====
-  function iphoneControl(){
-    // Best practical: iOS Shortcuts + share sheet + URL scheme
-    const url = "shortcuts://";
-    sysMsg("iPhone: Usá Atajos (Shortcuts). Te dejo lo mínimo:");
-    aiMsg("1) Creá un Atajo: 'CONSIA' (Entrada: Texto). \n2) En el Atajo: Abrir URL → " + API + "/ (o tu app). \n3) Ejecutá por Siri / Back Tap / Widget.");
-    // Copy helper
-    navigator.clipboard?.writeText(url).catch(()=>{});
+  function loadScript(src){
+    return new Promise((resolve,reject)=>{
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
   }
 
-  // ==== UI actions ====
-  el("send").onclick = () => {
+  let holoStarted = false;
+  function startHologram(){
+    if(holoStarted) return;
+    holoStarted = true;
+
+    const canvas = el("holo");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Use the same avatar video as texture
+    const tex = new THREE.VideoTexture(avatarVideo);
+
+    const geo = new THREE.PlaneGeometry(3.2, 5.6);
+    const mat = new THREE.MeshBasicMaterial({ map: tex, transparent:true, opacity:0.90 });
+
+    const plane = new THREE.Mesh(geo, mat);
+    plane.position.set(0, 0, 0);
+    scene.add(plane);
+
+    // soft glow effect via second plane
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0x66aaff, transparent:true, opacity:0.10 });
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.35, 5.8), glowMat);
+    glow.position.set(0, 0, -0.02);
+    scene.add(glow);
+
+    camera.position.z = 6;
+
+    function onResize(){
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener("resize", onResize);
+
+    function loop(){
+      requestAnimationFrame(loop);
+      // slow floating motion
+      plane.rotation.y += 0.002;
+      plane.position.y = Math.sin(Date.now()/900) * 0.04;
+      renderer.render(scene, camera);
+    }
+    loop();
+  }
+
+  /* =========================
+     UI actions
+  ========================= */
+  el("send").onclick = ()=>{
     const t = input.value.trim();
-    if (!t) return;
+    if(!t) return;
     input.value = "";
-    meMsg(t);
-    if (t === ".") {
-      ask("Guiame con 3 opciones cortas y claras.");
-    } else {
+    me(t);
+    if(t === "."){
+      ask("Guiame con 3 opciones claras y pedime lo mínimo.");
+    }else{
       ask(t);
     }
   };
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") el("send").click();
-  });
+  input.addEventListener("keydown",(e)=>{ if(e.key==="Enter") el("send").click(); });
 
-  el("mic").onclick = () => startSTT();
+  el("mic").onclick = ()=> startSTT();
 
-  el("qGuide").onclick = () => ask(msgFor("Dame 3 opciones cortas y pedime lo mínimo."));
-  el("qWhat").onclick  = () => ask(msgFor("¿Qué podés hacer? En 6 bullets ultra cortos y 3 opciones."));
-  el("qMagic").onclick = () => ask("Activá modo '.' y guiame con 3 opciones.");
-  el("qVoice").onclick = () => ask(msgFor("Listo. Podés hablar (🎙️) o escribir en el chat."), { noAudio:true });
+  el("qGuide").onclick = ()=> ask("Dame 3 opciones cortas y pedime lo mínimo.");
+  el("qWhat").onclick  = ()=> ask("¿Qué podés hacer? En 6 bullets cortos y luego 3 opciones.");
+  el("qMagic").onclick = ()=> ask("Activá modo '.' y guiame con 3 opciones.");
 
-  el("btnHyper").onclick = async () => {
-    const p = prompt(msgFor("Escribí tu pedido de hiperrealismo (ej: 'departamento premium con luz cálida, río de fondo')"));
-    if (p && p.trim()) hyperImage(p.trim());
+  el("btnHyper").onclick = ()=>{
+    const p = prompt("Escribí tu pedido de hyperrealismo (9:16):");
+    if(p && p.trim()) hyper(p.trim());
   };
-  el("btnRealtime").onclick = async () => {
-    sysMsg("Realtime: preparando…");
-    await realtimeToken();
-    aiMsg(msgFor("Realtime: activalo con 1 toque y decime 3 comandos ejemplo."));
-    // In Phase 2 we wire full WebRTC session with OpenAI calls endpoint.
-  };
-  el("btnIphone").onclick = () => iphoneControl();
 
-  // init
-  sysMsg(msgFor("Decime qué querés. Yo me encargo."));
-  sysMsg(msgFor("Un toque. Tres opciones. Cero fricción."));
+  el("btnHolo").onclick = toggleHolo;
+
+  el("togVoice").onclick = ()=>{
+    VOICE_ON = !VOICE_ON;
+    const b = el("togVoice");
+    b.textContent = `Voz: ${VOICE_ON ? "ON" : "OFF"}`;
+    b.classList.toggle("on", VOICE_ON);
+    b.classList.toggle("off", !VOICE_ON);
+    if(VOICE_ON) showGate();
+  };
+
+  el("togWS").onclick = ()=>{
+    WS_ON = !WS_ON;
+    const b = el("togWS");
+    b.textContent = `Realtime: ${WS_ON ? "ON" : "OFF"}`;
+    b.classList.toggle("on", WS_ON);
+    b.classList.toggle("off", !WS_ON);
+    if(WS_ON) connectWS();
+    else if(socket) try{ socket.close(); }catch{}
+  };
+
+  /* =========================
+     INIT
+  ========================= */
+  sys("CONSIA activo. Decime qué querés.");
+  sys("Regla: solo español. No se mezcla.");
   ping();
-})();
-</script>
+  connectWS();
 
-<script>
-  // Service worker (optional)
-  if ("serviceWorker" in navigator) {
+  // PWA SW (si existe)
+  if("serviceWorker" in navigator){
     navigator.serviceWorker.register("./sw.js").catch(()=>{});
   }
+})();
 </script>
 </body>
 </html>

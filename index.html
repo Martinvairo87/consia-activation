@@ -1,306 +1,330 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>CONSIA ∞</title>
 
-<title>CONSIA ∞</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
 
-<link rel="manifest" href="manifest.webmanifest">
-
-<style>
-
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont;
-background:#05070c;
-color:white;
-overflow:hidden;
-}
-
-header{
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:14px 20px;
-background:linear-gradient(90deg,#0a0f1f,#020409);
-border-bottom:1px solid rgba(255,255,255,0.05);
-}
-
-.logo{
-font-weight:600;
-letter-spacing:3px;
-opacity:.9;
-}
-
-.status{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.dot{
-width:10px;
-height:10px;
-border-radius:50%;
-background:red;
-box-shadow:0 0 10px red;
-}
-
-.online .dot{
-background:#00ffd5;
-box-shadow:0 0 14px #00ffd5;
-}
-
-main{
-display:flex;
-height:calc(100vh - 70px);
-}
-
-#left{
-width:320px;
-border-right:1px solid rgba(255,255,255,0.05);
-padding:20px;
-overflow:auto;
-}
-
-#center{
-flex:1;
-position:relative;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-#chat{
-position:absolute;
-bottom:20px;
-width:90%;
-display:flex;
-gap:10px;
-}
-
-input{
-flex:1;
-padding:14px;
-border-radius:12px;
-border:none;
-background:#0b0f18;
-color:white;
-}
-
-button{
-padding:14px 20px;
-border:none;
-border-radius:12px;
-background:#00ffd5;
-color:black;
-font-weight:600;
-cursor:pointer;
-}
-
-#hologram-core{
-text-align:center;
-font-size:28px;
-opacity:.85;
-animation:float 4s infinite ease-in-out;
-}
-
-@keyframes float{
-0%{transform:translateY(0)}
-50%{transform:translateY(-20px)}
-100%{transform:translateY(0)}
-}
-
-#avatarVideo{
-position:absolute;
-bottom:120px;
-width:220px;
-border-radius:18px;
-box-shadow:0 0 40px rgba(0,255,213,.3);
-}
-
-.panel{
-margin-bottom:20px;
-padding:14px;
-background:#0b0f18;
-border-radius:12px;
-font-size:13px;
-opacity:.85;
-}
-
-.consia-ascended{
-background:radial-gradient(circle at center,#0a1a2f,#000);
-}
-
-</style>
+  <style>
+    :root{
+      --bg:#070a0f; --panel:#0b0f14; --panel2:#0d131b;
+      --text:#eaf0ff; --muted:#93a4c7;
+      --line:#162131; --accent:#5df; --accent2:#8cf; --danger:#ff4d5a;
+      --ok:#16d47b;
+      --shadow: 0 10px 40px rgba(0,0,0,.55);
+      --r:18px;
+    }
+    *{box-sizing:border-box;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+    body{
+      margin:0; background: radial-gradient(1200px 600px at 50% -10%, rgba(93,255,255,.10), transparent 60%),
+                       radial-gradient(900px 500px at 90% 10%, rgba(140,204,255,.10), transparent 55%),
+                       var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1040px;margin:0 auto;padding:22px 16px 44px;}
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 16px; border:1px solid var(--line); border-radius:var(--r);
+      background: rgba(11,15,20,.75); box-shadow: var(--shadow);
+      position: sticky; top: 10px; backdrop-filter: blur(10px); z-index: 4;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .dot{width:10px;height:10px;border-radius:99px;background:var(--danger);box-shadow:0 0 0 4px rgba(255,77,90,.15)}
+    .dot.ok{background:var(--ok);box-shadow:0 0 0 4px rgba(22,212,123,.15)}
+    .name{font-weight:800;letter-spacing:.18em}
+    .pill{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(13,19,27,.6);color:var(--muted);font-size:12px}
+    .row{display:grid;grid-template-columns: 1.1fr .9fr; gap:14px; margin-top:14px}
+    @media(max-width: 920px){.row{grid-template-columns:1fr}}
+    .card{border:1px solid var(--line);border-radius:var(--r);background:rgba(11,15,20,.75);box-shadow:var(--shadow);overflow:hidden}
+    .card h2{margin:0;padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .card .body{padding:14px 16px}
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(13,19,27,.6);cursor:pointer;user-select:none}
+    .chip:hover{border-color:rgba(93,255,255,.35)}
+    .chip b{font-size:13px}
+    .chip span{font-size:12px;color:var(--muted)}
+    .chat{height:420px;overflow:auto;padding:10px 10px 18px;background:rgba(7,10,15,.35)}
+    .msg{max-width:78%;padding:10px 12px;border-radius:16px;margin:8px 6px;border:1px solid var(--line);white-space:pre-wrap}
+    .me{margin-left:auto;background:rgba(93,255,255,.08);border-color:rgba(93,255,255,.22)}
+    .ai{background:rgba(13,19,27,.7)}
+    .meta{font-size:11px;color:var(--muted);padding:0 10px 8px}
+    .composer{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:rgba(11,15,20,.85)}
+    input,textarea{
+      width:100%; outline:none; border:1px solid var(--line); border-radius:14px;
+      background:rgba(13,19,27,.6); color:var(--text); padding:12px 12px; font-size:14px;
+    }
+    button{
+      border:1px solid rgba(93,255,255,.28); background:rgba(93,255,255,.10); color:var(--text);
+      padding:12px 14px; border-radius:14px; cursor:pointer; font-weight:700;
+    }
+    button:hover{background:rgba(93,255,255,.16)}
+    .mini{font-size:12px;color:var(--muted)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .preview{
+      width:100%; border-radius:16px; border:1px solid var(--line); background:rgba(13,19,27,.45);
+      overflow:hidden
+    }
+    .preview video{width:100%;display:block}
+    .preview img{width:100%;display:block}
+    .kbd{opacity:.85;font-size:12px}
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div id="statusDot" class="dot"></div>
+        <div>
+          <div class="name">CONSIA</div>
+          <div class="mini">One tap. Three options. Zero friction.</div>
+        </div>
+      </div>
+      <div class="pill">
+        <span id="statusText">OFFLINE</span>
+        <span class="kbd">Enter = enviar · “.” = magia</span>
+      </div>
+    </div>
 
-<header>
-<div class="logo">CONSIA</div>
+    <div class="row">
+      <div class="card">
+        <h2>CONSIA ∞ LIVE</h2>
+        <div class="body">
+          <div class="chips">
+            <div class="chip" onclick="quick('Guíame con 3 opciones cortas y claras.')"><b>🧭 Guíame</b><span>(3 opciones)</span></div>
+            <div class="chip" onclick="quick('Mostrame qué podés hacer en 6 bullets ultra cortos y luego dame 3 opciones.')"><b>🧠 ¿Qué podés hacer?</b><span>core</span></div>
+            <div class="chip" onclick="openHyper()"><b>🖼️ Hiperrealismo</b><span>(imagen/video/avatar)</span></div>
+            <div class="chip" onclick="toggleVoice()"><b>🎙️ Voz</b><span>activar</span></div>
+            <div class="chip" onclick="connectWS()"><b>⚡ Realtime</b><span>WS</span></div>
+          </div>
 
-<div class="status" id="status">
-<div class="dot"></div>
-<span>OFFLINE</span>
-</div>
-</header>
+          <div style="height:12px"></div>
 
-<main>
+          <div class="grid2">
+            <div class="preview">
+              <video id="avatarVid" src="./avatar.mp4" autoplay muted loop playsinline></video>
+            </div>
+            <div class="preview" id="imgBox" style="display:flex;align-items:center;justify-content:center;padding:18px;color:var(--muted)">
+              Hyperrealismo preview (9:16)
+            </div>
+          </div>
 
-<!-- LEFT PANEL -->
-<div id="left">
+          <div style="height:12px"></div>
 
-<div class="panel" id="omniscient">
-Loading CORE…
-</div>
+          <div class="chat" id="chat"></div>
+          <div class="meta" id="meta">Device: <span id="deviceId"></span> · API: <span id="apiUrl"></span></div>
 
-<div class="panel">
-Realtime ∞ Active<br>
-Hyperrealismo ∞ Ready<br>
-Avatar ∞ Sync<br>
-Predictive AI ∞ Live
-</div>
+          <div class="composer">
+            <input id="input" placeholder='Decime qué querés… (o escribí ".")' />
+            <button onclick="send()">Enviar</button>
+          </div>
+        </div>
+      </div>
 
-</div>
+      <div class="card">
+        <h2>ASCEND ∞</h2>
+        <div class="body">
+          <div class="mini">
+            Esta UI ya está lista para el mundo.  
+            Solo depende de que el backend esté en <b>api.consia.world</b>.
+          </div>
 
-<!-- CENTER -->
-<div id="center">
+          <div style="height:12px"></div>
 
-<div id="hologram-core">
-CONSIA ∞ ACTIVE
-</div>
+          <div class="chips">
+            <div class="chip" onclick="ascendPing()"><b>✅ Activate</b><span>/activate</span></div>
+            <div class="chip" onclick="quick('Hiperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.')"><b>🖼️ Hyper Options</b><span>3</span></div>
+            <div class="chip" onclick="quick('Realtime: activá modo realtime y decime 3 comandos ejemplo.')"><b>⚡ Realtime</b><span>commands</span></div>
+          </div>
 
-<video id="avatarVideo" autoplay muted loop></video>
+          <div style="height:14px"></div>
 
-<div id="chat">
-<input id="msg" placeholder="Decime qué querés…"/>
-<button onclick="send()">Enviar</button>
-</div>
+          <div class="mini">
+            <b>Comandos rápidos</b><br/>
+            1) "." → magia (CONSIA decide) <br/>
+            2) "Hyper: imagen 9:16 de …" <br/>
+            3) "Voz: respondé con audio"
+          </div>
 
-</div>
+          <div style="height:14px"></div>
 
-</main>
+          <audio id="audio" controls style="width:100%"></audio>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
+  // ===== CONFIG =====
+  const API = "https://api.consia.world";
+  const ASK_URL = API + "/ask";
+  const IMG_URL = API + "/image";
+  const VOICE_URL = API + "/voice";
+  const ACT_URL = API + "/activate";
+  const WS_URL = API.replace("https://","wss://") + "/ws";
 
-/* =========================
-   REALTIME CORE WS
-========================= */
+  // Public mode: si querés cerrar con token, poné aquí un Bearer válido
+  // const AUTH = "Bearer " + "TU_USER_TOKEN";
+  const AUTH = ""; // abierto (si tu worker no exige user)
 
-const ws = new WebSocket("wss://api.consia.world/ws");
+  // Device id persistente
+  const DEVICE_ID = localStorage.getItem("consia_device") || ("dev_" + Math.random().toString(16).slice(2));
+  localStorage.setItem("consia_device", DEVICE_ID);
 
-ws.onopen = ()=>{
-document.getElementById("status").classList.add("online");
-document.querySelector("#status span").innerText="ONLINE";
-};
+  // ===== UI =====
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("input");
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+  const meta = document.getElementById("meta");
+  const apiUrl = document.getElementById("apiUrl");
+  const deviceEl = document.getElementById("deviceId");
+  const audioEl = document.getElementById("audio");
+  const imgBox = document.getElementById("imgBox");
 
-ws.onmessage = e=>{
-const data = JSON.parse(e.data);
+  apiUrl.textContent = API;
+  deviceEl.textContent = DEVICE_ID;
 
-if(data.realtime){
-document.getElementById("hologram-core").innerHTML=
-`CONSIA ∞<br>${data.echo}`;
-}
-};
+  let voiceOn = false;
+  let ws = null;
 
-/* =========================
-   CHAT → AI CORE
-========================= */
+  function addMsg(role, text){
+    const div = document.createElement("div");
+    div.className = "msg " + (role === "me" ? "me" : "ai");
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
-async function send(){
+  function setOnline(ok){
+    statusDot.classList.toggle("ok", !!ok);
+    statusText.textContent = ok ? "ONLINE" : "OFFLINE";
+  }
 
-const msg = document.getElementById("msg").value;
+  async function ping(){
+    try{
+      const r = await fetch(API + "/health", { headers: baseHeaders() });
+      setOnline(r.ok);
+    }catch{ setOnline(false); }
+  }
 
-ws.send(msg);
+  function baseHeaders(){
+    const h = {
+      "content-type": "application/json",
+      "x-consia-device": DEVICE_ID
+    };
+    if (AUTH) h["authorization"] = AUTH;
+    return h;
+  }
 
-const r = await fetch("https://api.consia.world/ask",{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({message:msg})
-});
+  // ===== ACTIONS =====
+  async function send(){
+    const txt = input.value.trim();
+    if(!txt) return;
+    input.value = "";
+    addMsg("me", txt);
 
-const d = await r.json();
+    // “.” trigger
+    const message = (txt === ".")
+      ? "Activá modo CONSIA ∞: dame 3 opciones top (Realtime / Hyperrealismo / Control iPhone) y pedime lo mínimo."
+      : txt;
 
-avatarTalk(d.text);
-}
+    // Si hay WS, preferimos WS
+    if(ws && ws.readyState === 1){
+      ws.send(JSON.stringify({ message, lang: "es" }));
+      return;
+    }
 
-/* =========================
-   AVATAR LIPSYNC
-========================= */
+    // HTTP
+    const payload = { message, lang: "es", audioWanted: voiceOn };
+    const r = await fetch(ASK_URL, { method:"POST", headers: baseHeaders(), body: JSON.stringify(payload) });
+    const data = await r.json().catch(()=>({}));
+    addMsg("ai", data.text || "Algo falló. Probá de nuevo.");
 
-async function avatarTalk(text){
+    if(voiceOn && data.audio_b64){
+      playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
+    }
+    setOnline(true);
+  }
 
-const r = await fetch("https://api.consia.world/avatar/lipsync",{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({text})
-});
+  function quick(text){ input.value = text; send(); }
 
-const d = await r.json();
+  async function ascendPing(){
+    addMsg("me","ASCEND ∞ /activate");
+    const r = await fetch(ACT_URL, { headers: baseHeaders() });
+    const data = await r.json().catch(()=>({}));
+    addMsg("ai", JSON.stringify(data, null, 2));
+  }
 
-document.getElementById("avatarVideo").src=d.video_url;
-}
+  function toggleVoice(){
+    voiceOn = !voiceOn;
+    addMsg("ai", voiceOn ? "Voz: ACTIVADA" : "Voz: DESACTIVADA");
+  }
 
-/* =========================
-   DASHBOARD OMNISCIENTE
-========================= */
+  async function openHyper(){
+    // Modo hiperrealismo: pide mínimo
+    quick("Hiperrealismo: ofreceme 3 opciones (imagen, video, avatar) y pedime lo mínimo.");
+  }
 
-async function loadDashboard(){
+  async function renderHyper(prompt){
+    addMsg("me","Hyper: " + prompt);
+    const r = await fetch(IMG_URL, {
+      method:"POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ prompt, lang: "es" })
+    });
+    const data = await r.json().catch(()=>({}));
+    if(!data.image_b64){
+      addMsg("ai","No pude generar imagen. Revisá token/seguridad.");
+      return;
+    }
+    const img = new Image();
+    img.src = "data:" + (data.content_type || "image/png") + ";base64," + data.image_b64;
+    imgBox.innerHTML = "";
+    imgBox.appendChild(img);
+    addMsg("ai","Hyperrealismo listo (9:16).");
+  }
 
-const r = await fetch("https://api.consia.world/dashboard");
-const d = await r.json();
+  function playB64Audio(b64, mime){
+    const url = "data:" + mime + ";base64," + b64;
+    audioEl.src = url;
+    audioEl.play().catch(()=>{});
+  }
 
-document.getElementById("omniscient").innerHTML=`
-CONSIA CORE<br>
-Users: ${d.users}<br>
-Requests: ${d.requests}<br>
-AI Ops: ${d.ai}
-`;
-}
+  function connectWS(){
+    if(ws && ws.readyState === 1){
+      addMsg("ai","Realtime ya está conectado.");
+      return;
+    }
+    ws = new WebSocket(WS_URL);
+    ws.onopen = () => { addMsg("ai","Realtime WS: conectado."); setOnline(true); };
+    ws.onmessage = (ev) => {
+      let data = null;
+      try{ data = JSON.parse(ev.data); }catch{ data = { text: String(ev.data||"") }; }
+      if(data.text) addMsg("ai", data.text);
+      if(data.audio_b64 && voiceOn) playB64Audio(data.audio_b64, data.audio_mime || "audio/mpeg");
+    };
+    ws.onclose = () => addMsg("ai","Realtime WS: desconectado.");
+    ws.onerror = () => addMsg("ai","Realtime WS: error.");
+  }
 
-loadDashboard();
+  // Enter = send
+  input.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter"){ e.preventDefault(); send(); }
+  });
 
-/* =========================
-   PREDICTIVE AI
-========================= */
+  // PWA SW
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  }
 
-async function predict(){
-
-await fetch("https://api.consia.world/predict",{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({
-context:"User session",
-goal:"Optimization"
-})
-});
-
-}
-
-/* =========================
-   ASCEND VISUAL LAYER
-========================= */
-
-async function ascend(){
-
-await fetch("https://api.consia.world/activate",{method:"POST"});
-
-document.body.classList.add("consia-ascended");
-}
-
-ascend();
-
-/* =========================
-   SERVICE WORKER
-========================= */
-
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("/sw.js");
-}
-
+  ping();
+  setInterval(ping, 8000);
 </script>
-
 </body>
 </html>

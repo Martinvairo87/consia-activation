@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#000000" />
   <title>CONSIA</title>
 
-  <!-- Si ya tenés PWA -->
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
 
@@ -27,26 +26,24 @@
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
     button, input, select {font:inherit}
 
-    /* Background video full screen */
-    .bg { position:fixed; inset:0; overflow:hidden; }
+    .bg{position:fixed;inset:0;overflow:hidden}
     #avatarVideo{
-      width:100%; height:100%;
+      width:100%;height:100%;
       object-fit:cover;
-      transform: translateZ(0);
-      filter: contrast(1.06) saturate(1.06);
+      transform:translateZ(0);
+      filter:contrast(1.06) saturate(1.06);
       background:#000;
     }
     .shade{
-      position:fixed; inset:0;
+      position:fixed;inset:0;
       background: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,.18), rgba(0,0,0,.68) 55%, rgba(0,0,0,.92));
       pointer-events:none;
     }
 
-    /* Splash */
     .splash{
-      position:fixed; inset:0;
-      display:flex; align-items:flex-start; justify-content:flex-start;
-      padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+      position:fixed;inset:0;
+      display:flex;align-items:flex-start;justify-content:flex-start;
+      padding:14px 14px calc(14px + env(safe-area-inset-bottom));
       pointer-events:none;
       z-index:50;
     }
@@ -54,69 +51,64 @@
       font-weight:800;
       letter-spacing:.22em;
       font-size:14px;
-      padding: 10px 12px;
-      border-radius: 999px;
+      padding:10px 12px;
+      border-radius:999px;
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.38);
       backdrop-filter: blur(12px);
       opacity:0;
-      transform: translateY(-6px);
-      animation: splashIn .55s ease forwards;
+      transform:translateY(-6px);
+      animation:splashIn .55s ease forwards;
     }
-    @keyframes splashIn{ to{opacity:1; transform:translateY(0)} }
-    .splash.hide{ display:none; }
+    @keyframes splashIn{to{opacity:1;transform:translateY(0)}}
+    .splash.hide{display:none}
 
-    /* UI panel */
     .wrap{
-      position:fixed; inset:0;
-      display:flex; align-items:flex-end; justify-content:center;
-      padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+      position:fixed;inset:0;
+      display:flex;align-items:flex-end;justify-content:center;
+      padding:18px 14px calc(18px + env(safe-area-inset-bottom));
       z-index:40;
     }
     .panel{
       width:min(980px,100%);
       border:1px solid var(--stroke);
-      border-radius: 18px;
+      border-radius:18px;
       background: linear-gradient(180deg, var(--glass), var(--glass2));
       backdrop-filter: blur(18px);
       box-shadow: 0 18px 70px rgba(0,0,0,.60);
       overflow:hidden;
     }
     .topbar{
-      display:flex; align-items:center; justify-content:space-between;
+      display:flex;align-items:center;justify-content:space-between;
       gap:10px;
-      padding: 12px 14px;
+      padding:12px 14px;
       border-bottom:1px solid var(--stroke);
     }
     .brand{
-      display:flex; align-items:center; gap:10px;
-      font-weight:800; letter-spacing:.22em;
+      display:flex;align-items:center;gap:10px;
+      font-weight:800;letter-spacing:.22em;
       user-select:none;
     }
     .status{
-      display:flex; align-items:center; gap:10px;
-      font-size:12px; color:var(--muted);
+      display:flex;align-items:center;gap:10px;
+      font-size:12px;color:var(--muted);
     }
-    .dot{ width:8px; height:8px; border-radius:50%; background:var(--bad); box-shadow:0 0 18px rgba(255,90,90,.45); }
-    .dot.ok{ background:var(--ok); box-shadow:0 0 18px rgba(90,255,170,.35); }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--bad);box-shadow:0 0 18px rgba(255,90,90,.45)}
+    .dot.ok{background:var(--ok);box-shadow:0 0 18px rgba(90,255,170,.35)}
 
-    .controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .pill{
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.22);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 12px;
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 12px;
       font-size:13px;
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
     }
-    .pill:active{ transform: translateY(1px); }
-    .pill.primary{
-      border-color: rgba(120,180,255,.30);
-      background: rgba(120,180,255,.14);
-    }
+    .pill:active{transform:translateY(1px)}
     .pill.warn{
       border-color: rgba(255,190,90,.28);
       background: rgba(255,190,90,.10);
@@ -129,35 +121,30 @@
       border-color: rgba(255,90,90,.25);
       background: rgba(255,90,90,.08);
     }
-    select.pill{ padding:10px 10px; }
 
-    .body{
-      padding: 14px;
-      display:grid;
-      gap: 12px;
-    }
-    .quick{ display:flex; gap:10px; flex-wrap:wrap; }
+    .body{padding:14px;display:grid;gap:12px}
+    .quick{display:flex;gap:10px;flex-wrap:wrap}
 
     .chat{
-      height: 360px;
+      height:360px;
       overflow:auto;
       border:1px solid var(--stroke);
-      border-radius: 14px;
+      border-radius:14px;
       background: rgba(0,0,0,.18);
-      padding: 12px;
+      padding:12px;
     }
-    .msg{ display:flex; margin: 10px 0; }
+    .msg{display:flex;margin:10px 0}
     .msg .bubble{
-      max-width: 88%;
+      max-width:88%;
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.22);
-      padding: 10px 12px;
-      border-radius: 14px;
+      padding:10px 12px;
+      border-radius:14px;
       line-height:1.35;
-      white-space: pre-wrap;
-      word-wrap: break-word;
+      white-space:pre-wrap;
+      word-wrap:break-word;
     }
-    .me{ justify-content:flex-end; }
+    .me{justify-content:flex-end}
     .me .bubble{
       background: rgba(120,180,255,.12);
       border-color: rgba(120,180,255,.22);
@@ -172,29 +159,28 @@
     }
 
     .composer{
-      display:flex; gap:10px; align-items:center;
+      display:flex;gap:10px;align-items:center;
       border:1px solid var(--stroke);
-      border-radius: 14px;
+      border-radius:14px;
       padding:10px;
       background: rgba(0,0,0,.22);
     }
     #input{
-      flex:1;
-      border:0; outline:0;
-      background: transparent;
-      color: var(--text);
-      font-size: 15px;
-      padding: 10px 8px;
+      flex:1;border:0;outline:0;
+      background:transparent;
+      color:var(--text);
+      font-size:15px;
+      padding:10px 8px;
     }
     .btn{
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.30);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
       cursor:pointer;
       user-select:none;
-      min-width: 44px;
+      min-width:44px;
       text-align:center;
       white-space:nowrap;
     }
@@ -202,64 +188,55 @@
       border-color: rgba(120,180,255,.30);
       background: rgba(120,180,255,.14);
     }
-
     .row{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
-      color: var(--muted); font-size: 12px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+      color:var(--muted);font-size:12px;
     }
 
-    /* Image box (hyperrealismo) */
     .imgbox{
       display:none;
       border:1px solid var(--stroke);
-      border-radius: 14px;
+      border-radius:14px;
       overflow:hidden;
       background: rgba(0,0,0,.22);
     }
-    .imgbox img{ width:100%; display:block; }
+    .imgbox img{width:100%;display:block}
 
-    /* Hologram canvas overlay */
     #holoWrap{
-      position:fixed; inset:0;
+      position:fixed;inset:0;
       display:none;
       z-index:45;
       pointer-events:none;
     }
-    #holo{
-      width:100%; height:100%;
-    }
-    .holoOn #holoWrap{ display:block; }
+    #holo{width:100%;height:100%}
+    .holoOn #holoWrap{display:block}
 
-    /* Tap-to-enable audio */
     .gate{
-      position:fixed; inset:0;
+      position:fixed;inset:0;
       display:none;
-      align-items:flex-end; justify-content:center;
-      padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+      align-items:flex-end;justify-content:center;
+      padding:18px 14px calc(18px + env(safe-area-inset-bottom));
       z-index:60;
     }
     .gateCard{
-      width:min(720px, 100%);
+      width:min(720px,100%);
       border:1px solid var(--stroke);
-      border-radius: 16px;
+      border-radius:16px;
       background: rgba(0,0,0,.55);
       backdrop-filter: blur(14px);
-      padding: 14px;
+      padding:14px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
     }
-    .gateTitle{ font-weight:700; }
-    .gateHint{ font-size:12px; color:var(--muted); margin-top:4px; }
-    @media (max-width:520px){
-      .chat{ height: 48vh; }
-    }
+    .gateTitle{font-weight:700}
+    .gateHint{font-size:12px;color:var(--muted);margin-top:4px}
+    @media (max-width:520px){ .chat{height:48vh} }
   </style>
 </head>
 
 <body>
-  <!-- Background video -->
   <div class="bg">
     <video id="avatarVideo" autoplay muted loop playsinline preload="auto">
       <source src="./avatar.mp4" type="video/mp4" />
@@ -267,17 +244,10 @@
   </div>
   <div class="shade"></div>
 
-  <!-- Optional Hologram (3D overlay) -->
-  <div id="holoWrap">
-    <canvas id="holo"></canvas>
-  </div>
+  <div id="holoWrap"><canvas id="holo"></canvas></div>
 
-  <!-- Splash -->
-  <div class="splash" id="splash">
-    <div class="logo">CONSIA</div>
-  </div>
+  <div class="splash" id="splash"><div class="logo">CONSIA</div></div>
 
-  <!-- Tap-to-enable audio gate -->
   <div class="gate" id="gate">
     <div class="gateCard">
       <div>
@@ -288,17 +258,12 @@
     </div>
   </div>
 
-  <!-- UI -->
   <div class="wrap">
     <div class="panel">
       <div class="topbar">
         <div class="brand">CONSIA</div>
 
         <div class="controls">
-          <select id="lang" class="pill" title="Idioma (fijo)">
-            <option value="es" selected>Español</option>
-          </select>
-
           <div class="pill tog on" id="togVoice">Voz: ON</div>
           <div class="pill tog on" id="togWS">Realtime: ON</div>
           <div class="pill" id="btnHyper">Hyperrealismo</div>
@@ -320,9 +285,7 @@
 
         <div class="chat" id="chat"></div>
 
-        <div class="imgbox" id="imgbox">
-          <img id="img" alt="CONSIA render" />
-        </div>
+        <div class="imgbox" id="imgbox"><img id="img" alt="CONSIA render" /></div>
 
         <div class="composer">
           <button class="btn" id="mic" title="Hablar">🎙️</button>
@@ -331,8 +294,8 @@
         </div>
 
         <div class="row">
-          <div id="hint">Un toque. Tres opciones. Sin mezclar idiomas.</div>
-          <div id="apiHint"></div>
+          <div id="hint">Un toque. Tres opciones. Español fijo.</div>
+          <div id="apiHint">api.consia.world</div>
         </div>
       </div>
     </div>
@@ -340,21 +303,12 @@
 
 <script>
 (() => {
-  /* =========================
-     CONFIG (EDITAR SOLO ESTO)
-  ========================= */
-  // Si usás api.consia.world:
-  const API_BASE = "https://api.consia.world"; // <-- CAMBIÁ si tu API es otro dominio
-  // WebSocket (ideal: mismo dominio con /ws):
-  const WS_URL   = "wss://api.consia.world/ws"; // <-- CAMBIÁ si tu WS es otro
+  const API_BASE = "https://api.consia.world";
+  const WS_URL   = "wss://api.consia.world/ws";
 
-  // Identidad dispositivo (para idioma fijo / vault)
   const DEVICE_ID = (localStorage.getItem("consia_device") || crypto.randomUUID());
   localStorage.setItem("consia_device", DEVICE_ID);
 
-  /* =========================
-     STATE
-  ========================= */
   const el = (id) => document.getElementById(id);
   const chat = el("chat");
   const dot = el("dot");
@@ -368,10 +322,8 @@
   let WS_ON = true;
   let HOLO_ON = false;
 
-  // En este build, idioma fijo ES (no mezclar)
   const LANG = "es";
 
-  // UI helpers
   function addMsg(kind, text, cls=""){
     const row = document.createElement("div");
     row.className = `msg ${kind==="me"?"me":kind==="sys"?"sys":""} ${cls}`;
@@ -387,41 +339,23 @@
   const ai  = (t)=>addMsg("ai", t);
   const err = (t)=>addMsg("ai", t, "err");
 
-  el("apiHint").textContent = API_BASE.replace("https://","");
-
-  // Splash 3s
   setTimeout(() => { splash.classList.add("hide"); }, 3000);
 
-  /* =========================
-     AUDIO GATE (iOS)
-  ========================= */
-  function showGate(){
-    gate.style.display = "flex";
-  }
-  function hideGate(){
-    gate.style.display = "none";
-  }
+  function showGate(){ gate.style.display = "flex"; }
+  function hideGate(){ gate.style.display = "none"; }
 
-  // iOS suele bloquear audio hasta interacción
-  // Mostramos gate si el usuario quiere VOZ ON.
   showGate();
-
   el("enableAudio").onclick = async () => {
     hideGate();
     try{
-      // “desbloquear” audio
       const a = new Audio();
       a.src = "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAA==";
       await a.play().catch(()=>{});
     }catch{}
-    // Permitimos unmute manual del video si quisieras
-    avatarVideo.muted = true; // mantenemos mute por autoplay; voz va por TTS
+    avatarVideo.muted = true;
     sys("Audio habilitado. Te escucho.");
   };
 
-  /* =========================
-     HEALTH
-  ========================= */
   async function ping(){
     try{
       const r = await fetch(API_BASE + "/", { method:"GET" });
@@ -434,24 +368,12 @@
     }
   }
 
-  /* =========================
-     ASK + VOICE
-  ========================= */
   async function ask(message){
     try{
-      const payload = {
-        message,
-        lang: LANG,
-        deviceId: DEVICE_ID,
-        audioWanted: false
-      };
-
+      const payload = { message, lang: LANG, deviceId: DEVICE_ID, audioWanted: false };
       const r = await fetch(API_BASE + "/ask", {
         method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-consia-device": DEVICE_ID
-        },
+        headers:{ "Content-Type":"application/json", "x-consia-device": DEVICE_ID },
         body: JSON.stringify(payload)
       });
 
@@ -461,15 +383,12 @@
       const text = (data.text || "").trim() || "OK";
       ai(text);
 
-      if(VOICE_ON){
-        await speak(text);
-      }
+      if(VOICE_ON) await speak(text);
 
-      // Realtime echo (si WS está ON)
       if(WS_ON && socket && socket.readyState === 1){
         socket.send(JSON.stringify({ type:"user_ack", text, ts:Date.now() }));
       }
-    }catch(e){
+    }catch{
       err("No pude responder. Probá de nuevo.");
     }
   }
@@ -481,21 +400,14 @@
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ text, lang: LANG, deviceId: DEVICE_ID })
       });
-
-      // /voice puede devolver mp3 directo
       const blob = await r.blob();
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
       audio.onended = ()=>URL.revokeObjectURL(url);
       await audio.play().catch(()=>{ showGate(); });
-    }catch{
-      // si falla, no rompemos UX
-    }
+    }catch{}
   }
 
-  /* =========================
-     HYPERREALISMO
-  ========================= */
   async function hyper(prompt){
     try{
       sys("Generando…");
@@ -505,21 +417,15 @@
         body: JSON.stringify({ prompt, lang: LANG, deviceId: DEVICE_ID })
       });
       const data = await r.json().catch(()=>({}));
-      if(!r.ok || data.error) throw new Error(data.detail || data.error || "render_error");
+      if(!r.ok || data.error) throw new Error();
 
-      // soporta image_b64 o image/url
       const imgbox = el("imgbox");
       const img = el("img");
 
-      if(data.image_b64){
-        img.src = `data:image/png;base64,${data.image_b64}`;
-      }else if(data.image){
-        img.src = data.image;
-      }else if(data.url){
-        img.src = data.url;
-      }else{
-        throw new Error("no_image");
-      }
+      if(data.image_b64) img.src = `data:image/png;base64,${data.image_b64}`;
+      else if(data.image) img.src = data.image;
+      else if(data.url) img.src = data.url;
+      else throw new Error();
 
       imgbox.style.display = "block";
       ai("Listo.");
@@ -528,32 +434,20 @@
     }
   }
 
-  /* =========================
-     MIC (STT)
-  ========================= */
   function startSTT(){
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){
-      err("STT no disponible en este navegador.");
-      return;
-    }
+    if(!SR){ err("STT no disponible en este navegador."); return; }
     const rec = new SR();
     rec.lang = "es-AR";
     rec.interimResults = false;
     rec.maxAlternatives = 1;
     rec.onresult = (ev)=>{
       const t = ev.results?.[0]?.[0]?.transcript || "";
-      if(t.trim()){
-        me(t.trim());
-        ask(t.trim());
-      }
+      if(t.trim()){ me(t.trim()); ask(t.trim()); }
     };
     rec.start();
   }
 
-  /* =========================
-     REALTIME WS
-  ========================= */
   let socket = null;
 
   function connectWS(){
@@ -563,53 +457,31 @@
 
       socket.onopen = ()=>{
         sys("Realtime conectado.");
-        // handshake
         socket.send(JSON.stringify({ type:"hello", deviceId: DEVICE_ID, ts:Date.now() }));
       };
 
       socket.onmessage = (e)=>{
-        // Si tu WS devuelve JSON con {text: "..."} lo hablamos y lo mostramos
         try{
           const data = JSON.parse(e.data);
-
-          if(typeof data === "string"){
-            ai(data);
-            if(VOICE_ON) speak(data);
-            return;
-          }
-
           if(data && data.text){
             ai(data.text);
             if(VOICE_ON) speak(data.text);
           }
         }catch{
-          // fallback texto plano
-          const t = String(e.data || "");
-          if(t){
-            ai(t);
-            if(VOICE_ON) speak(t);
-          }
+          const t = String(e.data||"");
+          if(t){ ai(t); if(VOICE_ON) speak(t); }
         }
       };
 
-      socket.onerror = ()=>{};
-      socket.onclose = ()=>{
-        // auto-reconnect suave
-        if(WS_ON) setTimeout(connectWS, 900);
-      };
+      socket.onclose = ()=>{ if(WS_ON) setTimeout(connectWS, 900); };
     }catch{}
   }
 
-  /* =========================
-     HOLOGRAMA (Three.js on-demand)
-  ========================= */
   async function toggleHolo(){
     HOLO_ON = !HOLO_ON;
     document.body.classList.toggle("holoOn", HOLO_ON);
-
     if(!HOLO_ON) return;
 
-    // Load Three.js only when needed
     if(!window.THREE){
       await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js");
     }
@@ -638,20 +510,17 @@
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Use the same avatar video as texture
     const tex = new THREE.VideoTexture(avatarVideo);
 
     const geo = new THREE.PlaneGeometry(3.2, 5.6);
     const mat = new THREE.MeshBasicMaterial({ map: tex, transparent:true, opacity:0.90 });
 
     const plane = new THREE.Mesh(geo, mat);
-    plane.position.set(0, 0, 0);
     scene.add(plane);
 
-    // soft glow effect via second plane
     const glowMat = new THREE.MeshBasicMaterial({ color: 0x66aaff, transparent:true, opacity:0.10 });
     const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.35, 5.8), glowMat);
-    glow.position.set(0, 0, -0.02);
+    glow.position.z = -0.02;
     scene.add(glow);
 
     camera.position.z = 6;
@@ -665,7 +534,6 @@
 
     function loop(){
       requestAnimationFrame(loop);
-      // slow floating motion
       plane.rotation.y += 0.002;
       plane.position.y = Math.sin(Date.now()/900) * 0.04;
       renderer.render(scene, camera);
@@ -673,23 +541,17 @@
     loop();
   }
 
-  /* =========================
-     UI actions
-  ========================= */
   el("send").onclick = ()=>{
     const t = input.value.trim();
     if(!t) return;
     input.value = "";
     me(t);
-    if(t === "."){
-      ask("Guiame con 3 opciones claras y pedime lo mínimo.");
-    }else{
-      ask(t);
-    }
+    if(t === ".") ask("Guiame con 3 opciones claras y pedime lo mínimo.");
+    else ask(t);
   };
   input.addEventListener("keydown",(e)=>{ if(e.key==="Enter") el("send").click(); });
 
-  el("mic").onclick = ()=> startSTT();
+  el("mic").onclick = startSTT;
 
   el("qGuide").onclick = ()=> ask("Dame 3 opciones cortas y pedime lo mínimo.");
   el("qWhat").onclick  = ()=> ask("¿Qué podés hacer? En 6 bullets cortos y luego 3 opciones.");
@@ -721,15 +583,11 @@
     else if(socket) try{ socket.close(); }catch{}
   };
 
-  /* =========================
-     INIT
-  ========================= */
   sys("CONSIA activo. Decime qué querés.");
   sys("Regla: solo español. No se mezcla.");
   ping();
   connectWS();
 
-  // PWA SW (si existe)
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("./sw.js").catch(()=>{});
   }

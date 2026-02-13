@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>CONSIA ∞</title>
+<title>CONSIA WORLD</title>
 
 <style>
 body{
   margin:0;
-  background:#05070a;
-  font-family:-apple-system,system-ui;
+  background:#05070d;
+  font-family:Arial;
   color:white;
   display:flex;
   flex-direction:column;
@@ -18,108 +18,16 @@ body{
 
 header{
   padding:14px 20px;
-  background:#0a0f14;
-  border-bottom:1px solid #1e2a33;
+  background:#0b0f1a;
+  border-bottom:1px solid #1c2233;
   display:flex;
   justify-content:space-between;
 }
 
-.status{
-  color:#00ffa3;
-  font-weight:600;
+#status{
+  color:#00ffa6;
 }
 
-.chat{
+main{
   flex:1;
-  padding:20px;
-  overflow:auto;
-}
-
-.msg{
-  background:#0e151c;
-  padding:12px 16px;
-  border-radius:14px;
-  margin-bottom:12px;
-  max-width:70%;
-}
-
-.user{
-  background:#1b2b36;
-  margin-left:auto;
-}
-
-footer{
-  display:flex;
-  padding:12px;
-  background:#0a0f14;
-}
-
-input{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  outline:none;
-  background:#101820;
-  color:white;
-}
-
-button{
-  margin-left:10px;
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  background:#00ffa3;
-  font-weight:700;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-<div>CONSIA ∞</div>
-<div class="status">ONLINE</div>
-</header>
-
-<div id="chat" class="chat"></div>
-
-<footer>
-<input id="input" placeholder="Ask CONSIA…" />
-<button onclick="send()">Send</button>
-</footer>
-
-<script>
-const API="https://api.consia.world";
-
-function add(text,cls=""){
-  const d=document.createElement("div");
-  d.className="msg "+cls;
-  d.innerText=text;
-  chat.appendChild(d);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-async function send(){
-  const val=input.value;
-  if(!val)return;
-  add(val,"user");
-  input.value="";
-
-  const r=await fetch(API+"/ask",{
-    method:"POST",
-    headers:{ "content-type":"application/json"},
-    body:JSON.stringify({message:val})
-  });
-
-  const j=await r.json();
-  add(j.text);
-}
-
-/* REALTIME CORE */
-const ws=new WebSocket("wss://api.consia.world/realtime");
-ws.onmessage=e=>console.log("Realtime:",e.data);
-</script>
-
-</body>
-</html>
+  padding:

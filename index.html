@@ -1,142 +1,192 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>CONSIA ∞</title>
-
 <style>
-body{
-  margin:0;
-  background:#05070b;
-  color:#e8eef8;
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
+:root{
+  --bg:#05070b;
+  --panel:#0b1018;
+  --panel2:#0f1622;
+  --text:#e8eef8;
+  --muted:#9aa6b2;
+  --line:rgba(255,255,255,.10);
+  --ok:#19d37d;
+  --pill:#0c1a2a;
+  --btn:#19d37d;
+  --btnText:#000;
+  --radius:18px;
+  --shadow:0 10px 40px rgba(0,0,0,.45);
 }
-
-#app{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto}
+.wrap{max-width:980px;margin:0 auto;padding:18px}
+.top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 6px 16px 6px;
 }
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 18px rgba(25,211,125,.65)}
+.state{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:700}
+.pillRow{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 14px}
+.pill{
+  border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel2));
+  color:var(--text);padding:10px 12px;border-radius:999px;cursor:pointer;
+  user-select:none;font-weight:700
 }
-
-.online{
-  color:#19d37d;
-  font-weight:bold;
+.pill:active{transform:scale(.99)}
+.card{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
-
-.chat{
-  background:#0b1018;
-  border-radius:18px;
-  padding:20px;
-  min-height:420px;
-  box-shadow:0 10px 40px rgba(0,0,0,.45);
-  overflow:auto;
+.hint{
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  color:var(--muted);font-weight:700
 }
-
-.msg{
-  margin:10px 0;
-  padding:12px 14px;
-  border-radius:12px;
-  max-width:80%;
-}
-
-.user{ background:#123055; margin-left:auto; }
-.ai{ background:#16212e; }
-
-.inputBar{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
+.chat{padding:16px;min-height:440px;max-height:60vh;overflow:auto}
+.msg{margin:10px 0;padding:12px 14px;border-radius:14px;max-width:82%}
+.me{background:#123055;margin-left:auto}
+.ai{background:#16212e}
+.sys{background:#101827;color:#cbd5e1;border:1px solid var(--line)}
+.bar{display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--line)}
 input{
-  flex:1;
-  padding:14px;
-  border-radius:12px;
-  border:none;
-  outline:none;
-  background:#0b1018;
-  color:white;
+  flex:1;border:none;outline:none;padding:14px 14px;border-radius:14px;
+  background:#0b1018;color:var(--text);font-size:16px
 }
-
 button{
-  padding:14px 18px;
-  border:none;
-  border-radius:12px;
-  background:#19d37d;
-  color:black;
-  font-weight:bold;
+  border:none;border-radius:14px;padding:14px 16px;
+  background:var(--btn);color:var(--btnText);font-weight:900;cursor:pointer
 }
+.footer{display:flex;justify-content:space-between;color:var(--muted);padding:10px 4px 0;font-weight:700}
+small{opacity:.9}
 </style>
 </head>
-
 <body>
-<div id="app">
-
-  <div class="header">
-    <h2>CONSIA ∞</h2>
-    <div class="online">ONLINE</div>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><span>CONSIA ∞</span></div>
+    <div class="state"><span id="onlineTxt">ONLINE</span> · <span id="apiTxt">api.consia.world</span></div>
   </div>
 
-  <div id="chat" class="chat"></div>
-
-  <div class="inputBar">
-    <input id="msg" placeholder='Decí lo que querés (o escribí ".")' />
-    <button onclick="send()">Enviar</button>
+  <div class="pillRow">
+    <div class="pill" onclick="quick('GUIAME')">🧭 Guiame (3 opciones)</div>
+    <div class="pill" onclick="quick('FUNCIONES')">🧠 ¿Qué puede hacer?</div>
+    <div class="pill" onclick="quick('HYPER')">🖼️ Hyperrealismo</div>
+    <div class="pill" onclick="quick('VOICE')">🎙️ Voz</div>
+    <div class="pill" onclick="quick('FACETIME')">📞 FaceTime</div>
+    <div class="pill" onclick="quick('ASCEND')">⚡ ASCEND</div>
   </div>
 
+  <div class="card">
+    <div class="hint" id="hint">Escribí abajo. Si no hay IA, responde (fallback) y deja logs.</div>
+    <div id="chat" class="chat"></div>
+    <div class="bar">
+      <input id="msg" placeholder='Decí lo que querés (o escribí ".")' />
+      <button onclick="send()">Enviar</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <small>Idioma: <b>ES</b></small>
+    <small>Realtime: <b id="rtTxt">auto</b></small>
+  </div>
 </div>
 
 <script>
-const API="https://api.consia.world/ask";
+const API_BASE = "https://api.consia.world";
+const ASK_URL = API_BASE + "/ask";
+const RT_URL  = "wss://api.consia.world/realtime";
 
-function add(text,cls){
-  const div=document.createElement("div");
-  div.className="msg "+cls;
-  div.innerText=text;
-  chat.appendChild(div);
+const chat = document.getElementById("chat");
+const msg  = document.getElementById("msg");
+
+function add(text, cls){
+  const d=document.createElement("div");
+  d.className="msg "+cls;
+  d.textContent=text;
+  chat.appendChild(d);
   chat.scrollTop=chat.scrollHeight;
 }
 
-async function send(){
-  const input=document.getElementById("msg");
-  const text=input.value.trim();
-  if(!text) return;
+function sys(text){ add(text,"sys"); }
 
-  add(text,"user");
-  input.value="";
+async function send(){
+  const text = (msg.value||"").trim();
+  if(!text) return;
+  add(text,"me");
+  msg.value="";
 
   try{
-    const r=await fetch(API,{
+    const r = await fetch(ASK_URL,{
       method:"POST",
       headers:{ "content-type":"application/json" },
-      body:JSON.stringify({ message:text, lang:"ES" })
+      body: JSON.stringify({ message:text, lang:"ES" })
     });
-
-    const j=await r.json();
+    const j = await r.json();
     add(j.reply || "OK","ai");
-
   }catch(e){
     add("Fallback activo.","ai");
   }
 }
 
-/* ENTER key */
-document.getElementById("msg")
-.addEventListener("keydown",e=>{
-  if(e.key==="Enter") send();
+msg.addEventListener("keydown", e => {
+  if(e.key === "Enter") send();
 });
 
-/* HELLO AUTO */
-add("CONSIA realtime activo.","ai");
-</script>
+function quick(kind){
+  if(kind==="GUIAME"){
+    msg.value="Guiame con 3 opciones cortas y claras.";
+    return send();
+  }
+  if(kind==="FUNCIONES"){
+    msg.value="Mostrame las funciones de CONSIA en 6 bullets bien cortos y después dame 3 opciones.";
+    return send();
+  }
+  if(kind==="HYPER"){
+    msg.value="Hyperrealismo: dame 3 opciones (imagen, video, avatar) y pedime lo mínimo.";
+    return send();
+  }
+  if(kind==="VOICE"){
+    msg.value="Voz: explicame en 2 líneas cómo usar voz acá y dame 3 comandos ejemplo.";
+    return send();
+  }
+  if(kind==="FACETIME"){
+    msg.value="FaceTime: decime la mejor forma de conectar una llamada y qué preciso mínimo.";
+    return send();
+  }
+  if(kind==="ASCEND"){
+    msg.value="ASCEND: activá modo ejecución. Dame 3 acciones inmediatas para dejar CONSIA top mundial hoy.";
+    return send();
+  }
+}
 
+let ws;
+function connectRealtime(){
+  try{
+    ws = new WebSocket(RT_URL);
+    document.getElementById("rtTxt").textContent="conectando";
+    ws.onopen=()=>{ document.getElementById("rtTxt").textContent="ON"; sys("Realtime conectado."); };
+    ws.onmessage=(e)=>{
+      try{
+        const j=JSON.parse(e.data);
+        if(j?.type==="hello") sys(j.text || "Realtime listo.");
+      }catch{
+        sys("Realtime msg.");
+      }
+    };
+    ws.onclose=()=>{ document.getElementById("rtTxt").textContent="OFF"; setTimeout(connectRealtime,1500); };
+    ws.onerror=()=>{ document.getElementById("rtTxt").textContent="OFF"; };
+  }catch(e){
+    document.getElementById("rtTxt").textContent="OFF";
+  }
+}
+
+sys("CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
+connectRealtime();
+</script>
 </body>
 </html>

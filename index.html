@@ -27,7 +27,6 @@
 
     .app{height:100%;display:flex;flex-direction:column;padding:18px;gap:14px;}
 
-    /* TOPBAR */
     .topbar{
       display:flex;align-items:center;justify-content:space-between;
       padding:14px 16px;border-radius:22px;
@@ -46,7 +45,6 @@
     }
     .pillStatus b{color:var(--text);font-weight:800}
 
-    /* PANEL */
     .grid{display:flex;flex-direction:column;gap:12px;min-height:0;flex:1;}
     .panel{
       background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
@@ -69,7 +67,6 @@
     .chip.ok{background:linear-gradient(180deg, rgba(25,211,125,.14), rgba(0,0,0,.2)); border-color:rgba(25,211,125,.30)}
     .chip.bad{background:linear-gradient(180deg, rgba(255,77,77,.12), rgba(0,0,0,.2)); border-color:rgba(255,77,77,.25)}
 
-    /* SHOW (AVATAR) */
     .showWrap{
       margin:0 16px 12px 16px;
       border:1px solid rgba(255,255,255,.10);
@@ -121,7 +118,6 @@
     .bar > i{display:block;height:100%;width:10%;background:linear-gradient(90deg, rgba(25,211,125,.65), rgba(30,80,160,.65));}
     .note{color:var(--muted);font-size:12px;line-height:1.35}
 
-    /* DROP */
     .drop{
       margin:0 16px 12px 16px;border:1px dashed rgba(255,255,255,.18);
       background:rgba(0,0,0,.18);border-radius:18px;padding:10px 12px;
@@ -130,7 +126,6 @@
     .drop b{color:var(--text)}
     .drop.drag{border-color:rgba(25,211,125,.55); background:rgba(25,211,125,.06); color:var(--text)}
 
-    /* CHAT */
     .chat{padding:14px 16px 0 16px;overflow:auto;min-height:0;flex:1;scroll-behavior:smooth;}
     .msg{display:flex;gap:10px;margin:0 0 12px 0;align-items:flex-start;}
     .tag{
@@ -141,13 +136,21 @@
     .bubble{
       flex:1;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.20);
       border-radius:18px;padding:12px 12px;line-height:1.35;font-size:14px;
-      white-space:pre-wrap;word-break:break-word;
+      white-space:normal;word-break:break-word;
     }
     .bubble.sys{background:rgba(0,0,0,.32)}
     .bubble.ai{background:linear-gradient(180deg, rgba(18,48,85,.35), rgba(0,0,0,.18))}
     .bubble.err{border-color:rgba(255,77,77,.35); background:rgba(255,77,77,.08)}
 
-    /* INPUT */
+    .bubble .md { color: var(--text); }
+    .bubble .md p{ margin: 0 0 10px 0; }
+    .bubble .md p:last-child{ margin-bottom: 0; }
+    .bubble .md strong{ font-weight: 900; }
+    .bubble .md ul, .bubble .md ol{ margin: 0 0 10px 20px; padding:0; }
+    .bubble .md li{ margin: 6px 0; }
+    .bubble .md code{ font-family: var(--mono); font-size: 12px; padding:2px 6px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.25); }
+
     .inputBar{
       position:sticky;bottom:0;padding:14px 16px 16px 16px;
       background:linear-gradient(180deg, rgba(5,7,11,0) 0%, rgba(5,7,11,.75) 20%, rgba(5,7,11,.98) 70%);
@@ -170,7 +173,6 @@
     .miniPill b{color:var(--text)}
     .kbd{font-family:var(--mono); color:var(--text); opacity:.9}
 
-    /* MODAL */
     .modalWrap{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);z-index:9999;padding:18px;}
     .modal{width:min(720px, 100%);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;}
@@ -187,9 +189,7 @@
     .card small{color:var(--muted);font-size:12px;line-height:1.25}
     .card:active{transform:translateY(1px)}
     .hidden{display:none !important}
-    @media (max-width: 860px){
-      .showBody{grid-template-columns:1fr}
-    }
+    @media (max-width: 860px){ .showBody{grid-template-columns:1fr} }
     @media (max-width: 560px){
       .modalGrid{grid-template-columns:1fr}
       .btn{min-width:88px}
@@ -231,7 +231,6 @@
           <div class="chip warn" id="btnAscend"><span class="ico">⚡</span>ASCEND</div>
         </div>
 
-        <!-- SHOW / AVATAR -->
         <div class="showWrap" id="showWrap">
           <div class="showTop">
             <div class="showTitle">
@@ -251,7 +250,6 @@
               <video id="cam" autoplay playsinline muted class="hidden"></video>
               <canvas id="canvas" class="hidden"></canvas>
 
-              <!-- fallback avatar (si no hay cámara) -->
               <div id="avatarFallback" style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:26px;">
                 <div style="width:72px;height:72px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.22);
                             display:grid;place-items:center;font-size:30px;box-shadow:var(--shadow);">🌊</div>
@@ -292,16 +290,13 @@
           </div>
         </div>
 
-        <!-- DROP / UPLOADS -->
         <div class="drop" id="drop">
           <div>📥 Arrastrá y soltá <b>cualquier archivo</b> (foto, video, PDF, DOCX, XLSX, ZIP) para análisis <b>100%</b>.</div>
           <div class="smallBtn" id="pickAnyBtn">Seleccionar archivo</div>
         </div>
 
-        <!-- CHAT -->
         <div class="chat" id="chat"></div>
 
-        <!-- INPUT -->
         <div class="inputBar">
           <div class="row">
             <input class="input" id="inp" autocomplete="off" spellcheck="false" placeholder="Decí lo que querés (o escribí &quot;.&quot;)" />
@@ -317,7 +312,6 @@
     </div>
   </div>
 
-  <!-- MODAL -->
   <div class="modalWrap" id="mw">
     <div class="modal">
       <div class="modalHead">
@@ -328,7 +322,6 @@
     </div>
   </div>
 
-  <!-- FILE PICKERS -->
   <input id="pickImg" class="hidden" type="file" accept="image/*" />
   <input id="pickVid" class="hidden" type="file" accept="video/*" />
   <input id="pickAud" class="hidden" type="file" accept="audio/*" capture />
@@ -340,7 +333,6 @@
   const ASK_URL  = API_BASE + "/ask";
   const REALTIME_URL = "wss://api.consia.world/realtime";
 
-  // ====== STATE ======
   let ws = null;
   let wsOk = false;
 
@@ -349,9 +341,8 @@
   let lastFrameTs = 0;
   let fps = 0;
 
-  const LIVE_PERCENT = 10; // sellado: 10% live analysis
+  const LIVE_PERCENT = 10;
 
-  // ====== DOM ======
   const chat = document.getElementById("chat");
   const inp  = document.getElementById("inp");
   const send = document.getElementById("send");
@@ -372,7 +363,6 @@
   const pickAnyBtn = document.getElementById("pickAnyBtn");
   const drop = document.getElementById("drop");
 
-  // Show / Live
   const cam = document.getElementById("cam");
   const canvas = document.getElementById("canvas");
   const avatarFallback = document.getElementById("avatarFallback");
@@ -394,26 +384,7 @@
   const repVid = document.getElementById("repVid");
   const repAva = document.getElementById("repAva");
 
-  // ====== HELPERS ======
   const nowTs = () => Date.now();
-
-  function addMsg(tag, text, kind="sys"){
-    const row = document.createElement("div");
-    row.className = "msg";
-    const t = document.createElement("div");
-    t.className = "tag";
-    t.textContent = tag;
-    const b = document.createElement("div");
-    b.className = "bubble " + (kind || "");
-    b.textContent = text;
-    row.appendChild(t);
-    row.appendChild(b);
-    chat.appendChild(row);
-    chat.scrollTop = chat.scrollHeight;
-  }
-  function addJsonSys(obj){
-    addMsg("SYS", JSON.stringify(obj), "sys");
-  }
 
   function setStatus(ok){
     if(ok){
@@ -429,6 +400,94 @@
     }
   }
 
+  function escapeHtml(s){
+    return String(s || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  // Markdown básico: **bold**, listas 1. / - , saltos de línea, `code`
+  function mdToHtml(md){
+    let s = String(md || "");
+    s = s.replace(/\r\n/g,"\n");
+
+    // code inline
+    s = s.replace(/`([^`]+)`/g, (m, p1)=> `<code>${escapeHtml(p1)}</code>`);
+
+    // bold
+    s = s.replace(/\*\*([^*]+)\*\*/g, (m, p1)=> `<strong>${escapeHtml(p1)}</strong>`);
+
+    // bloquear por líneas
+    const lines = s.split("\n");
+    let out = [];
+    let inUl = false, inOl = false;
+
+    function closeLists(){
+      if(inUl){ out.push("</ul>"); inUl=false; }
+      if(inOl){ out.push("</ol>"); inOl=false; }
+    }
+
+    for(const lineRaw of lines){
+      const line = lineRaw.trimEnd();
+
+      const mOl = line.match(/^\s*\d+\.\s+(.*)$/);
+      const mUl = line.match(/^\s*[-•]\s+(.*)$/);
+
+      if(mOl){
+        if(inUl){ out.push("</ul>"); inUl=false; }
+        if(!inOl){ out.push("<ol>"); inOl=true; }
+        out.push(`<li>${escapeHtml(mOl[1])}</li>`);
+        continue;
+      }
+      if(mUl){
+        if(inOl){ out.push("</ol>"); inOl=false; }
+        if(!inUl){ out.push("<ul>"); inUl=true; }
+        out.push(`<li>${escapeHtml(mUl[1])}</li>`);
+        continue;
+      }
+
+      closeLists();
+
+      if(line.trim() === ""){
+        out.push("");
+      } else {
+        out.push(`<p>${escapeHtml(line)}</p>`);
+      }
+    }
+    closeLists();
+
+    return `<div class="md">${out.join("\n")}</div>`;
+  }
+
+  function addMsg(tag, text, kind="sys", asMarkdown=false){
+    const row = document.createElement("div");
+    row.className = "msg";
+    const t = document.createElement("div");
+    t.className = "tag";
+    t.textContent = tag;
+
+    const b = document.createElement("div");
+    b.className = "bubble " + (kind || "");
+
+    if(asMarkdown){
+      b.innerHTML = mdToHtml(text);
+    } else {
+      b.textContent = text;
+    }
+
+    row.appendChild(t);
+    row.appendChild(b);
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function addJsonSys(obj){
+    addMsg("SYS", JSON.stringify(obj), "sys", false);
+  }
+
   function openModal(title, html){
     mt.textContent = title;
     mb.innerHTML = html;
@@ -438,7 +497,6 @@
   mx.onclick = closeModal;
   mw.addEventListener("click", (e)=>{ if(e.target === mw) closeModal(); });
 
-  // ====== REALTIME ======
   function connectRealtime(){
     try{
       ws = new WebSocket(REALTIME_URL);
@@ -454,9 +512,11 @@
         let data = ev.data;
         try { data = JSON.parse(ev.data); } catch(e){}
         if(typeof data === "object"){
-          addMsg("SYS", (data.text || JSON.stringify(data)), "sys");
+          const msg = data.reply || data.text || data.message || "";
+          if(msg) addMsg("SYS", msg, "sys", true);
+          else addMsg("SYS", JSON.stringify(data), "sys", false);
         } else {
-          addMsg("SYS", String(data), "sys");
+          addMsg("SYS", String(data), "sys", false);
         }
       };
       ws.onerror = () => { wsOk = false; rt.textContent = "auto"; rtMode.textContent = "auto"; };
@@ -468,7 +528,6 @@
     }
   }
 
-  // ====== API ======
   async function callAsk(payload){
     const res = await fetch(ASK_URL, {
       method: "POST",
@@ -484,11 +543,16 @@
     return await res.text();
   }
 
+  function pickBestText(out){
+    if(typeof out === "string") return out;
+    return out.reply || out.answer || out.text || out.message || out.output || "";
+  }
+
   async function sendText(text){
     const trimmed = (text || "").trim();
     if(!trimmed) return;
 
-    addMsg("YO", trimmed, "");
+    addMsg("YO", trimmed, "", false);
     inp.value = "";
     inp.focus();
 
@@ -505,17 +569,19 @@
         realtime: wsOk ? true : false
       });
 
-      if(typeof out === "string"){ addMsg("AI", out, "ai"); return; }
-      const ans = out.answer || out.text || out.message || out.output || "";
-      addMsg("AI", ans ? ans : JSON.stringify(out, null, 2), "ai");
+      const ans = pickBestText(out);
+      if(ans){
+        addMsg("AI", ans, "ai", true);
+      } else {
+        addMsg("AI", JSON.stringify(out, null, 2), "ai", false);
+      }
     }catch(err){
-      addMsg("AI", "Falló. Intente nuevamente.", "err");
-      addMsg("SYS", String(err && err.message ? err.message : err), "sys");
+      addMsg("AI", "Falló. Intente nuevamente.", "err", false);
+      addMsg("SYS", String(err && err.message ? err.message : err), "sys", false);
       setStatus(false);
     }
   }
 
-  // ====== FILES (100%) ======
   async function fileToDataURL(file){
     return new Promise((resolve, reject)=>{
       const r = new FileReader();
@@ -536,11 +602,11 @@
     const kind = friendlyKind(file.type);
     const kb = Math.round(file.size/1024);
     if(kb > 18000){
-      addMsg("SYS", `${kind}: "${file.name}" es muy pesado (${kb} KB). Recortá/comprimí o dividí.`, "sys");
+      addMsg("SYS", `${kind}: "${file.name}" es muy pesado (${kb} KB). Recortá/comprimí o dividí.`, "sys", false);
       return;
     }
     try{
-      addMsg("SYS", `${kind}: recibido "${file.name}" (${kb} KB). Análisis 100%...`, "sys");
+      addMsg("SYS", `${kind}: recibido "${file.name}" (${kb} KB). Análisis 100%...`, "sys", false);
       const data_url = await fileToDataURL(file);
 
       const out = await callAsk({
@@ -552,24 +618,21 @@
         file: { name:file.name, type:file.type || "application/octet-stream", data_url }
       });
 
-      const ans = (typeof out === "string") ? out : (out.answer || out.text || out.message || out.output || JSON.stringify(out, null, 2));
-      addMsg("AI", ans, "ai");
+      const ans = pickBestText(out) || JSON.stringify(out, null, 2);
+      addMsg("AI", ans, "ai", true);
     }catch(err){
-      addMsg("AI", "Falló. Intente nuevamente.", "err");
-      addMsg("SYS", String(err && err.message ? err.message : err), "sys");
+      addMsg("AI", "Falló. Intente nuevamente.", "err", false);
+      addMsg("SYS", String(err && err.message ? err.message : err), "sys", false);
     }
   }
 
-  // ====== LIVE CAM (10%) ======
   function setLiveUI(state, hint){
     liveState.textContent = state;
     liveHint.textContent = hint || "";
   }
-
   function updateBar(pct){
     barFill.style.width = Math.max(2, Math.min(100, pct)) + "%";
   }
-
   function tickFps(ts){
     if(!lastFrameTs) lastFrameTs = ts;
     const dt = ts - lastFrameTs;
@@ -591,7 +654,7 @@
       cam.classList.remove("hidden");
       avatarFallback.style.display = "none";
       srcLbl.textContent = "CÁMARA";
-      setLiveUI("LIVE READY", "Tap “Snap → Análisis 10%”");
+      setLiveUI("LIVE READY", "Escribí 1 frase + Snap");
       repLbl.textContent = "LISTA";
       updateBar(LIVE_PERCENT);
       loop();
@@ -600,7 +663,7 @@
       cam.classList.add("hidden");
       avatarFallback.style.display = "flex";
       setLiveUI("CAMERA BLOQUEADA", "Habilitá permisos de cámara");
-      addMsg("SYS","No se pudo abrir la cámara (permiso / navegador).", "sys");
+      addMsg("SYS","No se pudo abrir la cámara (permiso / navegador).", "sys", false);
     }
   }
 
@@ -626,7 +689,7 @@
 
   async function snapAndAnalyzeLive(userInstruction){
     if(!stream){
-      addMsg("SYS","Live: no hay cámara activa.", "sys");
+      addMsg("SYS","Live: no hay cámara activa.", "sys", false);
       return;
     }
     const w = cam.videoWidth || 1280;
@@ -635,22 +698,21 @@
     canvas.height = h;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(cam, 0, 0, w, h);
-    const data_url = canvas.toDataURL("image/jpeg", 0.82); // snapshot ligero
+    const data_url = canvas.toDataURL("image/jpeg", 0.82);
+
     setLiveUI("LIVE SNAP", "Analizando 10%…");
     repLbl.textContent = "EN PROCESO";
 
     try{
       const out = await callAsk({
         message:
-`LIVE 10%: Analizá SOLO lo esencial del frame (10% del análisis). Devolvé:
-(1) 6 bullets de observación,
-(2) 3 acciones inmediatas,
-(3) réplica hiperrealista (prompt) EXACTA según instrucción del usuario.
+`LIVE 10%: 3 opciones (Imagen/Video/Avatar) + pedime lo mínimo (1 frase).
+Luego generá prompt final hiperrealista según instrucción.
 
-INSTRUCCIÓN USUARIO:
-${userInstruction || "Sin instrucción: pedí 1 frase mínima."}
+INSTRUCCIÓN:
+${userInstruction || "Sin instrucción"}
 
-Responder ES, ultra conciso.`,
+Respuesta en ES.`,
         lang: "es",
         ts: nowTs(),
         client: "consia-activation",
@@ -659,29 +721,28 @@ Responder ES, ultra conciso.`,
         live: { percent: LIVE_PERCENT, source:"camera" }
       });
 
-      const ans = (typeof out === "string") ? out : (out.answer || out.text || out.message || out.output || JSON.stringify(out, null, 2));
-      addMsg("AI", ans, "ai");
+      const ans = pickBestText(out) || JSON.stringify(out, null, 2);
+      addMsg("AI", ans, "ai", true);
       repLbl.textContent = "LISTA";
-      setLiveUI("LIVE READY", "Tap “Snap” de nuevo o pedí réplica");
+      setLiveUI("LIVE READY", "Snap de nuevo o subí archivo");
     }catch(err){
       repLbl.textContent = "ERROR";
       setLiveUI("LIVE ERROR", "Reintentar");
-      addMsg("AI", "Falló el análisis live.", "err");
-      addMsg("SYS", String(err && err.message ? err.message : err), "sys");
+      addMsg("AI", "Falló el análisis live.", "err", false);
+      addMsg("SYS", String(err && err.message ? err.message : err), "sys", false);
     }
   }
 
-  // ====== MODALS ======
   function openHyper(){
     openModal("HIPERREALISMO", `
-      <div style="color:var(--muted);margin-bottom:12px;font-size:13px">Elegí 1 opción. Mínimo: 1 archivo o 1 snap live + 1 frase.</div>
+      <div style="color:var(--muted);margin-bottom:12px;font-size:13px">Elegí 1 opción. Mínimo: 1 snap live + 1 frase.</div>
       <div class="modalGrid">
-        <div class="card" id="hImg"><b>Imagen (8K look)</b><small>Subí 1 foto o usá Snap Live.</small></div>
-        <div class="card" id="hVid"><b>Video (4K/8K look)</b><small>Subí 1 clip.</small></div>
-        <div class="card" id="hAva"><b>Avatar</b><small>Foto para crear avatar premium.</small></div>
+        <div class="card" id="hImg"><b>Imagen</b><small>Snap Live o subí 1 foto.</small></div>
+        <div class="card" id="hVid"><b>Video</b><small>Subí 1 clip.</small></div>
+        <div class="card" id="hAva"><b>Avatar</b><small>Subí 1 foto.</small></div>
       </div>
     `);
-    document.getElementById("hImg").onclick = () => { closeModal(); pickImg.click(); };
+    document.getElementById("hImg").onclick = () => { closeModal(); startCamera(); };
     document.getElementById("hVid").onclick = () => { closeModal(); pickVid.click(); };
     document.getElementById("hAva").onclick = () => { closeModal(); pickImg.click(); };
   }
@@ -696,7 +757,7 @@ Responder ES, ultra conciso.`,
       </div>
     `);
     document.getElementById("vRec").onclick = () => { closeModal(); pickAud.click(); };
-    document.getElementById("vCmd").onclick = () => { closeModal(); sendText("Voz: dame 3 comandos ultra cortos para usar CONSIA con voz."); };
+    document.getElementById("vCmd").onclick = () => { closeModal(); sendText("Voz: 3 comandos ultra cortos."); };
     document.getElementById("vNote").onclick = () => { closeModal(); sendText("Modo Reunión: flujo mínimo en 6 bullets + 3 comandos."); };
   }
 
@@ -711,8 +772,8 @@ Responder ES, ultra conciso.`,
     document.getElementById("ft1").onclick = () => { closeModal(); window.location.href = "facetime://"; };
     document.getElementById("ft2").onclick = () => {
       closeModal();
-      addMsg("SYS","Copiá y mandá:", "sys");
-      addMsg("AI","\"Abrí consia.world → activá Cámara Live → Snap → escribí en 1 frase qué querés que replique en hiperrealismo.\"", "ai");
+      addMsg("SYS","Copiá y mandá:", "sys", false);
+      addMsg("AI","Abrí consia.world → activá Cámara Live → escribí 1 frase → Snap.", "ai", false);
     };
   }
 
@@ -724,19 +785,15 @@ Responder ES, ultra conciso.`,
         <div class="card" id="fImg"><b>Foto</b><small>Imagen para análisis / hiperrealismo.</small></div>
         <div class="card" id="fVid"><b>Video</b><small>Clip para análisis / optimización.</small></div>
       </div>
-      <div style="margin-top:12px;color:var(--muted);font-size:12px">Mínimo: 1 archivo + 1 frase (“qué querés lograr”).</div>
     `);
     document.getElementById("fAny").onclick = () => { closeModal(); pickAny.click(); };
     document.getElementById("fImg").onclick = () => { closeModal(); pickImg.click(); };
     document.getElementById("fVid").onclick = () => { closeModal(); pickVid.click(); };
   }
 
-  // ====== WIRES ======
-  // Chat input
   send.onclick = () => sendText(inp.value);
   inp.addEventListener("keydown", (e)=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(inp.value); } });
 
-  // Actions
   document.getElementById("btnGuide").onclick = () => sendText("Guiame con 3 opciones cortas y claras. Pedime lo mínimo.");
   document.getElementById("btnCan").onclick  = () => sendText("Mostrame funciones reales en 6 bullets y 3 opciones.");
   document.getElementById("btnHyper").onclick= openHyper;
@@ -744,40 +801,32 @@ Responder ES, ultra conciso.`,
   document.getElementById("btnVoice").onclick= openVoice;
   document.getElementById("btnFiles").onclick= openFiles;
   document.getElementById("btnFT").onclick   = openFaceTime;
-  document.getElementById("btnAscend").onclick= () => sendText("ASCEND: modo ejecución. 3 opciones para avanzar hoy y pedime lo mínimo.");
+  document.getElementById("btnAscend").onclick= () => sendText("ASCEND: 3 opciones para avanzar hoy y pedime lo mínimo.");
 
-  // Show controls
-  startShow.onclick = async () => {
-    addMsg("SYS","SHOW iniciado. Avatar listo. Activá cámara si querés Live 10%.", "sys");
-    try{ inp.focus(); }catch(e){}
-  };
+  startShow.onclick = async () => { addMsg("SYS","SHOW iniciado. Activá cámara si querés Live 10%.", "sys", false); inp.focus(); };
   startLive.onclick = () => startCamera();
   stopLive.onclick  = () => stopCamera();
   snapLive.onclick  = async () => {
-    // instrucción mínima (1 frase)
     const instruction = (inp.value || "").trim();
     if(!instruction){
-      addMsg("SYS","Escribí 1 frase de instrucción y tocá Snap de nuevo.", "sys");
+      addMsg("SYS","Escribí 1 frase de instrucción y tocá Snap.", "sys", false);
       return;
     }
-    addMsg("YO", "Live instrucción: " + instruction, "");
+    addMsg("YO", "Live instrucción: " + instruction, "", false);
     inp.value = "";
     await snapAndAnalyzeLive(instruction);
   };
 
-  // Replica buttons (based on current scene/instructions)
-  repImg.onclick = () => sendText("Réplica hiperrealista: generá PROMPT final para IMAGEN (9:16, 8K look). Pedime lo mínimo.");
-  repVid.onclick = () => sendText("Réplica hiperrealista: generá PROMPT final para VIDEO (9:16, 4K/8K look). Pedime lo mínimo.");
-  repAva.onclick = () => sendText("Réplica hiperrealista: definí AVATAR + VOZ + estilo, y pedime lo mínimo.");
+  repImg.onclick = () => sendText("Réplica hiperrealista: PROMPT final para IMAGEN (9:16, 8K look). Pedime lo mínimo.");
+  repVid.onclick = () => sendText("Réplica hiperrealista: PROMPT final para VIDEO (9:16, 4K/8K look). Pedime lo mínimo.");
+  repAva.onclick = () => sendText("Réplica hiperrealista: AVATAR + VOZ + estilo. Pedime lo mínimo.");
 
-  // File pickers
   pickImg.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickImg.value=""; if(f) await sendAnyFile(f); });
   pickVid.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickVid.value=""; if(f) await sendAnyFile(f); });
   pickAud.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickAud.value=""; if(f) await sendAnyFile(f); });
   pickAny.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickAny.value=""; if(f) await sendAnyFile(f); });
   pickAnyBtn.onclick = () => pickAny.click();
 
-  // Drag & Drop
   ["dragenter","dragover"].forEach(evt=>{
     drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
   });
@@ -789,14 +838,12 @@ Responder ES, ultra conciso.`,
     if(f) await sendAnyFile(f);
   });
 
-  // ====== BOOT ======
   livePct.textContent = LIVE_PERCENT + "%";
   updateBar(LIVE_PERCENT);
   setStatus(true);
-  addMsg("SYS", "CONSIA sellado: SHOW (avatar) primero + Live Cam 10% + uploads 100% + réplica hiperrealista por instrucción.", "sys");
+  addMsg("SYS", "CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.", "sys", false);
   connectRealtime();
   setTimeout(()=>{ try{ inp.focus(); }catch(e){} }, 250);
-
 })();
 </script>
 </body>

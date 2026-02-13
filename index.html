@@ -7,844 +7,869 @@
   <title>CONSIA ∞</title>
   <style>
     :root{
-      --bg:#05070b; --panel:#0b1018; --panel2:#0f1622;
-      --text:#e8eef8; --muted:#9aa6b2; --line:rgba(255,255,255,.10);
-      --ok:#19d37d; --warn:#ffcc00; --bad:#ff4d4d;
-      --pill:#0c1a2a; --btn:#0e223a; --btn2:#123055;
-      --shadow:0 10px 40px rgba(0,0,0,.45); --radius:18px;
+      --bg:#05070b;
+      --panel:#0b1018;
+      --panel2:#0f1622;
+      --text:#e8eef8;
+      --muted:#9aa6b2;
+      --line:rgba(255,255,255,.10);
+      --ok:#19d37d;
+      --warn:#ffcc00;
+      --bad:#ff4d4d;
+      --pill:#0c1a2a;
+      --btn:#0e223a;
+      --btn2:#123055;
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:18px;
       --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
       --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,Segoe UI,Roboto,Helvetica,Arial;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0;font-family:var(--sans);color:var(--text);overflow:hidden;
-      background:
-        radial-gradient(1200px 700px at 30% 10%, rgba(30,80,160,.18), transparent 60%),
-        radial-gradient(900px 600px at 80% 20%, rgba(60,220,160,.10), transparent 60%),
-        linear-gradient(180deg, #05070b 0%, #060a10 35%, #05070b 100%);
+      margin:0;
+      font-family:var(--sans);
+      background:radial-gradient(1200px 600px at 15% 10%, rgba(36,88,255,.08), transparent 55%),
+                 radial-gradient(900px 500px at 90% 0%, rgba(25,211,125,.06), transparent 55%),
+                 var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
     }
 
-    .app{height:100%;display:flex;flex-direction:column;padding:18px;gap:14px;}
-
+    /* Top bar */
     .topbar{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:14px 16px;border-radius:22px;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter: blur(10px);
+      position:sticky; top:0; z-index:30;
+      padding:14px 14px 10px;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(5,7,11,.92), rgba(5,7,11,.55));
+      border-bottom:1px solid var(--line);
     }
-    .brand{display:flex;align-items:center;gap:10px;letter-spacing:.16em;font-weight:800;}
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--ok);
-      box-shadow:0 0 0 4px rgba(25,211,125,.12), 0 0 22px rgba(25,211,125,.35);}
-    .brand small{letter-spacing:.08em;opacity:.85;font-weight:700}
-    .sub{font-size:12px;color:var(--muted);letter-spacing:.08em;margin-top:2px}
-    .status{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);}
-    .pillStatus{
-      display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(0,0,0,.25);
+    .toprow{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      max-width:1100px; margin:0 auto;
     }
-    .pillStatus b{color:var(--text);font-weight:800}
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:700; letter-spacing:.4px;
+    }
+    .dot{width:9px;height:9px;border-radius:999px;background:var(--ok);box-shadow:0 0 16px rgba(25,211,125,.6)}
+    .badge{
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--line);
+      background:rgba(11,16,24,.6);
+      padding:8px 10px; border-radius:999px;
+      white-space:nowrap;
+    }
+    .toggle{
+      display:flex; align-items:center; gap:8px;
+    }
+    .pill{
+      border:1px solid var(--line);
+      background:rgba(11,16,24,.55);
+      padding:8px 12px;
+      border-radius:999px;
+      color:var(--text);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .pill:hover{background:rgba(15,22,34,.75)}
+    .pill:active{transform:translateY(1px)}
+    .pill[disabled]{opacity:.5; cursor:not-allowed}
 
-    .grid{display:flex;flex-direction:column;gap:12px;min-height:0;flex:1;}
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);
-      backdrop-filter: blur(10px);overflow:hidden;min-height:0;display:flex;flex-direction:column;
+    /* Layout */
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:14px;
     }
-    .panelHeader{padding:14px 16px 10px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
-    .hint{color:var(--muted);font-size:13px;}
-
-    .actions{display:flex;gap:10px;flex-wrap:wrap;padding:12px 16px 16px 16px;}
-    .chip{
-      display:inline-flex;align-items:center;gap:9px;border-radius:999px;
-      padding:10px 12px;border:1px solid var(--line);background:rgba(0,0,0,.22);
-      color:var(--text);cursor:pointer;user-select:none;font-size:13px;
+    @media (max-width: 980px){
+      .wrap{grid-template-columns:1fr}
     }
-    .chip:active{transform:translateY(1px)}
-    .chip .ico{width:18px;height:18px;display:grid;place-items:center;opacity:.95}
-    .chip.primary{background:linear-gradient(180deg, rgba(18,48,85,.9), rgba(14,34,58,.75));}
-    .chip.warn{background:linear-gradient(180deg, rgba(255,204,0,.14), rgba(0,0,0,.2)); border-color:rgba(255,204,0,.28)}
-    .chip.ok{background:linear-gradient(180deg, rgba(25,211,125,.14), rgba(0,0,0,.2)); border-color:rgba(25,211,125,.30)}
-    .chip.bad{background:linear-gradient(180deg, rgba(255,77,77,.12), rgba(0,0,0,.2)); border-color:rgba(255,77,77,.25)}
 
-    .showWrap{
-      margin:0 16px 12px 16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      border-radius:22px;
+    /* Avatar hero */
+    .hero{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(11,16,24,.72), rgba(11,16,24,.35));
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .showTop{
-      display:flex;justify-content:space-between;align-items:center;gap:10px;
-      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+    .heroHeader{
+      padding:12px 12px 0;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
     }
-    .showTitle{display:flex;align-items:center;gap:10px}
-    .badge{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
-      padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);color:var(--muted);}
-    .showBtns{display:flex;gap:8px;flex-wrap:wrap}
-    .smallBtn{
-      border-radius:14px;padding:10px 12px;border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.22);color:var(--text);font-weight:800;cursor:pointer;white-space:nowrap;
+    .heroTitle{
+      display:flex; flex-direction:column; gap:4px;
     }
-    .smallBtn:active{transform:translateY(1px)}
-    .smallBtn.primary{background:linear-gradient(180deg, rgba(18,48,85,.95), rgba(14,34,58,.75));}
-
-    .showBody{display:grid;grid-template-columns: 1.2fr .8fr; gap:12px; padding:12px;}
-    .avatarBox{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;background:rgba(0,0,0,.22);
-      min-height:240px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+    .heroTitle b{font-size:14px}
+    .heroTitle span{font-size:12px;color:var(--muted)}
+    .heroBody{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      padding:12px;
     }
-    video, canvas{max-width:100%;width:100%;height:100%;object-fit:cover;display:block;}
+    .avatarStage{
+      position:relative;
+      border:1px solid rgba(255,255,255,.08);
+      background:radial-gradient(900px 500px at 20% 20%, rgba(36,88,255,.10), transparent 60%),
+                 radial-gradient(700px 420px at 75% 10%, rgba(25,211,125,.06), transparent 55%),
+                 rgba(0,0,0,.35);
+      border-radius:16px;
+      overflow:hidden;
+      min-height:260px;
+    }
+    .avatarVideo{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      filter:contrast(1.03) saturate(1.05);
+    }
     .avatarOverlay{
-      position:absolute;inset:auto 10px 10px 10px;
-      display:flex;justify-content:space-between;gap:10px;align-items:center;
-      padding:10px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.40);backdrop-filter: blur(8px);
-      font-size:12px;color:var(--muted);
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,.10) 55%, rgba(0,0,0,.30));
+      pointer-events:none;
     }
-    .avatarOverlay b{color:var(--text)}
-    .telemetry{
+    .avatarHUD{
+      position:absolute; left:12px; right:12px; bottom:12px;
+      display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+      pointer-events:none;
+    }
+    .hudLeft{
+      display:flex; flex-direction:column; gap:6px;
+      pointer-events:none;
+    }
+    .statusLine{
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; color:rgba(232,238,248,.95);
+      pointer-events:none;
+    }
+    .liveDot{
+      width:8px; height:8px; border-radius:99px;
+      background:var(--ok);
+      box-shadow:0 0 14px rgba(25,211,125,.65);
+    }
+    .kbdHint{
+      font-size:12px;
+      color:rgba(232,238,248,.85);
+      padding:8px 10px;
       border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;background:rgba(0,0,0,.22);
-      padding:12px;min-height:240px;display:flex;flex-direction:column;gap:10px;
+      border-radius:12px;
+      background:rgba(11,16,24,.45);
+      pointer-events:none;
     }
-    .kv{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;}
-    .kv b{color:var(--text)}
-    .bar{
-      height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.10);
-    }
-    .bar > i{display:block;height:100%;width:10%;background:linear-gradient(90deg, rgba(25,211,125,.65), rgba(30,80,160,.65));}
-    .note{color:var(--muted);font-size:12px;line-height:1.35}
+    .kbdHint span{color:var(--muted)}
 
-    .drop{
-      margin:0 16px 12px 16px;border:1px dashed rgba(255,255,255,.18);
-      background:rgba(0,0,0,.18);border-radius:18px;padding:10px 12px;
-      color:var(--muted);font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    /* Right panel (controls) */
+    .panel{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(11,16,24,.72), rgba(11,16,24,.35));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:520px;
     }
-    .drop b{color:var(--text)}
-    .drop.drag{border-color:rgba(25,211,125,.55); background:rgba(25,211,125,.06); color:var(--text)}
+    .panelHeader{
+      padding:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px solid var(--line);
+    }
+    .panelHeader .title{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .panelHeader .title b{font-size:13px}
+    .panelHeader .title span{font-size:12px;color:var(--muted)}
+    .chips{
+      padding:10px 12px 0;
+      display:flex; flex-wrap:wrap; gap:8px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(12,26,42,.55);
+      color:var(--text);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip:hover{background:rgba(18,48,85,.65)}
+    .chip:active{transform:translateY(1px)}
 
-    .chat{padding:14px 16px 0 16px;overflow:auto;min-height:0;flex:1;scroll-behavior:smooth;}
-    .msg{display:flex;gap:10px;margin:0 0 12px 0;align-items:flex-start;}
-    .tag{
-      font-size:11px;letter-spacing:.12em;padding:6px 9px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);
-      color:var(--muted);min-width:44px;text-align:center;font-family:var(--mono);
+    .log{
+      flex:1;
+      padding:12px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
-    .bubble{
-      flex:1;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.20);
-      border-radius:18px;padding:12px 12px;line-height:1.35;font-size:14px;
-      white-space:normal;word-break:break-word;
+    .msg{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(11,16,24,.55);
+      border-radius:16px;
+      padding:10px 12px;
+      white-space:pre-wrap;
+      word-break:break-word;
     }
-    .bubble.sys{background:rgba(0,0,0,.32)}
-    .bubble.ai{background:linear-gradient(180deg, rgba(18,48,85,.35), rgba(0,0,0,.18))}
-    .bubble.err{border-color:rgba(255,77,77,.35); background:rgba(255,77,77,.08)}
+    .msg .tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-family:var(--mono);
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      margin-right:8px;
+      color:rgba(232,238,248,.9);
+      background:rgba(0,0,0,.25);
+    }
+    .msg.sys{border-color:rgba(255,255,255,.08); background:rgba(11,16,24,.45); color:rgba(232,238,248,.92)}
+    .msg.you{background:rgba(18,48,85,.30); border-color:rgba(36,88,255,.22)}
+    .msg.ai{background:rgba(25,211,125,.08); border-color:rgba(25,211,125,.18)}
+    .msg.err{background:rgba(255,77,77,.08); border-color:rgba(255,77,77,.20)}
 
-    .bubble .md { color: var(--text); }
-    .bubble .md p{ margin: 0 0 10px 0; }
-    .bubble .md p:last-child{ margin-bottom: 0; }
-    .bubble .md strong{ font-weight: 900; }
-    .bubble .md ul, .bubble .md ol{ margin: 0 0 10px 20px; padding:0; }
-    .bubble .md li{ margin: 6px 0; }
-    .bubble .md code{ font-family: var(--mono); font-size: 12px; padding:2px 6px; border-radius:10px;
-      border:1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.25); }
+    /* Composer */
+    .composer{
+      border-top:1px solid var(--line);
+      padding:12px;
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:end;
+      background:rgba(5,7,11,.35);
+    }
+    .inputWrap{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(11,16,24,.55);
+      border-radius:16px;
+      padding:10px 10px 8px;
+    }
+    textarea{
+      width:100%;
+      min-height:44px;
+      max-height:180px;
+      resize:none;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:14px;
+      font-family:var(--sans);
+    }
+    .row2{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding-top:6px;
+    }
+    .meta{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .smallBtn{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(12,26,42,.55);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:12px;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .smallBtn:hover{background:rgba(18,48,85,.65)}
+    .smallBtn:active{transform:translateY(1px)}
+    .smallBtn[disabled]{opacity:.5; cursor:not-allowed}
+    .send{
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg, rgba(18,48,85,.95), rgba(14,34,58,.92));
+      padding:14px 16px;
+      border-radius:16px;
+      color:var(--text);
+      cursor:pointer;
+      font-weight:700;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      user-select:none;
+      min-width:128px;
+      text-align:center;
+    }
+    .send:hover{filter:brightness(1.05)}
+    .send:active{transform:translateY(1px)}
+    .subnote{font-size:12px;color:var(--muted);padding:0 12px 12px}
 
-    .inputBar{
-      position:sticky;bottom:0;padding:14px 16px 16px 16px;
-      background:linear-gradient(180deg, rgba(5,7,11,0) 0%, rgba(5,7,11,.75) 20%, rgba(5,7,11,.98) 70%);
-      border-top:1px solid rgba(255,255,255,.10);
+    /* Upload / Camera */
+    .tools{
+      display:flex; flex-wrap:wrap; gap:8px;
+      padding:10px 12px 0;
     }
-    .row{display:flex; gap:10px; align-items:center;}
-    .input{
-      flex:1;border-radius:16px;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.30);color:var(--text);padding:14px 14px;
-      font-size:15px;outline:none;
+    input[type="file"]{display:none}
+    .kbd{
+      font-family:var(--mono);
+      font-size:11px;
+      padding:2px 7px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.25);
+      color:rgba(232,238,248,.9);
     }
-    .btn{
-      border-radius:16px;padding:13px 14px;border:1px solid rgba(255,255,255,.14);
-      background:linear-gradient(180deg, rgba(18,48,85,.95), rgba(14,34,58,.75));
-      color:var(--text);font-weight:800;cursor:pointer;min-width:96px;
-    }
-    .btn:active{transform:translateY(1px)}
-    .foot{display:flex; justify-content:space-between; gap:10px; padding-top:10px; color:var(--muted); font-size:12px;}
-    .miniPill{border:1px solid rgba(255,255,255,.10); padding:7px 10px; border-radius:999px; background:rgba(0,0,0,.22);}
-    .miniPill b{color:var(--text)}
-    .kbd{font-family:var(--mono); color:var(--text); opacity:.9}
 
-    .modalWrap{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);z-index:9999;padding:18px;}
-    .modal{width:min(720px, 100%);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;}
-    .modalHead{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.10);}
-    .modalHead b{letter-spacing:.08em}
-    .x{cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);
-      color:var(--text);border-radius:12px;padding:8px 10px;font-weight:900;user-select:none;}
-    .modalBody{padding:14px 16px 16px 16px}
-    .modalGrid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:10px;}
-    .card{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.22);
-      border-radius:18px;padding:12px;cursor:pointer;user-select:none;min-height:84px;
-      display:flex;flex-direction:column;gap:6px;justify-content:center;}
-    .card b{font-size:14px}
-    .card small{color:var(--muted);font-size:12px;line-height:1.25}
-    .card:active{transform:translateY(1px)}
-    .hidden{display:none !important}
-    @media (max-width: 860px){ .showBody{grid-template-columns:1fr} }
-    @media (max-width: 560px){
-      .modalGrid{grid-template-columns:1fr}
-      .btn{min-width:88px}
-      .drop{flex-direction:column;align-items:flex-start}
-      .showBtns{width:100%}
+    /* Camera modal */
+    .modal{
+      position:fixed; inset:0; z-index:100;
+      background:rgba(0,0,0,.65);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
     }
+    .modal.on{display:flex}
+    .modalCard{
+      width:min(980px, 100%);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg, rgba(11,16,24,.92), rgba(11,16,24,.70));
+      box-shadow:0 30px 120px rgba(0,0,0,.7);
+      overflow:hidden;
+    }
+    .modalTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px 12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .modalTop b{font-size:13px}
+    .modalBody{padding:12px; display:grid; grid-template-columns: 1fr; gap:10px}
+    .camStage{
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.35);
+      position:relative;
+      min-height:280px;
+    }
+    .camStage video{width:100%; height:100%; object-fit:cover; display:block}
+    .camBar{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
+    }
+    .camBar .left, .camBar .right{display:flex; gap:8px; flex-wrap:wrap}
   </style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="topbar">
+  <div class="topbar">
+    <div class="toprow">
       <div class="brand">
-        <span class="dot" id="dot"></span>
-        <div>
-          <div>CONSIA <small>∞</small></div>
-          <div class="sub" id="sub">ONLINE</div>
-        </div>
+        <span class="dot" aria-hidden="true"></span>
+        <span>CONSIA <span style="opacity:.7">∞</span></span>
       </div>
-      <div class="status">
-        <div class="pillStatus"><span style="width:8px;height:8px;border-radius:999px;background:var(--ok);display:inline-block"></span> <b id="st">ONLINE</b> · <span id="rt">auto</span></div>
-        <div class="pillStatus" title="API"><span style="opacity:.9" id="apiLbl">api.consia.world</span></div>
-      </div>
-    </div>
 
-    <div class="grid">
-      <div class="panel">
-        <div class="panelHeader">
-          <div class="hint"><b>SHOW (Avatar) primero.</b> Cámara en vivo (análisis 10%) + réplica hiperrealista por tus instrucciones + chat + uploads (100%).</div>
+      <div class="toggle">
+        <div class="badge" title="Estado del sistema">
+          <span id="onlineDot" class="dot" style="width:8px;height:8px;opacity:.8"></span>
+          <span id="onlineText">ONLINE</span>
+          <span style="opacity:.5">·</span>
+          <span id="realtimeText">AUTO</span>
         </div>
-
-        <div class="actions">
-          <div class="chip primary" id="btnGuide"><span class="ico">🧭</span>Guiame (3 opciones)</div>
-          <div class="chip" id="btnCan"><span class="ico">🧠</span>¿Qué puede hacer?</div>
-          <div class="chip" id="btnHyper"><span class="ico">🖼️</span>Hiperrealismo</div>
-          <div class="chip" id="btnLive"><span class="ico">📷</span>Live Cam (10%)</div>
-          <div class="chip" id="btnVoice"><span class="ico">🎙️</span>Voz</div>
-          <div class="chip" id="btnFiles"><span class="ico">📎</span>Archivos</div>
-          <div class="chip" id="btnFT"><span class="ico">📞</span>FaceTime</div>
-          <div class="chip warn" id="btnAscend"><span class="ico">⚡</span>ASCEND</div>
-        </div>
-
-        <div class="showWrap" id="showWrap">
-          <div class="showTop">
-            <div class="showTitle">
-              <span class="badge">AVATAR · SHOW</span>
-              <span style="color:var(--muted);font-size:12px">Inicio del sistema</span>
-            </div>
-            <div class="showBtns">
-              <div class="smallBtn primary" id="startShow">Iniciar Show</div>
-              <div class="smallBtn" id="startLive">Cámara Live</div>
-              <div class="smallBtn" id="snapLive">Snap → Análisis 10%</div>
-              <div class="smallBtn" id="stopLive">Stop</div>
-            </div>
-          </div>
-
-          <div class="showBody">
-            <div class="avatarBox">
-              <video id="cam" autoplay playsinline muted class="hidden"></video>
-              <canvas id="canvas" class="hidden"></canvas>
-
-              <div id="avatarFallback" style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:26px;">
-                <div style="width:72px;height:72px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.22);
-                            display:grid;place-items:center;font-size:30px;box-shadow:var(--shadow);">🌊</div>
-                <div style="font-weight:900;letter-spacing:.12em">CONSIA AVATAR</div>
-                <div style="color:var(--muted);font-size:12px;max-width:420px;line-height:1.35">
-                  Activá cámara para “Live 10%”. Si no, seguís con uploads (100%).
-                </div>
-              </div>
-
-              <div class="avatarOverlay">
-                <div><b id="liveState">SHOW READY</b> · <span id="liveHint">Tap “Cámara Live”</span></div>
-                <div style="display:flex;gap:10px;align-items:center">
-                  <span class="badge" id="fpsLbl">fps: —</span>
-                  <span class="badge" id="qLbl">live%: 10</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="telemetry">
-              <div class="kv"><span>Fuente</span><b id="srcLbl">AVATAR</b></div>
-              <div class="kv"><span>Live análisis</span><b id="livePct">10%</b></div>
-              <div class="kv"><span>Uploads análisis</span><b>100%</b></div>
-              <div class="kv"><span>Réplica hiperrealismo</span><b id="repLbl">LISTA</b></div>
-
-              <div class="bar" title="Live load"><i id="barFill" style="width:10%"></i></div>
-
-              <div class="note">
-                Live = “mirar” + snapshot (10%) y generar “réplica” según tu instrucción.
-                Para precisión total, subí archivo (100%).
-              </div>
-
-              <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <div class="smallBtn" id="repImg">Réplica (Imagen)</div>
-                <div class="smallBtn" id="repVid">Réplica (Video)</div>
-                <div class="smallBtn" id="repAva">Réplica (Avatar)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="drop" id="drop">
-          <div>📥 Arrastrá y soltá <b>cualquier archivo</b> (foto, video, PDF, DOCX, XLSX, ZIP) para análisis <b>100%</b>.</div>
-          <div class="smallBtn" id="pickAnyBtn">Seleccionar archivo</div>
-        </div>
-
-        <div class="chat" id="chat"></div>
-
-        <div class="inputBar">
-          <div class="row">
-            <input class="input" id="inp" autocomplete="off" spellcheck="false" placeholder="Decí lo que querés (o escribí &quot;.&quot;)" />
-            <button class="btn" id="send">Enviar</button>
-          </div>
-          <div class="foot">
-            <div class="miniPill">Idioma: <b>ES</b></div>
-            <div class="miniPill">Realtime: <b id="rtMode">auto</b></div>
-            <div class="miniPill"><span class="kbd">Enter</span> = enviar</div>
-          </div>
-        </div>
+        <div class="pill" id="btnTest">Test API</div>
       </div>
     </div>
   </div>
 
-  <div class="modalWrap" id="mw">
-    <div class="modal">
-      <div class="modalHead">
-        <b id="mt">CONSIA</b>
-        <div class="x" id="mx">✕</div>
+  <div class="wrap">
+    <!-- LEFT: Avatar from start -->
+    <section class="hero" aria-label="Avatar">
+      <div class="heroHeader">
+        <div class="heroTitle">
+          <b>Avatar / Inicio</b>
+          <span>Voz · Click · Teclado · Archivos · Cámara</span>
+        </div>
+        <div class="badge" style="gap:10px">
+          <span class="kbd">Enter</span><span>enviar</span>
+          <span style="opacity:.45">|</span>
+          <span class="kbd">Shift</span><span>+</span><span class="kbd">Enter</span><span>salto</span>
+        </div>
       </div>
-      <div class="modalBody"><div id="mb"></div></div>
+
+      <div class="heroBody">
+        <div class="avatarStage">
+          <!-- PONÉ TU ARCHIVO: /avatar.mp4 (en tu repo Pages) -->
+          <video id="avatar" class="avatarVideo" autoplay muted loop playsinline preload="auto">
+            <source src="./avatar.mp4" type="video/mp4" />
+          </video>
+          <div class="avatarOverlay"></div>
+
+          <div class="avatarHUD">
+            <div class="hudLeft">
+              <div class="statusLine"><span class="liveDot"></span><span id="hudStatus">Realtime: conectando…</span></div>
+              <div class="statusLine" style="opacity:.85"><span style="opacity:.75">API:</span> <span id="hudApi">api.consia.world</span></div>
+            </div>
+            <div class="kbdHint">
+              Decí <b>“Hola CONSIA”</b> por voz o escribí abajo. <span>(si tu navegador soporta voz)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tools">
+          <label class="smallBtn" for="filePicker">📎 Subir archivo</label>
+          <input id="filePicker" type="file" multiple
+                 accept="image/*,video/*,audio/*,.pdf,.txt,.md,.doc,.docx,.xls,.xlsx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+          <div class="smallBtn" id="btnCamera">📷 Cámara (vivo 10%)</div>
+          <div class="smallBtn" id="btnMic">🎙️ Voz (hablar)</div>
+          <div class="smallBtn" id="btnSpeak" title="Leer en voz alta la última respuesta">🔊 Voz (leer)</div>
+        </div>
+
+        <div class="subnote" id="voiceNote">Voz: preparando…</div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Chat + actions -->
+    <section class="panel" aria-label="CONSIA Console">
+      <div class="panelHeader">
+        <div class="title">
+          <b>CONSIA Console</b>
+          <span>Click / Voz / Teclado + ejecución</span>
+        </div>
+        <div class="badge"><span id="apiLabel">api.consia.world</span></div>
+      </div>
+
+      <div class="chips">
+        <div class="chip" data-prompt="Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.">🧭 Guiame (3)</div>
+        <div class="chip" data-prompt="¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo.">🧠 ¿Qué puede hacer?</div>
+        <div class="chip" data-prompt="Hiperrealismo: dame 3 opciones (Imagen/Video/Avatar). Pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.">🖼️ Hiperrealismo</div>
+        <div class="chip" data-prompt="Voz: activá modo asistente por voz. Hacé preguntas cortas y confirmaciones sí/no.">🎙️ Voz</div>
+        <div class="chip" data-prompt="FaceTime/Cámara: pedime permiso y luego indicame 1 acción de análisis en vivo (10%) y 1 salida esperada.">📷 Cámara</div>
+        <div class="chip" data-prompt="ASCEND: modo ultra. Respuestas cortas, plan de acción inmediato y checklist.">⚡ ASCEND</div>
+      </div>
+
+      <div class="log" id="log"></div>
+
+      <div class="composer">
+        <div class="inputWrap">
+          <textarea id="input" placeholder="Decí lo que querés (o escribí '.')"></textarea>
+          <div class="row2">
+            <div class="meta">
+              <span>Idioma: <b>ES</b></span>
+              <span style="opacity:.45">·</span>
+              <span>Realtime: <b id="rtMode">auto</b></span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap">
+              <div class="smallBtn" id="btnClear">🧹 Limpiar</div>
+              <div class="smallBtn" id="btnStopTTS">⏹️ Stop voz</div>
+            </div>
+          </div>
+        </div>
+        <div class="send" id="send">Enviar</div>
+      </div>
+      <div class="subnote">Si no hay IA, igual responde (fallback) y deja logs. Archivos/cámara se envían como “contexto”.</div>
+    </section>
+  </div>
+
+  <!-- CAMERA MODAL -->
+  <div class="modal" id="camModal" aria-hidden="true">
+    <div class="modalCard">
+      <div class="modalTop">
+        <b>Cámara en vivo (10% análisis)</b>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="smallBtn" id="btnCamClose">✖ Cerrar</div>
+        </div>
+      </div>
+      <div class="modalBody">
+        <div class="camStage">
+          <video id="camVideo" autoplay playsinline muted></video>
+        </div>
+        <div class="camBar">
+          <div class="left">
+            <div class="smallBtn" id="btnCamStart">▶️ Iniciar cámara</div>
+            <div class="smallBtn" id="btnCamStop" disabled>⏹️ Detener</div>
+            <div class="smallBtn" id="btnSnap" disabled>📸 Capturar 1 frame</div>
+          </div>
+          <div class="right">
+            <div class="smallBtn" id="btnStream10" disabled>🧠 Enviar 10% (frame)</div>
+          </div>
+        </div>
+        <div class="subnote" id="camNote">Pedirá permiso. Captura 1 frame y lo envía para análisis.</div>
+      </div>
     </div>
   </div>
 
-  <input id="pickImg" class="hidden" type="file" accept="image/*" />
-  <input id="pickVid" class="hidden" type="file" accept="video/*" />
-  <input id="pickAud" class="hidden" type="file" accept="audio/*" capture />
-  <input id="pickAny" class="hidden" type="file" accept="*/*" />
+  <script>
+    /**********************
+     * CONFIG (edit if needed)
+     **********************/
+    const API_BASE = "https://api.consia.world";
+    const ASK_URL  = API_BASE + "/ask";          // tu endpoint de chat
+    const REALTIME_URL = API_BASE.replace("https://","wss://") + "/realtime"; // opcional
+    const AVATAR_SRC = "./avatar.mp4";           // en tu Pages repo
 
-<script>
-(() => {
-  const API_BASE = "https://api.consia.world";
-  const ASK_URL  = API_BASE + "/ask";
-  const REALTIME_URL = "wss://api.consia.world/realtime";
+    /**********************
+     * UI helpers
+     **********************/
+    const $ = (id)=>document.getElementById(id);
+    const logEl = $("log");
+    const inputEl = $("input");
+    const onlineText = $("onlineText");
+    const realtimeText = $("realtimeText");
+    const hudStatus = $("hudStatus");
+    const voiceNote = $("voiceNote");
 
-  let ws = null;
-  let wsOk = false;
-
-  let stream = null;
-  let raf = null;
-  let lastFrameTs = 0;
-  let fps = 0;
-
-  const LIVE_PERCENT = 10;
-
-  const chat = document.getElementById("chat");
-  const inp  = document.getElementById("inp");
-  const send = document.getElementById("send");
-  const dot  = document.getElementById("dot");
-  const st   = document.getElementById("st");
-  const rt   = document.getElementById("rt");
-  const rtMode = document.getElementById("rtMode");
-
-  const mw = document.getElementById("mw");
-  const mt = document.getElementById("mt");
-  const mb = document.getElementById("mb");
-  const mx = document.getElementById("mx");
-
-  const pickImg = document.getElementById("pickImg");
-  const pickVid = document.getElementById("pickVid");
-  const pickAud = document.getElementById("pickAud");
-  const pickAny = document.getElementById("pickAny");
-  const pickAnyBtn = document.getElementById("pickAnyBtn");
-  const drop = document.getElementById("drop");
-
-  const cam = document.getElementById("cam");
-  const canvas = document.getElementById("canvas");
-  const avatarFallback = document.getElementById("avatarFallback");
-
-  const startShow = document.getElementById("startShow");
-  const startLive = document.getElementById("startLive");
-  const snapLive  = document.getElementById("snapLive");
-  const stopLive  = document.getElementById("stopLive");
-
-  const liveState = document.getElementById("liveState");
-  const liveHint  = document.getElementById("liveHint");
-  const fpsLbl    = document.getElementById("fpsLbl");
-  const srcLbl    = document.getElementById("srcLbl");
-  const livePct   = document.getElementById("livePct");
-  const barFill   = document.getElementById("barFill");
-  const repLbl    = document.getElementById("repLbl");
-
-  const repImg = document.getElementById("repImg");
-  const repVid = document.getElementById("repVid");
-  const repAva = document.getElementById("repAva");
-
-  const nowTs = () => Date.now();
-
-  function setStatus(ok){
-    if(ok){
-      dot.style.background = "var(--ok)";
-      dot.style.boxShadow = "0 0 0 4px rgba(25,211,125,.12), 0 0 22px rgba(25,211,125,.35)";
-      st.textContent = "ONLINE";
-      st.style.color = "var(--text)";
-    } else {
-      dot.style.background = "var(--bad)";
-      dot.style.boxShadow = "0 0 0 4px rgba(255,77,77,.12), 0 0 22px rgba(255,77,77,.35)";
-      st.textContent = "OFFLINE";
-      st.style.color = "var(--bad)";
-    }
-  }
-
-  function escapeHtml(s){
-    return String(s || "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  // Markdown básico: **bold**, listas 1. / - , saltos de línea, `code`
-  function mdToHtml(md){
-    let s = String(md || "");
-    s = s.replace(/\r\n/g,"\n");
-
-    // code inline
-    s = s.replace(/`([^`]+)`/g, (m, p1)=> `<code>${escapeHtml(p1)}</code>`);
-
-    // bold
-    s = s.replace(/\*\*([^*]+)\*\*/g, (m, p1)=> `<strong>${escapeHtml(p1)}</strong>`);
-
-    // bloquear por líneas
-    const lines = s.split("\n");
-    let out = [];
-    let inUl = false, inOl = false;
-
-    function closeLists(){
-      if(inUl){ out.push("</ul>"); inUl=false; }
-      if(inOl){ out.push("</ol>"); inOl=false; }
+    function addMsg(kind, text){
+      const div = document.createElement("div");
+      div.className = "msg " + kind;
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = kind.toUpperCase();
+      const body = document.createElement("span");
+      body.textContent = " " + (text ?? "");
+      div.appendChild(tag);
+      div.appendChild(body);
+      logEl.appendChild(div);
+      logEl.scrollTop = logEl.scrollHeight;
+      return div;
     }
 
-    for(const lineRaw of lines){
-      const line = lineRaw.trimEnd();
+    function setOnline(ok){
+      onlineText.textContent = ok ? "ONLINE" : "OFFLINE";
+      $("onlineDot").style.background = ok ? "var(--ok)" : "var(--bad)";
+      $("onlineDot").style.boxShadow = ok ? "0 0 16px rgba(25,211,125,.6)" : "0 0 16px rgba(255,77,77,.5)";
+    }
 
-      const mOl = line.match(/^\s*\d+\.\s+(.*)$/);
-      const mUl = line.match(/^\s*[-•]\s+(.*)$/);
-
-      if(mOl){
-        if(inUl){ out.push("</ul>"); inUl=false; }
-        if(!inOl){ out.push("<ol>"); inOl=true; }
-        out.push(`<li>${escapeHtml(mOl[1])}</li>`);
-        continue;
+    /**********************
+     * Avatar init
+     **********************/
+    (function initAvatar(){
+      const v = $("avatar");
+      if(v){
+        v.src = AVATAR_SRC;
+        v.muted = true;
+        v.playsInline = true;
+        v.autoplay = true;
+        v.loop = true;
+        v.play().catch(()=>{ /* autoplay may be blocked until user gesture */ });
       }
-      if(mUl){
-        if(inOl){ out.push("</ol>"); inOl=false; }
-        if(!inUl){ out.push("<ul>"); inUl=true; }
-        out.push(`<li>${escapeHtml(mUl[1])}</li>`);
-        continue;
-      }
+      $("hudApi").textContent = API_BASE.replace("https://","");
+      $("apiLabel").textContent = API_BASE.replace("https://","");
+    })();
 
-      closeLists();
-
-      if(line.trim() === ""){
-        out.push("");
-      } else {
-        out.push(`<p>${escapeHtml(line)}</p>`);
+    /**********************
+     * Realtime (optional)
+     **********************/
+    let ws = null;
+    function connectRealtime(){
+      try{
+        hudStatus.textContent = "Realtime: conectando…";
+        realtimeText.textContent = "AUTO";
+        ws = new WebSocket(REALTIME_URL);
+        ws.onopen = ()=>{
+          hudStatus.textContent = "Realtime: conectado";
+          addMsg("sys","Realtime conectado.");
+        };
+        ws.onmessage = (ev)=>{
+          // si tu backend manda JSON, lo mostramos
+          addMsg("sys", String(ev.data));
+        };
+        ws.onclose = ()=>{
+          hudStatus.textContent = "Realtime: desconectado";
+          addMsg("sys","Realtime desconectado.");
+          ws = null;
+        };
+        ws.onerror = ()=>{
+          hudStatus.textContent = "Realtime: error";
+        };
+      }catch(e){
+        hudStatus.textContent = "Realtime: no disponible";
       }
     }
-    closeLists();
+    connectRealtime();
 
-    return `<div class="md">${out.join("\n")}</div>`;
-  }
+    /**********************
+     * Voice (SpeechRecognition + TTS)
+     **********************/
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = null;
+    let listening = false;
 
-  function addMsg(tag, text, kind="sys", asMarkdown=false){
-    const row = document.createElement("div");
-    row.className = "msg";
-    const t = document.createElement("div");
-    t.className = "tag";
-    t.textContent = tag;
+    function initVoice(){
+      if(!SpeechRec){
+        voiceNote.textContent = "Voz: este navegador no soporta reconocimiento. Usá escribir/click.";
+        $("btnMic").setAttribute("disabled","disabled");
+        return;
+      }
+      rec = new SpeechRec();
+      rec.lang = "es-AR";
+      rec.interimResults = true;
+      rec.continuous = false;
 
-    const b = document.createElement("div");
-    b.className = "bubble " + (kind || "");
+      rec.onstart = ()=>{ listening = true; voiceNote.textContent = "Voz: escuchando…"; $("btnMic").textContent = "⏹️ Voz (stop)"; };
+      rec.onerror = (e)=>{ listening = false; voiceNote.textContent = "Voz: error ("+ (e?.error || "unknown") +")"; $("btnMic").textContent = "🎙️ Voz (hablar)"; };
+      rec.onend = ()=>{ listening = false; voiceNote.textContent = "Voz: listo."; $("btnMic").textContent = "🎙️ Voz (hablar)"; };
 
-    if(asMarkdown){
-      b.innerHTML = mdToHtml(text);
-    } else {
-      b.textContent = text;
-    }
-
-    row.appendChild(t);
-    row.appendChild(b);
-    chat.appendChild(row);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function addJsonSys(obj){
-    addMsg("SYS", JSON.stringify(obj), "sys", false);
-  }
-
-  function openModal(title, html){
-    mt.textContent = title;
-    mb.innerHTML = html;
-    mw.style.display = "flex";
-  }
-  function closeModal(){ mw.style.display = "none"; mb.innerHTML = ""; }
-  mx.onclick = closeModal;
-  mw.addEventListener("click", (e)=>{ if(e.target === mw) closeModal(); });
-
-  function connectRealtime(){
-    try{
-      ws = new WebSocket(REALTIME_URL);
-      ws.onopen = () => {
-        wsOk = true;
-        rt.textContent = "ON";
-        rtMode.textContent = "on";
-        setStatus(true);
-        addMsg("SYS", "Realtime conectado.", "sys");
-        addJsonSys({type:"hello", text:"CONSIA realtime activo.", ts: nowTs()});
-      };
-      ws.onmessage = (ev) => {
-        let data = ev.data;
-        try { data = JSON.parse(ev.data); } catch(e){}
-        if(typeof data === "object"){
-          const msg = data.reply || data.text || data.message || "";
-          if(msg) addMsg("SYS", msg, "sys", true);
-          else addMsg("SYS", JSON.stringify(data), "sys", false);
-        } else {
-          addMsg("SYS", String(data), "sys", false);
+      rec.onresult = (evt)=>{
+        let finalTxt = "";
+        let interim = "";
+        for(let i=evt.resultIndex;i<evt.results.length;i++){
+          const t = evt.results[i][0].transcript;
+          if(evt.results[i].isFinal) finalTxt += t;
+          else interim += t;
+        }
+        const combined = (finalTxt || interim).trim();
+        if(combined) inputEl.value = combined;
+        autosize(inputEl);
+        if(finalTxt){
+          sendNow(finalTxt.trim(), {source:"voice"});
         }
       };
-      ws.onerror = () => { wsOk = false; rt.textContent = "auto"; rtMode.textContent = "auto"; };
-      ws.onclose = () => { wsOk = false; rt.textContent = "auto"; rtMode.textContent = "auto"; };
-    }catch(e){
-      wsOk = false;
-      rt.textContent = "auto";
-      rtMode.textContent = "auto";
+
+      voiceNote.textContent = "Voz: listo. Tocá 🎙️ para hablar.";
     }
-  }
+    initVoice();
 
-  async function callAsk(payload){
-    const res = await fetch(ASK_URL, {
-      method: "POST",
-      headers: {"content-type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    const ct = (res.headers.get("content-type") || "").toLowerCase();
-    if(!res.ok){
-      const txt = await res.text().catch(()=> "");
-      throw new Error("HTTP " + res.status + " " + txt);
-    }
-    if(ct.includes("application/json")) return await res.json();
-    return await res.text();
-  }
-
-  function pickBestText(out){
-    if(typeof out === "string") return out;
-    return out.reply || out.answer || out.text || out.message || out.output || "";
-  }
-
-  async function sendText(text){
-    const trimmed = (text || "").trim();
-    if(!trimmed) return;
-
-    addMsg("YO", trimmed, "", false);
-    inp.value = "";
-    inp.focus();
-
-    if(wsOk){
-      try{ ws.send(JSON.stringify({type:"message", text: trimmed, ts: nowTs()})); }catch(e){}
+    function startStopVoice(){
+      if(!rec) return;
+      if(listening){ try{rec.stop()}catch(e){} return; }
+      try{ rec.start(); }catch(e){}
     }
 
-    try{
-      const out = await callAsk({
-        message: trimmed,
-        lang: "es",
-        ts: nowTs(),
-        client: "consia-activation",
-        realtime: wsOk ? true : false
+    let lastAIText = "";
+    function speak(text){
+      try{
+        if(!("speechSynthesis" in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "es-AR";
+        u.rate = 1.02;
+        u.pitch = 1.0;
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
+
+    /**********************
+     * File upload (as context)
+     **********************/
+    async function fileToDataURL(file){
+      return new Promise((resolve,reject)=>{
+        const r = new FileReader();
+        r.onload = ()=>resolve(String(r.result));
+        r.onerror = reject;
+        r.readAsDataURL(file);
       });
+    }
 
-      const ans = pickBestText(out);
-      if(ans){
-        addMsg("AI", ans, "ai", true);
-      } else {
-        addMsg("AI", JSON.stringify(out, null, 2), "ai", false);
+    let pendingAttachments = []; // {name,type,size,dataUrl}
+    $("filePicker").addEventListener("change", async (e)=>{
+      const files = Array.from(e.target.files || []);
+      if(!files.length) return;
+
+      addMsg("sys", "Adjuntando " + files.length + " archivo(s)…");
+      pendingAttachments = [];
+      for(const f of files){
+        const dataUrl = await fileToDataURL(f);
+        pendingAttachments.push({ name:f.name, type:f.type || "application/octet-stream", size:f.size, dataUrl });
       }
-    }catch(err){
-      addMsg("AI", "Falló. Intente nuevamente.", "err", false);
-      addMsg("SYS", String(err && err.message ? err.message : err), "sys", false);
-      setStatus(false);
-    }
-  }
-
-  async function fileToDataURL(file){
-    return new Promise((resolve, reject)=>{
-      const r = new FileReader();
-      r.onload = () => resolve(String(r.result || ""));
-      r.onerror = reject;
-      r.readAsDataURL(file);
+      addMsg("sys", "Listo: " + files.map(x=>x.name).join(", "));
+      e.target.value = "";
     });
-  }
-  function friendlyKind(mime){
-    if(!mime) return "ARCHIVO";
-    if(mime.startsWith("image/")) return "IMAGEN";
-    if(mime.startsWith("video/")) return "VIDEO";
-    if(mime.startsWith("audio/")) return "AUDIO";
-    return "DOCUMENTO";
-  }
 
-  async function sendAnyFile(file){
-    const kind = friendlyKind(file.type);
-    const kb = Math.round(file.size/1024);
-    if(kb > 18000){
-      addMsg("SYS", `${kind}: "${file.name}" es muy pesado (${kb} KB). Recortá/comprimí o dividí.`, "sys", false);
-      return;
+    /**********************
+     * Camera live (10% frame)
+     **********************/
+    const camModal = $("camModal");
+    const camVideo = $("camVideo");
+    let camStream = null;
+
+    function openCam(){ camModal.classList.add("on"); camModal.setAttribute("aria-hidden","false"); }
+    function closeCam(){
+      camModal.classList.remove("on"); camModal.setAttribute("aria-hidden","true");
+      stopCam();
     }
-    try{
-      addMsg("SYS", `${kind}: recibido "${file.name}" (${kb} KB). Análisis 100%...`, "sys", false);
-      const data_url = await fileToDataURL(file);
 
-      const out = await callAsk({
-        message: `ANALISIS 100% TOP: procesá el archivo adjunto completo. Entregá: (1) resumen ejecutivo, (2) hallazgos, (3) riesgos/errores, (4) acciones, (5) checklist mínima, (6) 3 opciones. ES.`,
+    async function startCam(){
+      try{
+        camStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"environment" }, audio:false });
+        camVideo.srcObject = camStream;
+        $("btnCamStop").disabled = false;
+        $("btnSnap").disabled = false;
+        $("btnStream10").disabled = false;
+        $("btnCamStart").disabled = true;
+        $("camNote").textContent = "Cámara activa. Capturá 1 frame y enviá a CONSIA.";
+      }catch(e){
+        $("camNote").textContent = "No se pudo acceder a la cámara.";
+      }
+    }
+    function stopCam(){
+      if(camStream){
+        camStream.getTracks().forEach(t=>t.stop());
+        camStream = null;
+      }
+      camVideo.srcObject = null;
+      $("btnCamStop").disabled = true;
+      $("btnSnap").disabled = true;
+      $("btnStream10").disabled = true;
+      $("btnCamStart").disabled = false;
+    }
+
+    function captureFrameDataURL(){
+      const v = camVideo;
+      if(!v || !v.videoWidth) return null;
+      const c = document.createElement("canvas");
+      // “10%” => bajamos resolución fuerte (performance)
+      const w = Math.max(320, Math.round(v.videoWidth * 0.10));
+      const h = Math.round(w * (v.videoHeight / v.videoWidth));
+      c.width = w; c.height = h;
+      const ctx = c.getContext("2d", { alpha:false });
+      ctx.drawImage(v, 0, 0, w, h);
+      return c.toDataURL("image/jpeg", 0.72);
+    }
+
+    async function sendCam10(){
+      const frame = captureFrameDataURL();
+      if(!frame){ addMsg("err","No hay frame para enviar."); return; }
+      // lo agregamos como attachment temporal + prompt corto
+      const prompt = "Análisis en vivo (10%): describí lo que ves y seguí mis instrucciones. Respuesta corta + 1 pregunta mínima.";
+      const attachments = [{ name:"live_frame.jpg", type:"image/jpeg", size: frame.length, dataUrl: frame }];
+      await sendNow(prompt, { source:"camera", attachments });
+    }
+
+    /**********************
+     * Chat send
+     **********************/
+    let busy = false;
+
+    async function sendNow(text, opts={}){
+      const msg = (text || "").trim();
+      if(!msg || busy) return;
+      busy = true;
+
+      addMsg("you", msg);
+
+      const attachments = (opts.attachments || []).concat(pendingAttachments || []);
+      // limpiamos pendingAttachments al enviar
+      pendingAttachments = [];
+
+      // payload simple: el backend puede ignorar attachments si no los usa
+      const payload = {
+        message: msg,
         lang: "es",
-        ts: nowTs(),
-        client: "consia-activation",
-        realtime: wsOk ? true : false,
-        file: { name:file.name, type:file.type || "application/octet-stream", data_url }
+        realtime: true,
+        source: opts.source || "text",
+        attachments: attachments.length ? attachments : undefined
+      };
+
+      try{
+        const res = await fetch(ASK_URL, {
+          method: "POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        setOnline(res.ok);
+
+        const ct = (res.headers.get("content-type") || "");
+        let data;
+        if(ct.includes("application/json")) data = await res.json();
+        else data = { reply: await res.text() };
+
+        const reply = (data && (data.reply || data.text || data.message)) ? (data.reply || data.text || data.message) : JSON.stringify(data, null, 2);
+        lastAIText = String(reply || "");
+        addMsg("ai", lastAIText);
+
+      }catch(e){
+        setOnline(false);
+        addMsg("err", "Error llamando API. " + (e?.message || ""));
+      }finally{
+        busy = false;
+      }
+    }
+
+    /**********************
+     * Autosize textarea
+     **********************/
+    function autosize(el){
+      el.style.height = "auto";
+      el.style.height = Math.min(180, el.scrollHeight) + "px";
+    }
+    inputEl.addEventListener("input", ()=>autosize(inputEl));
+
+    /**********************
+     * Buttons / events
+     **********************/
+    $("send").onclick = ()=>sendNow(inputEl.value, {source:"text"});
+    inputEl.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter" && !e.shiftKey){
+        e.preventDefault();
+        sendNow(inputEl.value, {source:"text"});
+      }
+    });
+
+    document.querySelectorAll(".chip").forEach(ch=>{
+      ch.addEventListener("click", ()=>{
+        const p = ch.getAttribute("data-prompt") || "";
+        inputEl.value = p;
+        autosize(inputEl);
+        sendNow(p, {source:"click"});
       });
+    });
 
-      const ans = pickBestText(out) || JSON.stringify(out, null, 2);
-      addMsg("AI", ans, "ai", true);
-    }catch(err){
-      addMsg("AI", "Falló. Intente nuevamente.", "err", false);
-      addMsg("SYS", String(err && err.message ? err.message : err), "sys", false);
-    }
-  }
-
-  function setLiveUI(state, hint){
-    liveState.textContent = state;
-    liveHint.textContent = hint || "";
-  }
-  function updateBar(pct){
-    barFill.style.width = Math.max(2, Math.min(100, pct)) + "%";
-  }
-  function tickFps(ts){
-    if(!lastFrameTs) lastFrameTs = ts;
-    const dt = ts - lastFrameTs;
-    if(dt > 0){
-      const instant = 1000/dt;
-      fps = fps*0.9 + instant*0.1;
-      fpsLbl.textContent = "fps: " + Math.round(fps);
-    }
-    lastFrameTs = ts;
-  }
-
-  async function startCamera(){
-    try{
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      });
-      cam.srcObject = stream;
-      cam.classList.remove("hidden");
-      avatarFallback.style.display = "none";
-      srcLbl.textContent = "CÁMARA";
-      setLiveUI("LIVE READY", "Escribí 1 frase + Snap");
-      repLbl.textContent = "LISTA";
-      updateBar(LIVE_PERCENT);
-      loop();
-    }catch(err){
-      srcLbl.textContent = "AVATAR";
-      cam.classList.add("hidden");
-      avatarFallback.style.display = "flex";
-      setLiveUI("CAMERA BLOQUEADA", "Habilitá permisos de cámara");
-      addMsg("SYS","No se pudo abrir la cámara (permiso / navegador).", "sys", false);
-    }
-  }
-
-  function stopCamera(){
-    if(raf){ cancelAnimationFrame(raf); raf = null; }
-    if(stream){
-      stream.getTracks().forEach(t=>t.stop());
-      stream = null;
-    }
-    cam.srcObject = null;
-    cam.classList.add("hidden");
-    avatarFallback.style.display = "flex";
-    srcLbl.textContent = "AVATAR";
-    fpsLbl.textContent = "fps: —";
-    setLiveUI("SHOW READY", "Tap “Cámara Live”");
-  }
-
-  function loop(ts){
-    if(!stream){ return; }
-    tickFps(ts || performance.now());
-    raf = requestAnimationFrame(loop);
-  }
-
-  async function snapAndAnalyzeLive(userInstruction){
-    if(!stream){
-      addMsg("SYS","Live: no hay cámara activa.", "sys", false);
-      return;
-    }
-    const w = cam.videoWidth || 1280;
-    const h = cam.videoHeight || 720;
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(cam, 0, 0, w, h);
-    const data_url = canvas.toDataURL("image/jpeg", 0.82);
-
-    setLiveUI("LIVE SNAP", "Analizando 10%…");
-    repLbl.textContent = "EN PROCESO";
-
-    try{
-      const out = await callAsk({
-        message:
-`LIVE 10%: 3 opciones (Imagen/Video/Avatar) + pedime lo mínimo (1 frase).
-Luego generá prompt final hiperrealista según instrucción.
-
-INSTRUCCIÓN:
-${userInstruction || "Sin instrucción"}
-
-Respuesta en ES.`,
-        lang: "es",
-        ts: nowTs(),
-        client: "consia-activation",
-        realtime: wsOk ? true : false,
-        file: { name:"live-frame.jpg", type:"image/jpeg", data_url },
-        live: { percent: LIVE_PERCENT, source:"camera" }
-      });
-
-      const ans = pickBestText(out) || JSON.stringify(out, null, 2);
-      addMsg("AI", ans, "ai", true);
-      repLbl.textContent = "LISTA";
-      setLiveUI("LIVE READY", "Snap de nuevo o subí archivo");
-    }catch(err){
-      repLbl.textContent = "ERROR";
-      setLiveUI("LIVE ERROR", "Reintentar");
-      addMsg("AI", "Falló el análisis live.", "err", false);
-      addMsg("SYS", String(err && err.message ? err.message : err), "sys", false);
-    }
-  }
-
-  function openHyper(){
-    openModal("HIPERREALISMO", `
-      <div style="color:var(--muted);margin-bottom:12px;font-size:13px">Elegí 1 opción. Mínimo: 1 snap live + 1 frase.</div>
-      <div class="modalGrid">
-        <div class="card" id="hImg"><b>Imagen</b><small>Snap Live o subí 1 foto.</small></div>
-        <div class="card" id="hVid"><b>Video</b><small>Subí 1 clip.</small></div>
-        <div class="card" id="hAva"><b>Avatar</b><small>Subí 1 foto.</small></div>
-      </div>
-    `);
-    document.getElementById("hImg").onclick = () => { closeModal(); startCamera(); };
-    document.getElementById("hVid").onclick = () => { closeModal(); pickVid.click(); };
-    document.getElementById("hAva").onclick = () => { closeModal(); pickImg.click(); };
-  }
-
-  function openVoice(){
-    openModal("VOZ", `
-      <div style="color:var(--muted);margin-bottom:12px;font-size:13px">Elegí cómo usar voz.</div>
-      <div class="modalGrid">
-        <div class="card" id="vRec"><b>Grabar audio</b><small>Grabo y mando para análisis 100%.</small></div>
-        <div class="card" id="vCmd"><b>Comandos</b><small>3 comandos ultra cortos.</small></div>
-        <div class="card" id="vNote"><b>Modo reunión</b><small>Grabar → transcribir → resumen → acciones.</small></div>
-      </div>
-    `);
-    document.getElementById("vRec").onclick = () => { closeModal(); pickAud.click(); };
-    document.getElementById("vCmd").onclick = () => { closeModal(); sendText("Voz: 3 comandos ultra cortos."); };
-    document.getElementById("vNote").onclick = () => { closeModal(); sendText("Modo Reunión: flujo mínimo en 6 bullets + 3 comandos."); };
-  }
-
-  function openFaceTime(){
-    openModal("FACETIME", `
-      <div style="color:var(--muted);margin-bottom:12px;font-size:13px">Conectar llamada (mínimo).</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="card" id="ft1"><b>Abrir FaceTime</b><small>Abre FaceTime si el dispositivo lo permite.</small></div>
-        <div class="card" id="ft2"><b>Texto listo</b><small>Mensaje de invitación para copiar/pegar.</small></div>
-      </div>
-    `);
-    document.getElementById("ft1").onclick = () => { closeModal(); window.location.href = "facetime://"; };
-    document.getElementById("ft2").onclick = () => {
-      closeModal();
-      addMsg("SYS","Copiá y mandá:", "sys", false);
-      addMsg("AI","Abrí consia.world → activá Cámara Live → escribí 1 frase → Snap.", "ai", false);
+    $("btnClear").onclick = ()=>{
+      logEl.innerHTML = "";
+      addMsg("sys","CONSIA UI listo. Input siempre visible. Idioma ES.");
     };
-  }
 
-  function openFiles(){
-    openModal("ARCHIVOS", `
-      <div style="color:var(--muted);margin-bottom:12px;font-size:13px">Subí cualquier documento para análisis 100%.</div>
-      <div class="modalGrid">
-        <div class="card" id="fAny"><b>Documento</b><small>PDF, DOCX, XLSX, ZIP, TXT, etc.</small></div>
-        <div class="card" id="fImg"><b>Foto</b><small>Imagen para análisis / hiperrealismo.</small></div>
-        <div class="card" id="fVid"><b>Video</b><small>Clip para análisis / optimización.</small></div>
-      </div>
-    `);
-    document.getElementById("fAny").onclick = () => { closeModal(); pickAny.click(); };
-    document.getElementById("fImg").onclick = () => { closeModal(); pickImg.click(); };
-    document.getElementById("fVid").onclick = () => { closeModal(); pickVid.click(); };
-  }
+    $("btnMic").onclick = ()=>startStopVoice();
+    $("btnSpeak").onclick = ()=>{ if(lastAIText) speak(lastAIText); };
+    $("btnStopTTS").onclick = ()=>{ try{window.speechSynthesis.cancel()}catch(e){} };
 
-  send.onclick = () => sendText(inp.value);
-  inp.addEventListener("keydown", (e)=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(inp.value); } });
+    $("btnTest").onclick = async ()=>{
+      addMsg("sys","Testeando API…");
+      try{
+        const r = await fetch(API_BASE, { method:"GET" });
+        setOnline(r.ok);
+        addMsg("sys","API status: " + r.status);
+      }catch(e){
+        setOnline(false);
+        addMsg("err","API test falló.");
+      }
+    };
 
-  document.getElementById("btnGuide").onclick = () => sendText("Guiame con 3 opciones cortas y claras. Pedime lo mínimo.");
-  document.getElementById("btnCan").onclick  = () => sendText("Mostrame funciones reales en 6 bullets y 3 opciones.");
-  document.getElementById("btnHyper").onclick= openHyper;
-  document.getElementById("btnLive").onclick = () => startCamera();
-  document.getElementById("btnVoice").onclick= openVoice;
-  document.getElementById("btnFiles").onclick= openFiles;
-  document.getElementById("btnFT").onclick   = openFaceTime;
-  document.getElementById("btnAscend").onclick= () => sendText("ASCEND: 3 opciones para avanzar hoy y pedime lo mínimo.");
+    $("btnCamera").onclick = ()=>openCam();
+    $("btnCamClose").onclick = ()=>closeCam();
+    $("btnCamStart").onclick = ()=>startCam();
+    $("btnCamStop").onclick = ()=>stopCam();
+    $("btnSnap").onclick = ()=>{
+      const frame = captureFrameDataURL();
+      if(!frame){ $("camNote").textContent = "No se pudo capturar frame."; return; }
+      $("camNote").textContent = "Frame capturado (10%). Listo para enviar.";
+      // lo dejamos listo como attachment pending (sin mandar todavía)
+      pendingAttachments = [{ name:"live_frame.jpg", type:"image/jpeg", size: frame.length, dataUrl: frame }];
+      addMsg("sys","Frame capturado y adjuntado como live_frame.jpg");
+    };
+    $("btnStream10").onclick = ()=>sendCam10();
 
-  startShow.onclick = async () => { addMsg("SYS","SHOW iniciado. Activá cámara si querés Live 10%.", "sys", false); inp.focus(); };
-  startLive.onclick = () => startCamera();
-  stopLive.onclick  = () => stopCamera();
-  snapLive.onclick  = async () => {
-    const instruction = (inp.value || "").trim();
-    if(!instruction){
-      addMsg("SYS","Escribí 1 frase de instrucción y tocá Snap.", "sys", false);
-      return;
-    }
-    addMsg("YO", "Live instrucción: " + instruction, "", false);
-    inp.value = "";
-    await snapAndAnalyzeLive(instruction);
-  };
+    // Boot messages
+    addMsg("sys","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
+    addMsg("sys","Realtime conectando… (si tu backend lo soporta)");
 
-  repImg.onclick = () => sendText("Réplica hiperrealista: PROMPT final para IMAGEN (9:16, 8K look). Pedime lo mínimo.");
-  repVid.onclick = () => sendText("Réplica hiperrealista: PROMPT final para VIDEO (9:16, 4K/8K look). Pedime lo mínimo.");
-  repAva.onclick = () => sendText("Réplica hiperrealista: AVATAR + VOZ + estilo. Pedime lo mínimo.");
+    // keep RT label
+    $("rtMode").textContent = "auto";
 
-  pickImg.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickImg.value=""; if(f) await sendAnyFile(f); });
-  pickVid.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickVid.value=""; if(f) await sendAnyFile(f); });
-  pickAud.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickAud.value=""; if(f) await sendAnyFile(f); });
-  pickAny.addEventListener("change", async (e)=>{ const f=e.target.files&&e.target.files[0]; pickAny.value=""; if(f) await sendAnyFile(f); });
-  pickAnyBtn.onclick = () => pickAny.click();
-
-  ["dragenter","dragover"].forEach(evt=>{
-    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
-  });
-  ["dragleave","drop"].forEach(evt=>{
-    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
-  });
-  drop.addEventListener("drop", async (e)=>{
-    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) await sendAnyFile(f);
-  });
-
-  livePct.textContent = LIVE_PERCENT + "%";
-  updateBar(LIVE_PERCENT);
-  setStatus(true);
-  addMsg("SYS", "CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.", "sys", false);
-  connectRealtime();
-  setTimeout(()=>{ try{ inp.focus(); }catch(e){} }, 250);
-})();
-</script>
+    // if realtime fails quickly, show
+    setTimeout(()=>{ if(!ws){ hudStatus.textContent = "Realtime: no disponible"; } }, 1800);
+  </script>
 </body>
 </html>

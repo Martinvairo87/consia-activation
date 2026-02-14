@@ -9,579 +9,297 @@
     :root{
       --bg:#000;
       --txt:#fff;
-      --muted:rgba(255,255,255,.72);
+      --muted:rgba(255,255,255,.75);
       --ui:rgba(10,10,10,.55);
-      --ui2:rgba(10,10,10,.75);
+      --ui2:rgba(10,10,10,.78);
       --border:rgba(255,255,255,.16);
       --good:#20ff84;
       --warn:#ffcc00;
       --bad:#ff3b30;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --r2:22px;
-      --font:-apple-system, BlinkMacSystemFont, "SF Pro Display","SF Pro Text", system-ui, Segoe UI, Roboto, Helvetica, Arial;
+      --r:18px;
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+
+      /* Lipsync regions (ajustables en Owner Mode) */
+      --mouth-x:50%;
+      --mouth-y:70%;
+      --mouth-w:26%;
+      --mouth-h:14%;
+      --eyes-y:46%;
+      --eye-w:12%;
+      --eye-h:6%;
+      --eye-gap:18%;
     }
-    html,body{margin:0;padding:0;width:100%;height:100%;background:var(--bg);color:var(--txt);font-family:var(--font);overflow:hidden;}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-    .stage{position:fixed; inset:0; width:100vw; height:100vh; background:#000; overflow:hidden;}
-    video#avatarBase{
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; padding:0; width:100%; height:100%; background:var(--bg); color:var(--txt); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, Segoe UI, Roboto, Helvetica, Arial; overflow:hidden; }
+    button{ font:inherit; color:inherit; background:transparent; border:1px solid var(--border); border-radius:999px; padding:10px 14px; cursor:pointer; }
+    button:active{ transform:scale(.98); }
+    .pill{ background:rgba(255,255,255,.08); border:1px solid var(--border); border-radius:999px; padding:8px 12px; display:inline-flex; gap:8px; align-items:center; }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .dot{ width:10px; height:10px; border-radius:50%; background:var(--bad); box-shadow:0 0 12px rgba(255,0,0,.45); }
+    .dot.good{ background:var(--good); box-shadow:0 0 12px rgba(32,255,132,.45); }
+    .dot.warn{ background:var(--warn); box-shadow:0 0 12px rgba(255,204,0,.45); }
+
+    /* FULLSCREEN STAGE */
+    #stage{
+      position:fixed; inset:0;
+      width:100vw; height:100vh;
+      background:#000;
+      overflow:hidden;
+    }
+
+    /* Intro video (auto) */
+    #introWrap{
+      position:absolute; inset:0;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:30;
+      opacity:1;
+      transition:opacity .35s ease;
+    }
+    #introWrap.hidden{ opacity:0; pointer-events:none; }
+    #introVideo{
       position:absolute; inset:0;
       width:100%; height:100%;
-      object-fit:contain;            /* sin corte */
-      object-position:center center; /* centrado */
-      background:#000;
-      filter:saturate(1.08) contrast(1.06);
-      transform: translateZ(0);
+      object-fit:cover;
+      filter:contrast(1.05) saturate(1.05);
     }
-    .vignette{
-      position:absolute; inset:-20%;
+    #introOverlay{
+      position:absolute; inset:0;
+      background:radial-gradient(60% 60% at 50% 40%, rgba(0,0,0,.15), rgba(0,0,0,.75));
+    }
+    #skipIntro{
+      position:absolute;
+      right:16px; top:16px;
+      z-index:31;
+      backdrop-filter: blur(10px);
+      background:rgba(0,0,0,.25);
+    }
+
+    /* Avatar base fullscreen */
+    #avatarBase{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;            /* FULLSCREEN (sin corte percibido) */
+      object-position:center center;
+      transform:translateZ(0);
+      filter:contrast(1.06) saturate(1.05);
+      z-index:1;
+    }
+    /* Soft vignette */
+    #vignette{
+      position:absolute; inset:-20px;
+      background:radial-gradient(60% 60% at 50% 40%, rgba(0,0,0,.08), rgba(0,0,0,.78));
+      z-index:2;
       pointer-events:none;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,.45) 75%, rgba(0,0,0,.70) 100%);
-      mix-blend-mode: multiply;
     }
-    .topbar{
-      position:absolute; left:16px; right:16px; top:14px;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; z-index:10;
+
+    /* Face FX canvas (lipsync + gestures) */
+    #fx{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      z-index:3;
+      pointer-events:none;
+      mix-blend-mode:screen;
+      opacity:.85;
     }
-    .brand{
+
+    /* UI Overlay */
+    #hud{
+      position:absolute; left:14px; right:14px; top:12px;
+      z-index:10;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      pointer-events:none;
+    }
+    #hud .row{ pointer-events:auto; }
+    #brand{
       display:flex; align-items:center; gap:10px;
-      padding:10px 12px; border-radius:999px;
-      background:linear-gradient(180deg, rgba(10,10,10,.55), rgba(10,10,10,.30));
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(0,0,0,.25);
       border:1px solid var(--border);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
     }
-    .dot{width:10px;height:10px;border-radius:99px;background:var(--good);box-shadow:0 0 16px rgba(32,255,132,.55);}
-    .brand b{letter-spacing:.4px;}
-    .chip{
-      display:flex; align-items:center; gap:8px;
-      padding:10px 12px; border-radius:999px;
-      background:var(--ui);
-      border:1px solid var(--border);
-      backdrop-filter: blur(16px);
-    }
-    .chip .k{color:var(--muted);font-size:13px;}
-    .chip .v{font-weight:650;}
-    .btn{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      color:var(--txt);
+    #brand b{ letter-spacing:.5px; }
+    #statusBar{
+      display:flex; gap:10px; align-items:center;
+      padding:10px 12px;
       border-radius:999px;
-      padding:10px 14px;
-      font-size:14px;
-      display:inline-flex; align-items:center; gap:8px;
-      cursor:pointer;
-      user-select:none;
-      backdrop-filter: blur(16px);
-      transition: transform .08s ease, background .2s ease, border-color .2s ease;
-    }
-    .btn:active{transform:scale(.98);}
-    .btn.good{border-color:rgba(32,255,132,.55);}
-    .btn.warn{border-color:rgba(255,204,0,.55);}
-    .btn.bad{border-color:rgba(255,59,48,.55); background: linear-gradient(180deg, rgba(255,59,48,.18), rgba(255,59,48,.08));}
-    .btn.gold{border-color:rgba(255,215,0,.55); background: linear-gradient(180deg, rgba(255,215,0,.16), rgba(255,215,0,.06));}
-    .hint{
-      position:absolute; right:18px; top:92px;
-      padding:10px 14px;
-      border-radius:999px;
-      background:rgba(10,10,10,.50);
+      background:rgba(0,0,0,.25);
       border:1px solid var(--border);
-      backdrop-filter: blur(16px);
-      color:var(--muted);
-      z-index:10;
-      max-width:min(560px, calc(100vw - 36px));
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    /* Controls */
+    #controls{
+      position:absolute; left:14px; right:14px; bottom:14px;
+      z-index:12;
+      display:flex; flex-direction:column; gap:10px;
+      pointer-events:none;
+    }
+    #controls .row{ pointer-events:auto; }
+    #chat{
+      pointer-events:auto;
+      border:1px solid var(--border);
+      border-radius: var(--r);
+      background:rgba(0,0,0,.35);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
       overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
     }
-    .panel{
-      position:absolute; left:16px; right:16px; bottom:14px;
-      display:flex; flex-direction:column;
-      gap:10px;
-      z-index:10;
-    }
-    .actions{
-      display:flex; flex-wrap:wrap;
-      gap:10px;
-      justify-content:flex-start;
-    }
-    .log{
-      height:min(360px, 36vh);
-      border-radius:26px;
-      background:rgba(10,10,10,.55);
-      border:1px solid var(--border);
-      backdrop-filter: blur(18px);
+    #log{
+      height:210px;
       overflow:auto;
       padding:12px;
-      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      scrollbar-width: thin;
     }
-    .row{display:flex; gap:10px; align-items:flex-end;}
-    .input{
-      flex:1;
-      border-radius:26px;
-      background:rgba(10,10,10,.65);
-      border:1px solid var(--border);
-      backdrop-filter: blur(18px);
-      padding:14px 14px;
-      color:var(--txt);
-      font-size:16px;
-      outline:none;
-      box-shadow: var(--shadow);
-    }
-    .send{
-      padding:14px 16px;
-      border-radius:26px;
-      min-width:120px;
-      justify-content:center;
-      font-weight:700;
-    }
-    .msg{display:flex; gap:10px; margin:10px 0;}
-    .badge{
-      min-width:44px;height:26px;
-      display:inline-flex; align-items:center; justify-content:center;
-      border-radius:999px;border:1px solid var(--border);
-      color:var(--muted);font-size:12px;background:rgba(255,255,255,.06);
-      padding:0 10px;flex:0 0 auto;
-    }
-    .bubble{
-      flex:1;
-      border-radius:16px;border:1px solid var(--border);
-      background:rgba(255,255,255,.06);
+    .msg{
       padding:10px 12px;
-      white-space:pre-wrap;line-height:1.35;font-size:14px;
-    }
-    .bubble.ai{background:rgba(32,255,132,.10); border-color:rgba(32,255,132,.22);}
-    .bubble.sys{background:rgba(255,255,255,.04);}
-    .subline{display:flex; flex-wrap:wrap; gap:10px; color:var(--muted); font-size:13px; padding:0 2px;}
-    .modal{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.62);
-      display:none; align-items:center; justify-content:center;
-      z-index:50; padding:18px;
-    }
-    .modal.on{display:flex;}
-    .card{
-      width:min(980px, 100%);
-      border-radius:26px;
-      border:1px solid var(--border);
-      background:rgba(10,10,10,.82);
-      backdrop-filter: blur(20px);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .cardHead{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 16px;
-      border-bottom:1px solid var(--border);
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap:12px;
-      padding:14px;
-    }
-    .plan{
-      border-radius:20px;
-      border:1px solid var(--border);
+      border-radius:14px;
       background:rgba(255,255,255,.06);
-      padding:12px;
-      display:flex; flex-direction:column; gap:10px;
-      min-height:230px;
+      border:1px solid rgba(255,255,255,.10);
+      max-width:92%;
+      white-space:pre-wrap;
+      line-height:1.25;
     }
-    .plan h3{margin:0;font-size:16px;}
-    .plan .p{color:var(--muted);font-size:13px;line-height:1.25;}
-    .plan ul{margin:0;padding-left:16px;color:var(--muted);font-size:13px;}
-    .plan .cta{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;}
-    .small{font-size:12px;color:var(--muted);}
-    .hidden{display:none !important;}
-    @media (max-width: 980px){ .grid{grid-template-columns: repeat(2, minmax(0,1fr));} }
-    @media (max-width: 560px){
-      .grid{grid-template-columns: 1fr;}
-      .send{min-width:92px;}
-      .hint{top:130px;}
+    .msg.sys{ opacity:.9; background:rgba(255,255,255,.04); }
+    .msg.you{ align-self:flex-end; background:rgba(32,255,132,.10); border-color:rgba(32,255,132,.22); }
+    .msg.ai{ align-self:flex-start; background:rgba(255,255,255,.07); }
+    #composer{
+      display:flex; gap:10px; padding:12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      align-items:center;
+      background:rgba(0,0,0,.25);
+    }
+    #input{
+      flex:1;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      padding:12px 14px;
+      color:#fff;
+      outline:none;
+    }
+    #send{
+      background:rgba(255,255,255,.10);
+    }
+
+    /* Minimal modal (Owner) */
+    #ownerModal{
+      position:fixed; inset:0;
+      z-index:50;
+      background:rgba(0,0,0,.65);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    #ownerModal.on{ display:flex; }
+    #ownerCard{
+      width:min(820px, 100%);
+      border-radius:22px;
+      background:rgba(10,10,10,.85);
+      border:1px solid rgba(255,255,255,.16);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    #ownerCard textarea{
+      width:100%;
+      min-height:140px;
+      resize:none;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      padding:12px;
+      outline:none;
     }
   </style>
 </head>
 <body>
-  <div class="stage">
-    <video id="avatarBase" autoplay muted playsinline loop preload="auto">
-      <source src="avatar.mp4" type="video/mp4" />
-    </video>
-    <div class="vignette"></div>
+  <div id="stage">
+    <!-- AUTO INTRO -->
+    <div id="introWrap">
+      <video id="introVideo" autoplay muted playsinline loop></video>
+      <div id="introOverlay"></div>
+      <button id="skipIntro">Saltar</button>
+    </div>
 
-    <div class="topbar">
-      <div class="brand">
-        <span class="dot" id="dot"></span>
+    <!-- AVATAR FULLSCREEN -->
+    <video id="avatarBase" autoplay muted playsinline loop></video>
+    <div id="vignette"></div>
+    <canvas id="fx"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="row" id="brand">
+        <span class="dot" id="dotApi"></span>
         <b>CONSIA ∞</b>
       </div>
 
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
-        <div class="chip"><span class="k">Realtime</span><span class="v" id="rt">desconectado</span></div>
-        <div class="chip"><span class="k">API</span><span class="v" id="apiHost">api.consia.world</span></div>
-        <button class="btn" id="testApi">Test API</button>
+      <div class="row" id="statusBar">
+        <span class="pill"><span class="dot" id="dotRt"></span>Realtime <b id="rtTxt">off</b></span>
+        <span class="pill">API <b id="apiTxt">api.consia.world</b></span>
+        <button id="btnTestApi">Test API</button>
       </div>
     </div>
 
-    <div class="hint" id="hint">Decí “Hola CONSIA” o escribí abajo. (voz si el navegador soporta)</div>
-
-    <div class="panel">
-      <div class="actions">
-        <button class="btn" id="btnGuide">🧭 Guíame (3 opciones)</button>
-        <button class="btn" id="btnWhat">🧠 ¿Qué puede hacer?</button>
-        <button class="btn" id="btnHyper">🖼️ Hiperrealismo</button>
-        <button class="btn" id="btnVoice">🎙️ Voz</button>
-        <button class="btn" id="btnCam">📷 Cámara</button>
-        <button class="btn gold" id="btnAscend">⚡ ASCEND</button>
-
-        <button class="btn" id="btnUpload">📎 Subir archivo</button>
-        <button class="btn" id="btnCamLive">📷 Cámara (vivo 100%)</button>
-        <button class="btn good" id="btnTalk">🗣️ Hablar</button>
-        <button class="btn" id="btnRead">👁️ Leer</button>
-        <button class="btn" id="btnClear">🧹 Limpiar</button>
-        <button class="btn bad" id="btnStopVoice">⛔ Stop voz</button>
-
-        <button class="btn warn" id="btnPlans">💳 Planes</button>
-        <button class="btn" id="btnFit">🖼️ Fit: sin corte</button>
-        <button class="btn" id="btnOwner">🔒 Owner</button>
+    <!-- CONTROLS + CHAT -->
+    <div id="controls">
+      <div class="row">
+        <button id="btnGuide">🧭 Guiame (3 opciones)</button>
+        <button id="btnWhat">🧠 ¿Qué puede hacer?</button>
+        <button id="btnHyper">🖼️ Hiperrealismo</button>
+        <button id="btnVoice">🎙️ Voz</button>
+        <button id="btnCam">📷 Cámara</button>
+        <button id="btnAscend">⚡ ASCEND</button>
       </div>
-
-      <div class="subline" id="subline">
-        Idioma: <b>ES</b> · Realtime: <b id="rt2">auto</b> · Adjuntos: <b id="att">0</b> · Cámara: <b id="camState">off</b> · Plan: <b id="plan">FREE</b>
-      </div>
-
-      <div class="log" id="log"></div>
 
       <div class="row">
-        <input class="input" id="input" placeholder='Decí lo que querés (o escribí “.”)' autocomplete="off" />
-        <button class="btn send" id="send">Enviar ↵</button>
+        <button id="btnUpload">📎 Subir archivo</button>
+        <button id="btnCamLive">📷 Cámara (vivo <b id="camPct">100%</b>)</button>
+        <button id="btnTalk">🗣️ Hablar</button>
+        <button id="btnRead">👁️ Leer</button>
+        <button id="btnClear">🧹 Limpiar</button>
+        <button id="btnStopVoice">⛔ Stop voz</button>
+        <button id="btnPlans">💳 Planes</button>
+        <button id="btnOwner">🔒 Owner</button>
       </div>
-    </div>
-  </div>
 
-  <input type="file" id="file" class="hidden" multiple />
-
-  <!-- PLANES -->
-  <div class="modal" id="modalPlans">
-    <div class="card">
-      <div class="cardHead">
-        <div>
-          <b>Planes CONSIA</b>
-          <div class="small" id="planHint">Activación inmediata (modo test).</div>
+      <div id="chat">
+        <div id="log"></div>
+        <div id="composer">
+          <input id="input" placeholder="Decí lo que querés (o escribí '.')"/>
+          <button id="send">Enviar</button>
         </div>
-        <button class="btn" id="closePlans">Cerrar</button>
-      </div>
-      <div class="grid" id="plansGrid"></div>
-      <div style="padding: 0 14px 14px 14px;" class="small">
-        Para pruebas: activá con “Mock Subscribe”. Para producción: conectamos MoR (Paddle) después.
       </div>
     </div>
   </div>
 
   <!-- OWNER -->
-  <div class="modal" id="modalOwner">
-    <div class="card">
-      <div class="cardHead">
-        <div>
-          <b>Owner Mode (CONSIA)</b>
-          <div class="small">Solo Owner puede diseñar/mejorar desde la interfaz.</div>
+  <div id="ownerModal">
+    <div id="ownerCard">
+      <div class="row" style="justify-content:space-between;">
+        <div class="row">
+          <span class="pill">Owner Mode</span>
+          <span class="pill">Comandos por voz/texto</span>
         </div>
-        <button class="btn" id="closeOwner">Cerrar</button>
-      </div>
-      <div style="padding:14px; display:flex; flex-direction:column; gap:10px;">
-        <input class="input" id="ownerTok" placeholder="Pegá OWNER token (1 vez)" />
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn good" id="saveOwner">Guardar</button>
-          <button class="btn" id="clearOwner">Borrar</button>
-          <button class="btn warn" id="avatarTop">Actualizar Avatar (prompt)</button>
+        <div class="row">
+          <button id="ownerClose">Cerrar</button>
         </div>
-        <div class="small">Tip: después de guardar, el Owner token queda local (no se muestra).</div>
       </div>
-    </div>
-  </div>
 
-  <script>
-    const API = "https://api.consia.world";
-    const WS  = API.replace("https://","wss://") + "/realtime";
-    const LANG = "ES";
-
-    const el = (id)=>document.getElementById(id);
-    const log = el("log");
-    const input = el("input");
-    const dot = el("dot");
-    const rt = el("rt");
-    const apiHost = el("apiHost");
-    apiHost.textContent = new URL(API).host;
-
-    const fileInput = el("file");
-    let attachments = [];
-    let ownerToken = localStorage.getItem("consia_owner") || "";
-    let deviceId = localStorage.getItem("consia_device");
-    if(!deviceId){
-      deviceId = (crypto?.randomUUID ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2)));
-      localStorage.setItem("consia_device", deviceId);
-    }
-
-    let ws = null;
-    let camStream = null;
-    let camOn = false;
-    let camLive = false;
-    let camTimer = null;
-    let lastFrameB64 = "";
-    let fitMode = "contain";
-    let recognizing = false;
-    let rec = null;
-
-    function push(who, text, kind){
-      const row = document.createElement("div");
-      row.className = "msg";
-      const b = document.createElement("div");
-      b.className = "badge";
-      b.textContent = who;
-      const bubble = document.createElement("div");
-      bubble.className = "bubble " + (kind||"");
-      bubble.textContent = text;
-      row.appendChild(b);
-      row.appendChild(bubble);
-      log.appendChild(row);
-      log.scrollTop = log.scrollHeight;
-    }
-    function sys(t){ push("SYS", t, "sys"); }
-    function me(t){ push("YOU", t, ""); }
-    function ai(t){ push("AI", t, "ai"); }
-
-    const avatar = el("avatarBase");
-    avatar.addEventListener("ended", ()=>{ try{ avatar.currentTime = 0; avatar.play(); }catch(e){} });
-    document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ try{ avatar.play(); }catch(e){} } });
-    setInterval(()=>{ if(avatar.paused){ try{ avatar.play(); }catch(e){} } }, 1800);
-
-    function rtSet(ok){
-      rt.textContent = ok ? "conectado" : "desconectado";
-      dot.style.background = ok ? "var(--good)" : "var(--bad)";
-      dot.style.boxShadow = ok ? "0 0 16px rgba(32,255,132,.55)" : "0 0 16px rgba(255,59,48,.55)";
-      el("rt2").textContent = ok ? "on" : "auto";
-    }
-
-    function connectWS(){
-      try{
-        ws = new WebSocket(WS);
-        ws.onopen = ()=>{ rtSet(true); };
-        ws.onclose = ()=>{ rtSet(false); setTimeout(connectWS, 1200); };
-        ws.onerror = ()=>{ rtSet(false); };
-        ws.onmessage = (ev)=>{
-          try{
-            const d = JSON.parse(ev.data);
-            if(d.type === "hello") sys(d.text);
-            if(d.type === "avatar") sys("Avatar actualizado v" + d.avatar.version);
-          }catch(e){}
-        };
-      }catch(e){ rtSet(false); }
-    }
-    connectWS();
-
-    async function api(path, opts={}){
-      const headers = opts.headers || {};
-      headers["x-consia-device"] = deviceId;
-      headers["content-type"] = headers["content-type"] || "application/json";
-      if(ownerToken) headers["x-consia-owner"] = ownerToken;
-      opts.headers = headers;
-      const r = await fetch(API + path, opts);
-      const j = await r.json().catch(()=>({ok:false,error:"bad_json"}));
-      return { r, j };
-    }
-
-    async function refreshBilling(){
-      const {j} = await api("/billing/status", { method:"GET", headers:{ "content-type":"application/json" } });
-      if(j?.ok) el("plan").textContent = (j.plan || "FREE");
-    }
-
-    async function cameraStart(){
-      if(camStream) return true;
-      try{
-        camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
-        camOn = true;
-        el("camState").textContent = "on (frontal)";
-        return true;
-      }catch(e){
-        camOn = false;
-        el("camState").textContent = "off";
-        sys("Cámara no disponible (permiso/navegador).");
-        return false;
-      }
-    }
-    function cameraStop(){
-      if(camTimer){ clearInterval(camTimer); camTimer=null; }
-      if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
-      camOn = false; camLive = false; lastFrameB64 = "";
-      el("camState").textContent = "off";
-    }
-    function startLiveFrames(){
-      if(camTimer) clearInterval(camTimer);
-      const v = document.createElement("video");
-      v.autoplay = true; v.muted = true; v.playsInline = true;
-      v.srcObject = camStream;
-
-      const c = document.createElement("canvas");
-      const ctx = c.getContext("2d", { willReadFrequently:true });
-
-      camTimer = setInterval(()=>{
-        if(!camStream) return;
-        const w = 480, h = 480;
-        c.width = w; c.height = h;
-        try{ ctx.drawImage(v, 0, 0, w, h); lastFrameB64 = c.toDataURL("image/jpeg", 0.72); }catch(e){}
-      }, 500);
-    }
-
-    function ttsStop(){ try{ speechSynthesis.cancel(); }catch(e){} }
-    function ttsSay(text){
-      try{ ttsStop(); const u = new SpeechSynthesisUtterance(text); u.lang = "es-AR"; speechSynthesis.speak(u); }catch(e){}
-    }
-
-    function startSTT(){
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if(!SR){ sys("Voz STT no soportada en este navegador."); return; }
-      if(recognizing) return;
-      rec = new SR();
-      rec.lang = "es-AR";
-      rec.interimResults = false;
-      rec.maxAlternatives = 1;
-      rec.onresult = (e)=>{ const t = e.results?.[0]?.[0]?.transcript || ""; if(t.trim()){ input.value = t.trim(); send(); } };
-      rec.onend = ()=>{ recognizing=false; };
-      rec.onerror = ()=>{ recognizing=false; sys("Voz: error."); };
-      recognizing = true;
-      rec.start();
-      sys("Voz: escuchando…");
-    }
-    function stopSTT(){ try{ if(rec) rec.stop(); }catch(e){} recognizing=false; }
-
-    async function send(){
-      const msg = (input.value || "").trim();
-      if(!msg && attachments.length===0 && !lastFrameB64) return;
-
-      me(msg || "(adjuntos/cámara)");
-      input.value = "";
-
-      const payload = {
-        lang: LANG,
-        message: msg || "",
-        attachments: attachments.map(f=>({ name:f.name, type:f.type, size:f.size })),
-        files: attachments.map(f=>({ name:f.name, type:f.type, size:f.size })),
-        camera_frame_b64: lastFrameB64 || "",
-        camera_frames: camLive ? 2 : 0,
-      };
-
-      const {r,j} = await api("/ask", { method:"POST", body: JSON.stringify(payload) });
-      if(!j?.ok){ ai("ERROR: " + (j.error || r.status)); return; }
-      ai(j.reply || "");
-      attachments = [];
-      el("att").textContent = "0";
-    }
-
-    el("btnUpload").onclick = ()=> fileInput.click();
-    fileInput.onchange = ()=>{
-      const files = [...fileInput.files];
-      attachments.push(...files);
-      el("att").textContent = String(attachments.length);
-      sys("Adjuntos listos: " + files.map(f=>f.name).join(", "));
-      fileInput.value = "";
-    };
-
-    el("send").onclick = send;
-    input.addEventListener("keydown", (e)=>{ if(e.key === "Enter") send(); });
-
-    el("btnClear").onclick = ()=>{ log.innerHTML=""; sys("CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES."); };
-    el("btnRead").onclick = ()=>{ ttsSay("CONSIA activo. Decime qué querés hacer."); };
-    el("btnStopVoice").onclick = ()=>{ stopSTT(); ttsStop(); sys("Voz: stop."); };
-    el("btnVoice").onclick = ()=> startSTT();
-    el("btnTalk").onclick = ()=> startSTT();
-
-    el("btnCam").onclick = async ()=>{ if(camOn){ cameraStop(); sys("Cámara: off."); return; } const ok = await cameraStart(); if(ok) sys("Cámara frontal: lista."); };
-
-    el("btnCamLive").onclick = async ()=>{
-      if(!camOn){ const ok = await cameraStart(); if(!ok) return; }
-      camLive = !camLive;
-      if(camLive){ startLiveFrames(); sys("Cámara vivo: ON (captura estable)."); }
-      else{ if(camTimer){ clearInterval(camTimer); camTimer=null; } lastFrameB64=""; sys("Cámara vivo: OFF."); }
-    };
-
-    el("btnFit").onclick = ()=>{
-      fitMode = (fitMode === "contain") ? "cover" : "contain";
-      avatar.style.objectFit = fitMode;
-      el("btnFit").textContent = (fitMode === "contain") ? "🖼️ Fit: sin corte" : "🖼️ Fit: full pantalla";
-    };
-
-    el("btnGuide").onclick = ()=>{ input.value = "Guíame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá."; send(); };
-    el("btnWhat").onclick = ()=>{ input.value = "¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo."; send(); };
-    el("btnHyper").onclick = ()=>{ input.value = "Hiperrealismo: dame 3 opciones (Imagen/Video/Avatar). Pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá."; send(); };
-    el("btnAscend").onclick = ()=>{ input.value = "ASCEND: modo ultra. Respuestas cortas, plan inmediato y checklist. Pedí 1 dato mínimo."; send(); };
-
-    const modalPlans = el("modalPlans");
-    const grid = el("plansGrid");
-    function openPlans(){ modalPlans.classList.add("on"); }
-    function closePlans(){ modalPlans.classList.remove("on"); }
-    el("btnPlans").onclick = async ()=>{
-      grid.innerHTML = "";
-      const {j} = await api("/plans", { method:"GET", headers:{ "content-type":"application/json" } });
-      if(!j?.ok){ sys("Planes: error."); return; }
-      (j.plans || []).forEach(p=>{
-        const div = document.createElement("div");
-        div.className = "plan";
-        div.innerHTML = `
-          <h3>${p.name}</h3>
-          <div class="p">Mensual: <b>$${p.price.monthly}</b> · Anual: <b>$${p.price.yearly}</b></div>
-          <ul>${(p.features||[]).slice(0,6).map(x=>`<li>${x}</li>`).join("")}</ul>
-          <div class="cta">
-            <button class="btn good" data-plan="${p.id}" data-interval="monthly">Mock Subscribe</button>
-            <button class="btn" data-plan="${p.id}" data-interval="yearly">Mock Yearly</button>
-          </div>
-        `;
-        div.querySelectorAll("button").forEach(btn=>{
-          btn.onclick = async ()=>{
-            const plan = btn.getAttribute("data-plan");
-            const interval = btn.getAttribute("data-interval");
-            const {j} = await api("/billing/mock/subscribe", { method:"POST", body: JSON.stringify({ plan, interval }) });
-            if(j?.ok){ sys("Plan activado: " + j.plan); await refreshBilling(); closePlans(); }
-            else{ sys("Error plan: " + (j.error || "")); }
-          };
-        });
-        grid.appendChild(div);
-      });
-      openPlans();
-    };
-    el("closePlans").onclick = closePlans;
-    modalPlans.addEventListener("click", (e)=>{ if(e.target===modalPlans) closePlans(); });
-
-    const modalOwner = el("modalOwner");
-    el("btnOwner").onclick = ()=>{ el("ownerTok").value = ownerToken ? "********" : ""; modalOwner.classList.add("on"); };
-    el("closeOwner").onclick = ()=> modalOwner.classList.remove("on");
-    modalOwner.addEventListener("click", (e)=>{ if(e.target===modalOwner) modalOwner.classList.remove("on"); });
-
-    el("saveOwner").onclick = ()=>{
-      const v = el("ownerTok").value.trim();
-      if(v && v !== "********"){ ownerToken = v; localStorage.setItem("consia_owner", ownerToken); sys("Owner: listo."); }
-      else if(ownerToken){ sys("Owner: ya guardado."); }
-      else{ sys("Owner: falta token."); }
-      modalOwner.classList.remove("on");
-    };
-    el("clearOwner").onclick = ()=>{ ownerToken=""; localStorage.removeItem("consia_owner"); sys("Owner: borrado."); modalOwner.classList.remove("on"); };
-
-    el("avatarTop").onclick = async ()=>{
-      if(!ownerToken){ sys("Owner requerido."); return; }
-      const prompt = window.prompt("Prompt del AVATAR (ENTIDAD CONSIA):", "ENTIDAD CONSIA — avatar hiperrealista top mundial, gestos, facciones, presencia absoluta, premium, sereno, infinito.");
-      if(!prompt) return;
-      const {j} = await api("/avatar/transform", { method:"POST", body: JSON.stringify({ prompt }) });
-      if(j?.ok) sys(j.reply || "Avatar actualizado.");
-      else sys("Avatar: error (owner).");
-    };
-
-    el("testApi").onclick = async ()=>{
-      const {j} = await api("/health", { method:"GET", headers:{ "content-type":"application/json" } });
-      if(j?.ok) sys("API OK");
-      else sys("API FAIL");
-      await refreshBilling();
-    };
-
-    sys("CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
-    refreshBilling();
-  </script>
-</body>
-</html>
+      <textarea id="ownerText" placeholder="Comando Owner. Ej:
+- avatar: ENTIDAD CONSIA hiperrealista, gestos perfectos, labios realistas
+- plan: PRO
+-

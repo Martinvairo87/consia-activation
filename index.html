@@ -1,365 +1,523 @@
+<!-- index.html — CONSIA_UI_SEALED v1.0 — pegar TODO -->
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#070A10" />
   <title>CONSIA ∞</title>
-  <meta name="theme-color" content="#06070b" />
   <style>
     :root{
-      --bg:#05070c; --card:rgba(10,14,22,.62); --stroke:rgba(255,255,255,.08);
-      --text:#e9f2ff; --muted:rgba(233,242,255,.72);
-      --glow: 0 0 24px rgba(90,200,255,.18), 0 0 60px rgba(90,200,255,.10);
-      --r:18px;
+      --bg:#05070c;
+      --panel:rgba(255,255,255,.04);
+      --panel2:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.64);
+      --good:#2ef2a3;
+      --warn:#ffd36b;
+      --bad:#ff5b7a;
+      --shadow: 0 18px 70px rgba(0,0,0,.55);
+      --radius:18px;
+      --radius2:26px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;}
-    .wrap{max-width:1180px; margin:0 auto; padding:18px 14px 24px;}
-    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;}
-    .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.6px;}
-    .dot{width:9px; height:9px; border-radius:50%; background:#25ffb1; box-shadow:0 0 14px rgba(37,255,177,.35);}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--stroke); border-radius:999px; background:rgba(0,0,0,.25); backdrop-filter: blur(10px); box-shadow: var(--glow);}
-    .pill small{opacity:.85}
-    .hero{
-      position:relative; overflow:hidden; border-radius:22px;
-      border:1px solid var(--stroke); background:rgba(0,0,0,.25);
-      box-shadow: 0 18px 70px rgba(0,0,0,.55);
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 600px at 20% -10%, rgba(80,140,255,.18), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, rgba(255,210,120,.10), transparent 55%),
+      radial-gradient(1000px 700px at 60% 120%, rgba(80,255,200,.08), transparent 60%),
+      var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      overflow-x:hidden;
     }
-    .avatar{
-      width:100%;
-      height:min(48vh,420px);
-      background: radial-gradient(1200px 420px at 50% 10%, rgba(90,200,255,.15), transparent 60%),
-                  radial-gradient(900px 380px at 20% 70%, rgba(37,255,177,.10), transparent 55%),
-                  linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+    .wrap{max-width:1200px; margin:0 auto; padding:18px 18px 22px}
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 2px 14px;
     }
-    video{
-      width:100%; height:100%; display:block;
-      object-fit:cover; object-position:center center; /* NO CORTA */
-      filter: contrast(1.08) saturate(1.06);
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.5px}
+    .dot{width:10px; height:10px; border-radius:999px; background:var(--good); box-shadow:0 0 20px rgba(46,242,163,.6)}
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      background:rgba(255,255,255,.03); border:1px solid var(--stroke);
+      padding:9px 12px; border-radius:999px; box-shadow:var(--shadow);
+      color:var(--muted); font-size:13px;
     }
-    .overlay{
-      position:absolute; inset:0; pointer-events:none;
-      background: radial-gradient(1200px 440px at 55% 15%, rgba(255,255,255,.10), transparent 55%),
-                  radial-gradient(800px 340px at 25% 65%, rgba(90,200,255,.10), transparent 55%),
-                  radial-gradient(700px 320px at 78% 70%, rgba(37,255,177,.08), transparent 55%),
-                  linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.55));
-      mix-blend-mode: screen;
-      opacity:.9;
-    }
-    .hud{
-      position:absolute; left:14px; bottom:14px; right:14px;
-      display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;
-      pointer-events:auto;
-    }
-    .hud-left{display:flex; flex-direction:column; gap:6px}
-    .hud-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+    .pill b{color:var(--text); font-weight:700}
     .btn{
-      appearance:none; border:1px solid var(--stroke);
-      background:rgba(10,14,22,.72); color:var(--text);
-      padding:10px 12px; border-radius:999px; cursor:pointer;
-      box-shadow: var(--glow);
-      font-weight:650;
+      appearance:none; border:1px solid var(--stroke); background:rgba(255,255,255,.03);
+      color:var(--text); padding:10px 12px; border-radius:999px; cursor:pointer;
+      display:inline-flex; align-items:center; gap:8px;
+      transition:transform .06s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
     }
+    .btn:hover{background:rgba(255,255,255,.05)}
     .btn:active{transform:translateY(1px)}
-    .btn.primary{background:rgba(18,34,56,.78)}
-    .btn.warn{background:rgba(64,26,26,.70)}
-    .btn.ok{background:rgba(18,44,34,.72)}
-    .hint{color:var(--muted); font-size:13px}
+    .btn.primary{border-color:rgba(46,242,163,.35); background:rgba(46,242,163,.07)}
+    .btn.gold{border-color:rgba(255,211,107,.35); background:rgba(255,211,107,.08)}
+    .btn.bad{border-color:rgba(255,91,122,.35); background:rgba(255,91,122,.08)}
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .hero{
+      position:relative; border-radius:var(--radius2);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--stroke); overflow:hidden; box-shadow:var(--shadow);
+      min-height: 320px;
+    }
+    .hero video, .hero img{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover;           /* FIX: nunca cortado feo */
+      object-position:center;     /* centro */
+      transform:scale(1.02);
+      filter:saturate(1.12) contrast(1.08);
+    }
+    .hero::after{
+      content:""; position:absolute; inset:0;
+      background: radial-gradient(700px 250px at 55% 65%, rgba(0,0,0,.10), rgba(0,0,0,.75));
+      pointer-events:none;
+    }
+    .heroHUD{
+      position:absolute; left:18px; right:18px; bottom:14px;
+      display:flex; align-items:flex-end; justify-content:space-between; gap:12px; z-index:2;
+    }
+    .heroLeft{display:flex; flex-direction:column; gap:6px}
+    .heroLeft .small{color:rgba(255,255,255,.72); font-size:13px}
+    .heroLeft .small .ok{color:var(--good)}
+    .heroLeft .small .ko{color:var(--bad)}
+    .heroSpeak{
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.12);
+      padding:10px 12px; border-radius:999px; color:rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+      max-width: 72%;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
     .panel{
-      margin-top:12px;
-      border:1px solid var(--stroke); border-radius:22px;
-      background:var(--card); backdrop-filter: blur(12px);
-      box-shadow: var(--glow);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .bar{
-      display:flex; gap:8px; flex-wrap:wrap; padding:12px; border-bottom:1px solid var(--stroke);
+    .panelHead{
+      padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background:rgba(255,255,255,.02);
+      border-bottom:1px solid rgba(255,255,255,.06);
     }
-    .chat{padding:12px; max-height:44vh; overflow:auto}
-    .msg{border:1px solid var(--stroke); border-radius:18px; padding:12px; margin:10px 0; background:rgba(0,0,0,.18)}
-    .sys{opacity:.85}
-    .you{background:rgba(18,34,56,.25)}
-    .ai{background:rgba(12,44,34,.22)}
-    .inputRow{display:flex; gap:10px; padding:12px; border-top:1px solid var(--stroke); align-items:flex-end}
+    .panelBody{padding:12px 14px}
+    .rowBtns{display:flex; flex-wrap:wrap; gap:10px}
+    .chat{
+      height: 420px; overflow:auto; padding:12px 14px;
+      background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.35));
+    }
+    .msg{display:flex; gap:10px; margin:10px 0}
+    .tag{
+      min-width:44px; height:26px; padding:0 10px; border-radius:999px;
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:800; letter-spacing:.4px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.75);
+    }
+    .bubble{
+      flex:1;
+      border-radius:14px;
+      padding:12px 12px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      color:rgba(255,255,255,.90);
+      line-height:1.35;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    .bubble.ai{background:rgba(46,242,163,.06); border-color:rgba(46,242,163,.18)}
+    .bubble.sys{background:rgba(255,255,255,.03)}
+    .composer{
+      display:flex; gap:10px; padding:12px; border-top:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.02);
+    }
     textarea{
-      flex:1; min-height:54px; max-height:140px; resize:vertical;
-      border-radius:18px; border:1px solid var(--stroke);
-      padding:12px; background:rgba(0,0,0,.22); color:var(--text);
+      flex:1; resize:none; height:56px; max-height:140px;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      padding:12px 12px;
+      border-radius:14px;
       outline:none;
     }
-    .send{min-width:120px; padding:14px 16px; border-radius:18px;}
-    .row2{display:flex; gap:10px; flex-wrap:wrap; padding:12px; border-top:1px solid var(--stroke)}
-    .file{display:flex; align-items:center; gap:10px}
-    input[type=file]{color:var(--muted)}
-    .kbd{opacity:.72; font-size:12px}
-    .badge{font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--stroke); background:rgba(0,0,0,.22)}
-    .spacer{flex:1}
-    .camWrap{display:none; margin-top:10px}
-    .camWrap.active{display:block}
-    #camVideo{width:100%; border-radius:18px; border:1px solid var(--stroke); background:#000}
+    .meta{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:rgba(255,255,255,.62); padding:8px 12px}
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; padding:.5px 6px; border-radius:7px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25)}
+    .camPreview{
+      width:100%;
+      aspect-ratio: 16/9;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      background:rgba(0,0,0,.35);
+      display:none;
+      margin-top:10px;
+    }
+    .camPreview video{width:100%; height:100%; object-fit:cover; object-position:center; transform:scale(1.02)}
+    .hint{color:rgba(255,255,255,.70); font-size:13px}
+    .smallnote{color:rgba(255,255,255,.55); font-size:12px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="top">
-      <div class="brand"><span class="dot"></span><span>CONSIA ∞</span></div>
-      <div class="pill"><span class="dot" id="onlineDot" style="background:#ff4d4d; box-shadow:0 0 14px rgba(255,77,77,.35)"></span>
-        <small id="onlineTxt">OFFLINE</small>
-        <span class="badge" id="rtTxt">realtime: auto</span>
-        <button class="btn" id="testApiBtn">Test API</button>
+    <header>
+      <div class="brand"><span class="dot" id="dot"></span> CONSIA ∞</div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <div class="pill"><span id="rtBadge">REALTIME</span> · <b id="rtState">auto</b></div>
+        <button class="btn" id="btnTest">Test API</button>
       </div>
-    </div>
+    </header>
 
-    <div class="hero">
-      <div class="avatar" id="avatarBox">
-        <video id="avatarVideo" autoplay muted playsinline loop preload="auto">
-          <source src="consia-entity.mp4" type="video/mp4">
-        </video>
-      </div>
-      <div class="overlay"></div>
-
-      <div class="hud">
-        <div class="hud-left">
-          <div class="hud-row">
-            <span class="badge">API: <b id="apiHost">api.consia.world</b></span>
-            <span class="badge" id="rtState">Realtime: —</span>
+    <div class="grid">
+      <div class="hero" aria-label="Avatar CONSIA">
+        <video id="avatarVideo" src="avatar.mp4" autoplay muted loop playsinline></video>
+        <img id="avatarImg" alt="" style="display:none" />
+        <div class="heroHUD">
+          <div class="heroLeft">
+            <div class="small">
+              <span id="realtimeText" class="ok">●</span>
+              <span id="realtimeLabel">Realtime conectando...</span>
+            </div>
+            <div class="small">API: <span id="apiLabel">api.consia.world</span></div>
           </div>
-          <div class="hint" id="voiceHint">Voz: listo. Tocá 🎙 Hablar (si el navegador soporta).</div>
+          <div class="heroSpeak" id="heroSpeak">Decí “Hola CONSIA” o escribí abajo. (voz si el navegador soporta)</div>
         </div>
-        <div class="hud-row">
-          <button class="btn primary" id="btnGuide">Guiame (3 opciones)</button>
-          <button class="btn" id="btnCan">¿Qué puede hacer?</button>
-          <button class="btn" id="btnHyper">Hiperrealismo</button>
-          <button class="btn" id="btnVoice">Voz</button>
-          <button class="btn" id="btnCam">Cámara</button>
-          <button class="btn ok" id="btnAscend">⚡ ASCEND</button>
+      </div>
+
+      <div class="panel">
+        <div class="panelHead">
+          <div class="hint">Control ultra (click / voz / texto)</div>
+          <div class="rowBtns">
+            <button class="btn primary" id="btnSpeak">Hablar</button>
+            <button class="btn" id="btnStopVoice">Stop voz</button>
+            <button class="btn" id="btnClear">Limpiar</button>
+          </div>
+        </div>
+        <div class="panelBody">
+          <div class="rowBtns">
+            <button class="btn" id="btnGuide">🧭 Guiame (3 opciones)</button>
+            <button class="btn" id="btnCanDo">🧠 ¿Qué puede hacer?</button>
+            <button class="btn" id="btnHyper">🖼️ Hiperrealismo</button>
+            <button class="btn gold" id="btnAscend">⚡ ASCEND</button>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div class="rowBtns">
+            <label class="btn" style="cursor:pointer">
+              📎 Subir archivo
+              <input id="fileInput" type="file" multiple style="display:none" />
+            </label>
+            <button class="btn" id="btnCamera">📷 Cámara (frontal)</button>
+            <button class="btn" id="btnCameraLive">🎥 Cámara (vivo 10%)</button>
+            <button class="btn" id="btnAvatarMorph">✨ Avatar (morph)</button>
+          </div>
+
+          <div class="camPreview" id="camBox">
+            <video id="camVideo" autoplay muted playsinline></video>
+          </div>
+
+          <div style="height:10px"></div>
+          <div class="smallnote" id="attachNote">Adjuntos: 0</div>
+          <div class="smallnote">Archivos/cámara se envían como contexto al endpoint <span class="kbd">/ask</span>.</div>
         </div>
       </div>
     </div>
+
+    <div style="height:14px"></div>
 
     <div class="panel">
-      <div class="bar">
-        <button class="btn" id="btnUpload">Subir archivo</button>
-        <button class="btn" id="btnCamLive">Cámara (vivo 10%)</button>
-        <button class="btn primary" id="btnTalk">🎙 Hablar</button>
-        <button class="btn" id="btnRead">Leer</button>
-        <button class="btn" id="btnClear">Limpiar</button>
-        <button class="btn warn" id="btnStopVoice">Stop voz</button>
-        <span class="spacer"></span>
-        <span class="kbd">Tip: escribí <b>Avatar:</b> para transformar entidad</span>
-      </div>
-
       <div class="chat" id="chat"></div>
 
-      <div class="row2">
-        <div class="file">
-          <input id="fileInput" type="file" multiple />
-          <span class="badge" id="attCount">Adjuntos: 0</span>
-        </div>
+      <div class="composer">
+        <textarea id="input" placeholder='Decí lo que querés (o escribí ".")'></textarea>
+        <button class="btn primary" id="send">Enviar</button>
       </div>
 
-      <div class="camWrap" id="camWrap">
-        <video id="camVideo" autoplay playsinline muted></video>
-      </div>
-
-      <div class="inputRow">
-        <textarea id="msg" placeholder='Decí lo que querés (o escribí ".")'></textarea>
-        <button class="btn primary send" id="send">Enviar</button>
+      <div class="meta">
+        <div>Idioma: <b id="lang">ES</b></div>
+        <div>Realtime: <b id="rtMode">auto</b></div>
+        <div>Adjuntos: <b id="attachCount">0</b></div>
+        <div>Voz: <b id="voiceState">listo</b></div>
       </div>
     </div>
   </div>
 
 <script>
 (() => {
-  const API = "https://api.consia.world";
+  const API_BASE = (localStorage.getItem("CONSIA_API_BASE") || "https://api.consia.world").replace(/\/+$/,"");
+  const ASK_URL = API_BASE + "/ask";
+  const WS_URL  = API_BASE.replace(/^http/,"ws") + "/realtime";
+
   const chat = document.getElementById("chat");
-  const msg = document.getElementById("msg");
-  const send = document.getElementById("send");
-  const fileInput = document.getElementById("fileInput");
-  const attCount = document.getElementById("attCount");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+  const btnTest = document.getElementById("btnTest");
 
-  const avatarVideo = document.getElementById("avatarVideo");
-  const onlineDot = document.getElementById("onlineDot");
-  const onlineTxt = document.getElementById("onlineTxt");
-  const rtState = document.getElementById("rtState");
+  const attachCount = document.getElementById("attachCount");
+  const attachNote = document.getElementById("attachNote");
 
-  const camWrap = document.getElementById("camWrap");
+  const rtLabel = document.getElementById("realtimeLabel");
+  const rtDot = document.getElementById("realtimeText");
+
+  const camBox = document.getElementById("camBox");
   const camVideo = document.getElementById("camVideo");
 
-  let attachments = [];
-  let mediaStream = null;
+  const heroSpeak = document.getElementById("heroSpeak");
 
-  function add(role, text){
-    const d = document.createElement("div");
-    d.className = "msg " + (role==="SYS"?"sys":role==="YOU"?"you":"ai");
-    d.textContent = text;
-    chat.appendChild(d);
-    chat.scrollTop = chat.scrollHeight;
-  }
+  let files = [];
+  let ws = null;
 
-  function setOnline(ok){
-    onlineDot.style.background = ok ? "#25ffb1" : "#ff4d4d";
-    onlineDot.style.boxShadow = ok ? "0 0 14px rgba(37,255,177,.35)" : "0 0 14px rgba(255,77,77,.35)";
-    onlineTxt.textContent = ok ? "ONLINE" : "OFFLINE";
-  }
+  // Voice (STT + TTS) — ejecuta real, no depende del modelo
+  const voiceState = document.getElementById("voiceState");
+  const btnSpeak = document.getElementById("btnSpeak");
+  const btnStopVoice = document.getElementById("btnStopVoice");
 
-  async function apiJSON(path, body){
-    const res = await fetch(API + path, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(body || {})
-    });
-    const data = await res.json().catch(()=>({ok:false,error:"bad_json"}));
-    if(!res.ok) throw new Error(data?.error || ("HTTP "+res.status));
-    return data;
-  }
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const canSTT = !!SpeechRec;
+  const rec = canSTT ? new SpeechRec() : null;
+  let listening = false;
 
-  async function refreshAvatar(){
-    try{
-      const r = await fetch(API + "/avatar/latest", { method:"GET" });
-      const data = await r.json();
-      if(data?.url){
-        avatarVideo.pause();
-        avatarVideo.querySelector("source").src = data.url;
-        avatarVideo.load();
-        await avatarVideo.play().catch(()=>{});
+  if (rec) {
+    rec.lang = "es-AR";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = (e) => {
+      const text = (e.results?.[0]?.[0]?.transcript || "").trim();
+      if (text) {
+        input.value = text;
+        send();
       }
-    }catch(e){}
+    };
+    rec.onend = () => {
+      listening = false;
+      voiceState.textContent = "listo";
+      btnSpeak.textContent = "Hablar";
+    };
   }
 
-  async function testAPI(){
+  function speak(text){
     try{
-      const r = await fetch(API + "/health", { method:"GET" });
-      const data = await r.json();
-      setOnline(!!data?.ok);
-      add("SYS", JSON.stringify(data));
-    }catch(e){
-      setOnline(false);
-      add("SYS", "API OFFLINE");
-    }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text.slice(0, 1200));
+      u.lang = "es-ES";
+      u.rate = 1.0;
+      u.pitch = 1.0;
+      window.speechSynthesis.speak(u);
+    }catch{}
   }
 
-  function filesToBase64(files){
-    const tasks = Array.from(files).map(f => new Promise((resolve)=>{
-      const r = new FileReader();
-      r.onload = () => resolve({ name:f.name, type:f.type||"application/octet-stream", data:String(r.result).split(",")[1] });
-      r.readAsDataURL(f);
-    }));
-    return Promise.all(tasks);
-  }
-
-  async function startCamFront(){
-    if(mediaStream) return;
-    mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" }, audio:false
-    });
-    camVideo.srcObject = mediaStream;
-    camWrap.classList.add("active");
-  }
-
-  function stopCam(){
-    if(!mediaStream) return;
-    mediaStream.getTracks().forEach(t=>t.stop());
-    mediaStream = null;
-    camWrap.classList.remove("active");
-  }
-
-  async function captureFrameBase64(){
-    if(!camVideo.videoWidth) return null;
-    const c = document.createElement("canvas");
-    c.width = camVideo.videoWidth; c.height = camVideo.videoHeight;
-    const ctx = c.getContext("2d");
-    ctx.drawImage(camVideo,0,0,c.width,c.height);
-    const dataUrl = c.toDataURL("image/jpeg", 0.82);
-    return dataUrl.split(",")[1];
-  }
-
-  async function sendMessage(text){
-    const t = (text||"").trim();
-    if(!t) return;
-
-    // AVATAR TRANSFORM (infinito): "Avatar: ..."
-    if(/^avatar\s*:/i.test(t)){
-      add("YOU", t);
-      const instruction = t.replace(/^avatar\s*:/i,"").trim();
-      const out = await apiJSON("/avatar/transform", { instruction });
-      add("AI", out?.reply || "OK");
-      await refreshAvatar();
-      msg.value="";
-      return;
-    }
-
-    // CÁMARA 10%: "Cam:" o botón
-    const useCam = /^cam\s*:/i.test(t);
-
-    add("YOU", t);
-    const payload = { message: t, attachments };
-
-    if(useCam){
-      await startCamFront().catch(()=>{});
-      const frame = await captureFrameBase64();
-      if(frame) payload.camera_frame_b64 = frame;
-    }
-
-    const out = await apiJSON("/ask", payload);
-    add("AI", out?.reply ? out.reply : JSON.stringify(out));
-    msg.value="";
-    attachments = [];
-    attCount.textContent = "Adjuntos: 0";
-    fileInput.value = "";
-  }
-
-  // Buttons
-  document.getElementById("testApiBtn").onclick = testAPI;
-
-  document.getElementById("btnGuide").onclick = () =>
-    sendMessage("Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.");
-
-  document.getElementById("btnCan").onclick = () =>
-    sendMessage("¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo.");
-
-  document.getElementById("btnHyper").onclick = () =>
-    sendMessage("Hiperrealismo: dame 3 opciones (Imagen/Video/Avatar). Pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.");
-
-  document.getElementById("btnVoice").onclick = () =>
-    sendMessage("Voz: modo ultra. Preguntas cortas. Confirmaciones sí/no.");
-
-  document.getElementById("btnCam").onclick = async () => {
-    await startCamFront().catch(()=>add("SYS","Cámara no disponible"));
-    add("SYS","Cámara frontal activa.");
+  btnSpeak.onclick = () => {
+    if (!rec) { pushSys("SYS", "Voz: navegador sin SpeechRecognition."); return; }
+    if (listening) { rec.stop(); return; }
+    listening = true;
+    voiceState.textContent = "escuchando";
+    btnSpeak.textContent = "Escuchando…";
+    rec.start();
   };
 
-  document.getElementById("btnAscend").onclick = () =>
-    sendMessage("ASCEND: modo ultra. Respuestas cortas, plan inmediato y checklist.");
+  btnStopVoice.onclick = () => {
+    try { window.speechSynthesis.cancel(); } catch {}
+    if (rec && listening) { try { rec.stop(); } catch {} }
+    voiceState.textContent = "listo";
+    btnSpeak.textContent = "Hablar";
+  };
 
-  document.getElementById("btnUpload").onclick = () => fileInput.click();
-  document.getElementById("btnCamLive").onclick = async () => { await startCamFront().catch(()=>{}); };
-  document.getElementById("btnTalk").onclick = () => sendMessage("Voz: activá escucha y respondé. (Si no hay soporte, contestá por texto).");
-  document.getElementById("btnRead").onclick = () => sendMessage("Leé el historial y resumí en 7 bullets + acciones.");
-  document.getElementById("btnClear").onclick = () => { chat.innerHTML=""; add("SYS","CONSIA UI listo."); };
-  document.getElementById("btnStopVoice").onclick = () => sendMessage("Stop voz.");
+  // Chat UI
+  function pushMsg(tag, text, cls="") {
+    const row = document.createElement("div");
+    row.className = "msg";
+    const t = document.createElement("div");
+    t.className = "tag";
+    t.textContent = tag;
+    const b = document.createElement("div");
+    b.className = "bubble " + cls;
+    b.textContent = (text || "").replaceAll("Concia","CONSIA").replaceAll("concia","CONSIA");
+    row.appendChild(t); row.appendChild(b);
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+  function pushSys(tag, text){ pushMsg(tag, text, "sys"); }
+  function pushAI(text){ pushMsg("AI", text, "ai"); heroSpeak.textContent = (text || "").slice(0, 120); speak(text || ""); }
 
-  fileInput.addEventListener("change", async (e)=>{
-    const files = e.target.files;
-    if(!files || !files.length) return;
-    attachments = await filesToBase64(files);
-    attCount.textContent = "Adjuntos: " + attachments.length;
-    add("SYS", "Adjuntos listos: " + attachments.map(a=>a.name).join(", "));
-  });
-
-  send.onclick = () => sendMessage(msg.value);
-  msg.addEventListener("keydown", (e)=>{
-    if(e.key==="Enter" && !e.shiftKey){
-      e.preventDefault();
-      sendMessage(msg.value);
+  // Realtime
+  function connectWS(){
+    try{
+      ws = new WebSocket(WS_URL);
+      ws.onopen = () => { rtDot.textContent="●"; rtDot.className="ok"; rtLabel.textContent="Realtime conectado."; };
+      ws.onclose = () => { rtDot.textContent="●"; rtDot.className="ko"; rtLabel.textContent="Realtime desconectado."; setTimeout(connectWS, 1800); };
+      ws.onmessage = (e) => {
+        try{
+          const j = JSON.parse(e.data);
+          if (j?.type === "hello") pushSys("SYS", JSON.stringify(j));
+        }catch{}
+      };
+    }catch{
+      rtDot.textContent="●"; rtDot.className="ko"; rtLabel.textContent="Realtime no disponible.";
     }
+  }
+  connectWS();
+
+  // Test API
+  btnTest.onclick = async () => {
+    const r = await fetch(API_BASE + "/health").catch(()=>null);
+    if (!r) return pushSys("SYS","API offline.");
+    const j = await r.json().catch(()=>({}));
+    pushSys("SYS", JSON.stringify(j, null, 2));
+  };
+
+  // Attachments
+  const fileInput = document.getElementById("fileInput");
+  fileInput.onchange = () => {
+    files = Array.from(fileInput.files || []);
+    attachCount.textContent = String(files.length);
+    attachNote.textContent = "Adjuntos: " + files.length;
+    pushSys("SYS", `Adjuntos cargados: ${files.map(f=>f.name).join(", ") || "0"}`);
+  };
+
+  // Camera (FRONTAL)
+  let camStream = null;
+  async function startCam(){
+    if (camStream) return;
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" },  // FIX: frontal
+      audio: false
+    });
+    camVideo.srcObject = camStream;
+    camBox.style.display = "block";
+  }
+  function stopCam(){
+    if (!camStream) return;
+    camStream.getTracks().forEach(t=>t.stop());
+    camStream = null;
+    camVideo.srcObject = null;
+    camBox.style.display = "none";
+  }
+  async function snapJpegBlob(){
+    const v = camVideo;
+    const c = document.createElement("canvas");
+    const w = Math.max(640, v.videoWidth || 640);
+    const h = Math.max(360, v.videoHeight || 360);
+    c.width = w; c.height = h;
+    const ctx = c.getContext("2d");
+    ctx.drawImage(v, 0, 0, w, h);
+    return await new Promise(res => c.toBlob(res, "image/jpeg", 0.86));
+  }
+
+  document.getElementById("btnCamera").onclick = async () => {
+    try{
+      await startCam();
+      pushSys("SYS","Cámara frontal lista.");
+    }catch{
+      pushSys("SYS","Cámara bloqueada. Permití acceso.");
+    }
+  };
+
+  // Camera live 10% (envía 1 frame por acción, SAFE)
+  document.getElementById("btnCameraLive").onclick = async () => {
+    try{
+      await startCam();
+      const blob = await snapJpegBlob();
+      files = [new File([blob], "camera_live.jpg", { type:"image/jpeg" })];
+      attachCount.textContent = "1";
+      attachNote.textContent = "Adjuntos: 1 (camera_live.jpg)";
+      pushSys("SYS","Frame tomado (vivo 10%). Decime 1 frase: dónde/qué querés “teletransportar” en hiperrealismo.");
+    }catch{
+      pushSys("SYS","No se pudo usar cámara.");
+    }
+  };
+
+  // Avatar morph (envía prompt al backend)
+  document.getElementById("btnAvatarMorph").onclick = async () => {
+    const p = (input.value || "").trim();
+    if (!p) { pushSys("SYS","Escribí 1 frase del nuevo aspecto del avatar y tocá Avatar (morph)."); return; }
+    const r = await fetch(API_BASE + "/avatar/transform", {
+      method:"POST",
+      headers:{ "content-type":"application/json" },
+      body: JSON.stringify({ prompt: p })
+    }).catch(()=>null);
+    if (!r) return pushSys("SYS","Backend offline para morph.");
+    const j = await r.json().catch(()=>({}));
+    pushSys("SYS", (j?.reply || "Avatar actualizado."));
+    if (j?.avatar?.url) {
+      // si hay url renderizada, la usamos
+      const av = document.getElementById("avatarVideo");
+      av.pause();
+      av.removeAttribute("src");
+      const img = document.getElementById("avatarImg");
+      img.src = j.avatar.url;
+      img.style.display = "block";
+      av.style.display = "none";
+    }
+  };
+
+  // Buttons preset
+  document.getElementById("btnGuide").onclick = () => { input.value = "Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá."; send(); };
+  document.getElementById("btnCanDo").onclick = () => { input.value = "¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo."; send(); };
+  document.getElementById("btnHyper").onclick = () => { input.value = "Hiperrealismo: dame 3 opciones (Imagen/Video/Avatar). Pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá."; send(); };
+  document.getElementById("btnAscend").onclick = () => { input.value = "ASCEND: modo ultra. Respuestas cortas. 1 pregunta mínima. Checklist inmediato."; send(); };
+
+  // Clear
+  document.getElementById("btnClear").onclick = () => {
+    chat.innerHTML = "";
+    pushSys("SYS","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
+  };
+
+  // Send
+  async function send(){
+    let msg = (input.value || "").trim();
+    if (!msg && files.length === 0) return;
+
+    msg = msg.replaceAll("Concia","CONSIA").replaceAll("concia","CONSIA");
+    pushMsg("YO", msg || "(adjuntos)", "");
+
+    input.value = "";
+
+    let res = null;
+
+    // multipart si hay adjuntos, sino JSON
+    if (files.length > 0) {
+      const fd = new FormData();
+      fd.append("message", msg || "Analizá adjuntos.");
+      fd.append("mode", "mixed");
+      fd.append("lang", "ES");
+      files.forEach((f,i)=>fd.append("file"+i, f, f.name));
+      res = await fetch(ASK_URL, { method:"POST", body: fd }).catch(()=>null);
+    } else {
+      res = await fetch(ASK_URL, {
+        method:"POST",
+        headers:{ "content-type":"application/json" },
+        body: JSON.stringify({ message: msg, mode:"text", lang:"ES" })
+      }).catch(()=>null);
+    }
+
+    // reset adjuntos post envío
+    files = [];
+    fileInput.value = "";
+    attachCount.textContent = "0";
+    attachNote.textContent = "Adjuntos: 0";
+
+    if (!res) return pushAI("CONSIA: backend offline. Decime 1 objetivo y lo ejecuto en modo local.");
+
+    const j = await res.json().catch(()=>({}));
+    if (!j?.ok) return pushAI("CONSIA: error: " + (j?.error || "unknown"));
+
+    pushAI(j.reply || "CONSIA: listo.");
+  }
+
+  sendBtn.onclick = send;
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   });
 
-  // boot
-  add("SYS", "CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
-  testAPI();
-  refreshAvatar();
-  rtState.textContent = "Realtime: auto";
+  // Boot
+  document.getElementById("apiLabel").textContent = API_BASE.replace(/^https?:\/\//,"");
+  pushSys("SYS","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
 })();
 </script>
 </body>

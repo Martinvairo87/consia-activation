@@ -1,524 +1,775 @@
-<!-- index.html — CONSIA_UI_SEALED v1.0 — pegar TODO -->
+<!-- =========================
+     CONSIA — index.html (COMPLETO)
+     ✅ Avatar centrado (no cortado)
+     ✅ Voz (SpeechRecognition + TTS)
+     ✅ Texto + Click
+     ✅ Subir archivos (fotos/videos/docs)
+     ✅ Cámara FRONTAL + vivo 100% (frames → /ask)
+     ✅ Owner-Only panel (token local) + endpoints /owner/seal y /avatar/transform
+     ========================= -->
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#070A10" />
   <title>CONSIA ∞</title>
   <style>
     :root{
-      --bg:#05070c;
-      --panel:rgba(255,255,255,.04);
-      --panel2:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.64);
-      --good:#2ef2a3;
-      --warn:#ffd36b;
-      --bad:#ff5b7a;
-      --shadow: 0 18px 70px rgba(0,0,0,.55);
+      --bg:#05070b;
+      --panel:#0b1220cc;
+      --panel2:#0b1220f2;
+      --stroke:#1f2a44;
+      --soft:#94a3b8;
+      --text:#e6eefc;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --chip:#0f1b33;
+      --chip2:#0d172c;
+      --glow: 0 0 40px rgba(80,160,255,.18);
       --radius:18px;
-      --radius2:26px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background:radial-gradient(1200px 600px at 20% -10%, rgba(80,140,255,.18), transparent 60%),
-      radial-gradient(900px 500px at 90% 10%, rgba(255,210,120,.10), transparent 55%),
-      radial-gradient(1000px 700px at 60% 120%, rgba(80,255,200,.08), transparent 60%),
-      var(--bg);
-      color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      overflow-x:hidden;
-    }
-    .wrap{max-width:1200px; margin:0 auto; padding:18px 18px 22px}
-    header{
-      display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 2px 14px;
-    }
-    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.5px}
-    .dot{width:10px; height:10px; border-radius:999px; background:var(--good); box-shadow:0 0 20px rgba(46,242,163,.6)}
-    .pill{
-      display:flex; align-items:center; gap:10px;
-      background:rgba(255,255,255,.03); border:1px solid var(--stroke);
-      padding:9px 12px; border-radius:999px; box-shadow:var(--shadow);
-      color:var(--muted); font-size:13px;
-    }
-    .pill b{color:var(--text); font-weight:700}
-    .btn{
-      appearance:none; border:1px solid var(--stroke); background:rgba(255,255,255,.03);
-      color:var(--text); padding:10px 12px; border-radius:999px; cursor:pointer;
-      display:inline-flex; align-items:center; gap:8px;
-      transition:transform .06s ease, background .2s ease, border-color .2s ease;
-      user-select:none;
-    }
-    .btn:hover{background:rgba(255,255,255,.05)}
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 600px at 50% -20%, #0b1630 0%, var(--bg) 55%, #03040a 100%);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:1100px;margin:0 auto;padding:14px 14px 26px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.6px}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 18px rgba(34,197,94,.55)}
+    .badge{display:flex;align-items:center;gap:10px;background:rgba(8,12,22,.7);border:1px solid var(--stroke);padding:8px 10px;border-radius:999px}
+    .pill{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(10,18,34,.8);border:1px solid var(--stroke)}
+    .pill small{color:var(--soft)}
+    .btn{cursor:pointer;user-select:none;border:1px solid var(--stroke);background:linear-gradient(180deg,var(--chip),var(--chip2));color:var(--text);padding:10px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-weight:600}
     .btn:active{transform:translateY(1px)}
-    .btn.primary{border-color:rgba(46,242,163,.35); background:rgba(46,242,163,.07)}
-    .btn.gold{border-color:rgba(255,211,107,.35); background:rgba(255,211,107,.08)}
-    .btn.bad{border-color:rgba(255,91,122,.35); background:rgba(255,91,122,.08)}
-    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px}
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
-    .hero{
-      position:relative; border-radius:var(--radius2);
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border:1px solid var(--stroke); overflow:hidden; box-shadow:var(--shadow);
-      min-height: 320px;
-    }
-    .hero video, .hero img{
-      position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover;           /* FIX: nunca cortado feo */
-      object-position:center;     /* centro */
-      transform:scale(1.02);
-      filter:saturate(1.12) contrast(1.08);
-    }
-    .hero::after{
-      content:""; position:absolute; inset:0;
-      background: radial-gradient(700px 250px at 55% 65%, rgba(0,0,0,.10), rgba(0,0,0,.75));
-      pointer-events:none;
-    }
-    .heroHUD{
-      position:absolute; left:18px; right:18px; bottom:14px;
-      display:flex; align-items:flex-end; justify-content:space-between; gap:12px; z-index:2;
-    }
-    .heroLeft{display:flex; flex-direction:column; gap:6px}
-    .heroLeft .small{color:rgba(255,255,255,.72); font-size:13px}
-    .heroLeft .small .ok{color:var(--good)}
-    .heroLeft .small .ko{color:var(--bad)}
-    .heroSpeak{
-      background:rgba(0,0,0,.35);
-      border:1px solid rgba(255,255,255,.12);
-      padding:10px 12px; border-radius:999px; color:rgba(255,255,255,.82);
-      backdrop-filter: blur(10px);
-      max-width: 72%;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .panel{
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.03);
+    .btn.primary{border-color:#284a86;background:linear-gradient(180deg,#17325d,#0e1f3e)}
+    .btn.danger{border-color:#7a1a1a;background:linear-gradient(180deg,#3a1010,#1a0b0b)}
+    .btn.ok{border-color:#1f6a3c;background:linear-gradient(180deg,#0f2e1f,#0b1f16)}
+    .btn.warn{border-color:#7a5b1a;background:linear-gradient(180deg,#2d2510,#1b160a)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .stage{
+      background:linear-gradient(180deg,rgba(10,18,34,.85),rgba(6,10,18,.92));
       border:1px solid var(--stroke);
-      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      box-shadow:var(--glow);
       overflow:hidden;
     }
-    .panelHead{
-      padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;
-      background:rgba(255,255,255,.02);
-      border-bottom:1px solid rgba(255,255,255,.06);
+    .hero{
+      position:relative;
+      width:100%;
+      height:min(44vh,420px);
+      min-height:260px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(900px 360px at 50% 40%, rgba(120,190,255,.15), transparent 60%);
     }
-    .panelBody{padding:12px 14px}
-    .rowBtns{display:flex; flex-wrap:wrap; gap:10px}
-    .chat{
-      height: 420px; overflow:auto; padding:12px 14px;
-      background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.35));
+    .hero video{
+      width:100%;
+      height:100%;
+      object-fit:contain; /* ✅ NO CORTA */
+      object-position:center center;
+      filter:contrast(1.08) saturate(1.08);
+      background:transparent;
     }
-    .msg{display:flex; gap:10px; margin:10px 0}
+    .hero::after{
+      content:"";
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.55));
+      pointer-events:none;
+    }
+    .heroHud{
+      position:absolute;left:14px;bottom:14px;right:14px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      pointer-events:none;
+    }
+    .hudLeft{display:flex;flex-direction:column;gap:6px}
+    .hudLeft .mini{display:flex;gap:10px;align-items:center;color:var(--soft);font-weight:600}
+    .hudLeft .mini b{color:var(--text)}
+    .hint{
+      pointer-events:none;
+      background:rgba(3,6,12,.55);
+      border:1px solid rgba(31,42,68,.8);
+      padding:10px 12px;border-radius:999px;color:#cbd5e1;
+      max-width:min(520px, 78vw);
+      text-overflow:ellipsis;overflow:hidden;white-space:nowrap;
+    }
+    .controls{
+      padding:12px 12px 14px;
+      border-top:1px solid rgba(31,42,68,.65);
+      background:rgba(6,10,18,.75);
+    }
+    .log{
+      margin-top:10px;
+      background:rgba(4,7,12,.65);
+      border:1px solid rgba(31,42,68,.55);
+      border-radius:16px;
+      padding:12px;
+      min-height:250px;
+      max-height:44vh;
+      overflow:auto;
+    }
+    .msg{display:flex;gap:10px;margin:10px 0}
     .tag{
-      min-width:44px; height:26px; padding:0 10px; border-radius:999px;
-      display:inline-flex; align-items:center; justify-content:center;
-      font-size:12px; font-weight:800; letter-spacing:.4px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      color:rgba(255,255,255,.75);
+      min-width:44px;
+      height:26px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      border:1px solid rgba(31,42,68,.8);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.8px;
+      opacity:.92;
     }
+    .tag.sys{background:rgba(25,30,42,.65);color:#dbeafe}
+    .tag.you{background:rgba(14,37,65,.72);color:#e0f2fe}
+    .tag.ai{background:rgba(14,65,45,.55);color:#dcfce7}
     .bubble{
       flex:1;
+      background:rgba(8,12,22,.75);
+      border:1px solid rgba(31,42,68,.55);
       border-radius:14px;
-      padding:12px 12px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      color:rgba(255,255,255,.90);
-      line-height:1.35;
+      padding:10px 12px;
+      color:#e5e7eb;
       white-space:pre-wrap;
       word-break:break-word;
     }
-    .bubble.ai{background:rgba(46,242,163,.06); border-color:rgba(46,242,163,.18)}
-    .bubble.sys{background:rgba(255,255,255,.03)}
     .composer{
-      display:flex; gap:10px; padding:12px; border-top:1px solid rgba(255,255,255,.06);
-      background:rgba(255,255,255,.02);
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
     }
     textarea{
-      flex:1; resize:none; height:56px; max-height:140px;
-      background:rgba(0,0,0,.35);
-      border:1px solid rgba(255,255,255,.12);
+      flex:1;
+      resize:none;
+      height:86px;
+      border-radius:16px;
+      border:1px solid rgba(31,42,68,.7);
+      background:rgba(5,8,14,.85);
       color:var(--text);
       padding:12px 12px;
-      border-radius:14px;
       outline:none;
+      font-size:15px;
+      line-height:1.25;
     }
-    .meta{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:rgba(255,255,255,.62); padding:8px 12px}
-    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; padding:.5px 6px; border-radius:7px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25)}
+    .send{
+      min-width:140px;
+      height:86px;
+      border-radius:16px;
+      border:1px solid rgba(40,74,134,.9);
+      background:linear-gradient(180deg,#183765,#0d1f3f);
+      color:var(--text);
+      font-weight:900;
+      letter-spacing:.6px;
+    }
+    .subrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;color:var(--soft);font-weight:700}
+    .kv{display:flex;gap:10px;flex-wrap:wrap}
+    .kv span{opacity:.9}
+    .ownerPanel{
+      margin-top:10px;
+      padding:12px;
+      border:1px dashed rgba(148,163,184,.35);
+      border-radius:16px;
+      background:rgba(4,8,14,.45);
+      display:none;
+    }
+    .ownerPanel.show{display:block}
+    input[type="password"], input[type="text"]{
+      height:42px;border-radius:12px;border:1px solid rgba(31,42,68,.7);
+      background:rgba(5,8,14,.85);color:var(--text);padding:0 12px;outline:none;min-width:240px;
+    }
     .camPreview{
-      width:100%;
-      aspect-ratio: 16/9;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
+      margin-top:10px;
+      display:none;
+      border:1px solid rgba(31,42,68,.6);
+      border-radius:16px;
       overflow:hidden;
       background:rgba(0,0,0,.35);
-      display:none;
-      margin-top:10px;
     }
-    .camPreview video{width:100%; height:100%; object-fit:cover; object-position:center; transform:scale(1.02)}
-    .hint{color:rgba(255,255,255,.70); font-size:13px}
-    .smallnote{color:rgba(255,255,255,.55); font-size:12px}
+    .camPreview.show{display:block}
+    .camPreview video{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+    }
+    @media (max-width:720px){
+      .send{min-width:120px}
+      .hero{height:320px}
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand"><span class="dot" id="dot"></span> CONSIA ∞</div>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-        <div class="pill"><span id="rtBadge">REALTIME</span> · <b id="rtState">auto</b></div>
-        <button class="btn" id="btnTest">Test API</button>
-      </div>
-    </header>
+<div class="wrap">
 
-    <div class="grid">
-      <div class="hero" aria-label="Avatar CONSIA">
-        <video id="avatarVideo" src="avatar.mp4" autoplay muted loop playsinline></video>
-        <img id="avatarImg" alt="" style="display:none" />
-        <div class="heroHUD">
-          <div class="heroLeft">
-            <div class="small">
-              <span id="realtimeText" class="ok">●</span>
-              <span id="realtimeLabel">Realtime conectando...</span>
-            </div>
-            <div class="small">API: <span id="apiLabel">api.consia.world</span></div>
-          </div>
-          <div class="heroSpeak" id="heroSpeak">Decí “Hola CONSIA” o escribí abajo. (voz si el navegador soporta)</div>
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>CONSIA <span style="opacity:.65">∞</span></div>
+    </div>
+    <div class="badge">
+      <div class="pill"><small id="rtLabel">Realtime</small> <b id="rtStatus">desconectado</b></div>
+      <div class="pill"><small>API</small> <b id="apiLabel">api.consia.world</b></div>
+      <button class="btn primary" id="btnTest">Test API</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="hero">
+      <video id="avatarVideo" autoplay muted playsinline loop preload="auto">
+        <source src="avatar.mp4" type="video/mp4" />
+      </video>
+
+      <div class="heroHud">
+        <div class="hudLeft">
+          <div class="mini"><span class="dot" style="width:8px;height:8px"></span><span id="onlineText">ONLINE</span> <span style="opacity:.55">·</span> <b id="modeText">auto</b></div>
+          <div class="mini"><span style="opacity:.8">Decí</span> <b>"Hola CONSIA"</b> <span style="opacity:.8">o escribí abajo</span></div>
         </div>
-      </div>
-
-      <div class="panel">
-        <div class="panelHead">
-          <div class="hint">Control ultra (click / voz / texto)</div>
-          <div class="rowBtns">
-            <button class="btn primary" id="btnSpeak">Hablar</button>
-            <button class="btn" id="btnStopVoice">Stop voz</button>
-            <button class="btn" id="btnClear">Limpiar</button>
-          </div>
-        </div>
-        <div class="panelBody">
-          <div class="rowBtns">
-            <button class="btn" id="btnGuide">🧭 Guiame (3 opciones)</button>
-            <button class="btn" id="btnCanDo">🧠 ¿Qué puede hacer?</button>
-            <button class="btn" id="btnHyper">🖼️ Hiperrealismo</button>
-            <button class="btn gold" id="btnAscend">⚡ ASCEND</button>
-          </div>
-
-          <div style="height:10px"></div>
-
-          <div class="rowBtns">
-            <label class="btn" style="cursor:pointer">
-              📎 Subir archivo
-              <input id="fileInput" type="file" multiple style="display:none" />
-            </label>
-            <button class="btn" id="btnCamera">📷 Cámara (frontal)</button>
-            <button class="btn" id="btnCameraLive">🎥 Cámara (vivo 10%)</button>
-            <button class="btn" id="btnAvatarMorph">✨ Avatar (morph)</button>
-          </div>
-
-          <div class="camPreview" id="camBox">
-            <video id="camVideo" autoplay muted playsinline></video>
-          </div>
-
-          <div style="height:10px"></div>
-          <div class="smallnote" id="attachNote">Adjuntos: 0</div>
-          <div class="smallnote">Archivos/cámara se envían como contexto al endpoint <span class="kbd">/ask</span>.</div>
-        </div>
+        <div class="hint" id="hintText">voz si el navegador soporta</div>
       </div>
     </div>
 
-    <div style="height:14px"></div>
+    <div class="controls">
+      <div class="row">
+        <button class="btn" id="btnGuide">🧭 Guiame (3 opciones)</button>
+        <button class="btn" id="btnWhat">🧠 ¿Qué puede hacer?</button>
+        <button class="btn" id="btnHyper">🖼️ Hiperrealismo</button>
+        <button class="btn" id="btnVoice">🎙️ Voz</button>
+        <button class="btn" id="btnCamera">📷 Cámara</button>
+        <button class="btn warn" id="btnAscend">⚡ ASCEND</button>
+      </div>
 
-    <div class="panel">
-      <div class="chat" id="chat"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="file" id="fileInput" multiple style="display:none" />
+        <button class="btn" id="btnUpload">📎 Subir archivo</button>
+        <button class="btn" id="btnCamLive">📷 Cámara (vivo 100%)</button>
+        <button class="btn ok" id="btnTalk">🗣️ Hablar</button>
+        <button class="btn" id="btnRead">👁️ Leer</button>
+        <button class="btn" id="btnClear">🧹 Limpiar</button>
+        <button class="btn danger" id="btnStopVoice">⏹️ Stop voz</button>
+        <button class="btn" id="btnOwner">🔒 Owner</button>
+      </div>
+
+      <div class="subrow">
+        <div class="kv">
+          <span>Idioma: <b id="langLabel">ES</b></span>
+          <span>Realtime: <b id="rtMode">auto</b></span>
+          <span>Adjuntos: <b id="attCount">0</b></span>
+          <span>Cámara: <b id="camState">off</b></span>
+        </div>
+      </div>
+
+      <div class="ownerPanel" id="ownerPanel">
+        <div class="row">
+          <input id="ownerToken" type="password" placeholder="OWNER TOKEN (solo Martín)" />
+          <button class="btn ok" id="btnOwnerSave">Activar Owner</button>
+          <button class="btn danger" id="btnOwnerOff">Salir Owner</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <input id="avatarPrompt" type="text" placeholder="Avatar prompt (ENTIDAD CONSIA...)" />
+          <button class="btn primary" id="btnAvatarTransform">Actualizar Avatar (global)</button>
+          <button class="btn primary" id="btnSeal">Sellar flags (global)</button>
+        </div>
+        <div class="subrow" style="margin-top:8px">
+          <span>Owner activo: <b id="ownerOn">NO</b></span>
+        </div>
+      </div>
+
+      <div class="camPreview" id="camPreview">
+        <video id="camVideo" autoplay muted playsinline></video>
+      </div>
+
+      <div class="log" id="log"></div>
 
       <div class="composer">
         <textarea id="input" placeholder='Decí lo que querés (o escribí ".")'></textarea>
-        <button class="btn primary" id="send">Enviar</button>
-      </div>
-
-      <div class="meta">
-        <div>Idioma: <b id="lang">ES</b></div>
-        <div>Realtime: <b id="rtMode">auto</b></div>
-        <div>Adjuntos: <b id="attachCount">0</b></div>
-        <div>Voz: <b id="voiceState">listo</b></div>
+        <button class="send" id="sendBtn">Enviar</button>
       </div>
     </div>
   </div>
 
+</div>
+
 <script>
-(() => {
-  const API_BASE = (localStorage.getItem("CONSIA_API_BASE") || "https://api.consia.world").replace(/\/+$/,"");
-  const ASK_URL = API_BASE + "/ask";
-  const WS_URL  = API_BASE.replace(/^http/,"ws") + "/realtime";
+  // ===== CONFIG =====
+  const API = "https://api.consia.world";
+  const ENDPOINT_ASK = API + "/ask";
+  const ENDPOINT_UI  = API + "/ui";
+  const ENDPOINT_AVATAR_LATEST = API + "/avatar/latest";
+  const ENDPOINT_AVATAR_TRANSFORM = API + "/avatar/transform";
+  const ENDPOINT_OWNER_SEAL = API + "/owner/seal";
+  const ENDPOINT_WS = API.replace("https://","wss://") + "/realtime";
 
-  const chat = document.getElementById("chat");
-  const input = document.getElementById("input");
-  const sendBtn = document.getElementById("send");
-  const btnTest = document.getElementById("btnTest");
+  const $ = (id)=>document.getElementById(id);
 
-  const attachCount = document.getElementById("attachCount");
-  const attachNote = document.getElementById("attachNote");
+  // ===== STATE =====
+  let attachments = [];
+  let ownerToken = localStorage.getItem("CONSIA_OWNER_TOKEN") || "";
+  let ownerActive = !!ownerToken;
+  let ascend = false;
 
-  const rtLabel = document.getElementById("realtimeLabel");
-  const rtDot = document.getElementById("realtimeText");
-
-  const camBox = document.getElementById("camBox");
-  const camVideo = document.getElementById("camVideo");
-
-  const heroSpeak = document.getElementById("heroSpeak");
-
-  let files = [];
   let ws = null;
+  let recognition = null;
+  let speaking = false;
 
-  // Voice (STT + TTS) — ejecuta real, no depende del modelo
-  const voiceState = document.getElementById("voiceState");
-  const btnSpeak = document.getElementById("btnSpeak");
-  const btnStopVoice = document.getElementById("btnStopVoice");
+  // camera
+  let camStream = null;
+  let camLive = false;
+  let camInterval = null;
+  let lastCamFrameB64 = null;
 
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const canSTT = !!SpeechRec;
-  const rec = canSTT ? new SpeechRec() : null;
-  let listening = false;
+  // avatar talk swap (opcional)
+  const avatarVideo = $("avatarVideo");
+  const avatarIdleSrc = "avatar.mp4";
+  const avatarTalkSrc = "avatar_talk.mp4";
 
-  if (rec) {
-    rec.lang = "es-AR";
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    rec.onresult = (e) => {
-      const text = (e.results?.[0]?.[0]?.transcript || "").trim();
-      if (text) {
-        input.value = text;
-        send();
-      }
-    };
-    rec.onend = () => {
-      listening = false;
-      voiceState.textContent = "listo";
-      btnSpeak.textContent = "Hablar";
-    };
+  function log(tag, text){
+    const el = document.createElement("div");
+    el.className = "msg";
+    const t = document.createElement("div");
+    t.className = "tag " + tag;
+    t.textContent = tag.toUpperCase();
+    const b = document.createElement("div");
+    b.className = "bubble";
+    b.textContent = text;
+    el.appendChild(t); el.appendChild(b);
+    $("log").appendChild(el);
+    $("log").scrollTop = $("log").scrollHeight;
   }
 
+  function setOwnerUI(){
+    $("ownerOn").textContent = ownerActive ? "SÍ" : "NO";
+    $("ownerPanel").classList.toggle("show", false);
+  }
+
+  function setRtStatus(ok){
+    $("rtStatus").textContent = ok ? "conectado" : "desconectado";
+    $("rtStatus").style.color = ok ? "var(--ok)" : "var(--soft)";
+  }
+
+  async function fetchUI(){
+    try{
+      const r = await fetch(ENDPOINT_UI);
+      const j = await r.json();
+      if(j?.ok){
+        // avatar urls
+        if(j.avatar?.url) {
+          // no cortar: ya está en CSS
+          // set only if exists
+          const src = j.avatar.url.startsWith("http") ? j.avatar.url : j.avatar.url;
+          avatarVideo.innerHTML = `<source src="${src}" type="video/mp4" />`;
+          avatarVideo.load();
+        }
+      }
+    }catch(e){}
+  }
+
+  // ===== Realtime WS =====
+  function connectWS(){
+    try{
+      ws = new WebSocket(ENDPOINT_WS);
+      ws.onopen = ()=> { setRtStatus(true); $("rtMode").textContent="auto"; log("sys","Realtime conectado."); };
+      ws.onclose = ()=> { setRtStatus(false); log("sys","Realtime desconectado."); };
+      ws.onerror = ()=> { setRtStatus(false); };
+      ws.onmessage = (evt)=>{
+        try{
+          const m = JSON.parse(evt.data);
+          if(m?.type==="hello") log("sys", evt.data);
+        }catch{
+          // ignore
+        }
+      }
+    }catch(e){
+      setRtStatus(false);
+    }
+  }
+
+  // ===== Voice: TTS =====
   function speak(text){
     try{
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text.slice(0, 1200));
-      u.lang = "es-ES";
-      u.rate = 1.0;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "es-AR";
+      u.rate = 1.02;
       u.pitch = 1.0;
-      window.speechSynthesis.speak(u);
-    }catch{}
-  }
-
-  btnSpeak.onclick = () => {
-    if (!rec) { pushSys("SYS", "Voz: navegador sin SpeechRecognition."); return; }
-    if (listening) { rec.stop(); return; }
-    listening = true;
-    voiceState.textContent = "escuchando";
-    btnSpeak.textContent = "Escuchando…";
-    rec.start();
-  };
-
-  btnStopVoice.onclick = () => {
-    try { window.speechSynthesis.cancel(); } catch {}
-    if (rec && listening) { try { rec.stop(); } catch {} }
-    voiceState.textContent = "listo";
-    btnSpeak.textContent = "Hablar";
-  };
-
-  // Chat UI
-  function pushMsg(tag, text, cls="") {
-    const row = document.createElement("div");
-    row.className = "msg";
-    const t = document.createElement("div");
-    t.className = "tag";
-    t.textContent = tag;
-    const b = document.createElement("div");
-    b.className = "bubble " + cls;
-    b.textContent = (text || "").replaceAll("Concia","CONSIA").replaceAll("concia","CONSIA");
-    row.appendChild(t); row.appendChild(b);
-    chat.appendChild(row);
-    chat.scrollTop = chat.scrollHeight;
-  }
-  function pushSys(tag, text){ pushMsg(tag, text, "sys"); }
-  function pushAI(text){ pushMsg("AI", text, "ai"); heroSpeak.textContent = (text || "").slice(0, 120); speak(text || ""); }
-
-  // Realtime
-  function connectWS(){
-    try{
-      ws = new WebSocket(WS_URL);
-      ws.onopen = () => { rtDot.textContent="●"; rtDot.className="ok"; rtLabel.textContent="Realtime conectado."; };
-      ws.onclose = () => { rtDot.textContent="●"; rtDot.className="ko"; rtLabel.textContent="Realtime desconectado."; setTimeout(connectWS, 1800); };
-      ws.onmessage = (e) => {
+      u.onstart = ()=>{
+        speaking = true;
+        // swap avatar to talk (si existe)
         try{
-          const j = JSON.parse(e.data);
-          if (j?.type === "hello") pushSys("SYS", JSON.stringify(j));
-        }catch{}
+          avatarVideo.muted = true;
+          const test = document.createElement("video");
+          test.src = avatarTalkSrc;
+          test.onloadeddata = ()=>{
+            avatarVideo.innerHTML = `<source src="${avatarTalkSrc}" type="video/mp4" />`;
+            avatarVideo.load();
+            avatarVideo.play().catch(()=>{});
+          };
+          test.onerror = ()=>{};
+        }catch(e){}
       };
-    }catch{
-      rtDot.textContent="●"; rtDot.className="ko"; rtLabel.textContent="Realtime no disponible.";
+      u.onend = ()=>{
+        speaking = false;
+        // back to idle
+        avatarVideo.innerHTML = `<source src="${avatarIdleSrc}" type="video/mp4" />`;
+        avatarVideo.load();
+        avatarVideo.play().catch(()=>{});
+      };
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  // ===== Voice: SpeechRecognition =====
+  function setupRecognition(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR) return null;
+    const r = new SR();
+    r.lang = "es-AR";
+    r.interimResults = false;
+    r.continuous = false;
+
+    r.onresult = (evt)=>{
+      const text = evt.results?.[0]?.[0]?.transcript?.trim() || "";
+      if(!text) return;
+      log("you", "🎙️ " + text);
+      // wake phrase
+      const lower = text.toLowerCase();
+      if(lower.includes("hola consia")){
+        $("input").value = "Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.";
+        send();
+        return;
+      }
+      $("input").value = text;
+      send();
+    };
+
+    r.onerror = ()=>{};
+    r.onend = ()=>{};
+    return r;
+  }
+
+  // ===== Camera (FRONTAL) =====
+  async function startCamera(){
+    if(camStream) return;
+    try{
+      camStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 1280 }, height:{ ideal: 720 } }, // ✅ FRONTAL
+        audio: false
+      });
+      $("camVideo").srcObject = camStream;
+      $("camPreview").classList.add("show");
+      $("camState").textContent = "on";
+    }catch(e){
+      log("sys","Cámara: permiso denegado o no disponible.");
+      camStream = null;
+      $("camState").textContent = "off";
     }
   }
-  connectWS();
 
-  // Test API
-  btnTest.onclick = async () => {
-    const r = await fetch(API_BASE + "/health").catch(()=>null);
-    if (!r) return pushSys("SYS","API offline.");
-    const j = await r.json().catch(()=>({}));
-    pushSys("SYS", JSON.stringify(j, null, 2));
-  };
-
-  // Attachments
-  const fileInput = document.getElementById("fileInput");
-  fileInput.onchange = () => {
-    files = Array.from(fileInput.files || []);
-    attachCount.textContent = String(files.length);
-    attachNote.textContent = "Adjuntos: " + files.length;
-    pushSys("SYS", `Adjuntos cargados: ${files.map(f=>f.name).join(", ") || "0"}`);
-  };
-
-  // Camera (FRONTAL)
-  let camStream = null;
-  async function startCam(){
-    if (camStream) return;
-    camStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },  // FIX: frontal
-      audio: false
-    });
-    camVideo.srcObject = camStream;
-    camBox.style.display = "block";
+  function stopCamera(){
+    if(camInterval) clearInterval(camInterval);
+    camInterval = null;
+    camLive = false;
+    if(camStream){
+      camStream.getTracks().forEach(t=>t.stop());
+      camStream = null;
+    }
+    $("camPreview").classList.remove("show");
+    $("camState").textContent = "off";
   }
-  function stopCam(){
-    if (!camStream) return;
-    camStream.getTracks().forEach(t=>t.stop());
-    camStream = null;
-    camVideo.srcObject = null;
-    camBox.style.display = "none";
-  }
-  async function snapJpegBlob(){
-    const v = camVideo;
+
+  function captureFrameBase64(){
+    if(!camStream) return null;
+    const v = $("camVideo");
+    const w = 640;
+    const h = Math.round((v.videoHeight / v.videoWidth) * w) || 360;
     const c = document.createElement("canvas");
-    const w = Math.max(640, v.videoWidth || 640);
-    const h = Math.max(360, v.videoHeight || 360);
     c.width = w; c.height = h;
     const ctx = c.getContext("2d");
     ctx.drawImage(v, 0, 0, w, h);
-    return await new Promise(res => c.toBlob(res, "image/jpeg", 0.86));
+    // jpeg compact
+    const dataUrl = c.toDataURL("image/jpeg", 0.72);
+    return dataUrl.split(",")[1] || null;
   }
 
-  document.getElementById("btnCamera").onclick = async () => {
-    try{
-      await startCam();
-      pushSys("SYS","Cámara frontal lista.");
-    }catch{
-      pushSys("SYS","Cámara bloqueada. Permití acceso.");
-    }
-  };
+  async function toggleCamLive(){
+    if(!camStream) await startCamera();
+    if(!camStream) return;
 
-  // Camera live 10% (envía 1 frame por acción, SAFE)
-  document.getElementById("btnCameraLive").onclick = async () => {
-    try{
-      await startCam();
-      const blob = await snapJpegBlob();
-      files = [new File([blob], "camera_live.jpg", { type:"image/jpeg" })];
-      attachCount.textContent = "1";
-      attachNote.textContent = "Adjuntos: 1 (camera_live.jpg)";
-      pushSys("SYS","Frame tomado (vivo 10%). Decime 1 frase: dónde/qué querés “teletransportar” en hiperrealismo.");
-    }catch{
-      pushSys("SYS","No se pudo usar cámara.");
-    }
-  };
-
-  // Avatar morph (envía prompt al backend)
-  document.getElementById("btnAvatarMorph").onclick = async () => {
-    const p = (input.value || "").trim();
-    if (!p) { pushSys("SYS","Escribí 1 frase del nuevo aspecto del avatar y tocá Avatar (morph)."); return; }
-    const r = await fetch(API_BASE + "/avatar/transform", {
-      method:"POST",
-      headers:{ "content-type":"application/json" },
-      body: JSON.stringify({ prompt: p })
-    }).catch(()=>null);
-    if (!r) return pushSys("SYS","Backend offline para morph.");
-    const j = await r.json().catch(()=>({}));
-    pushSys("SYS", (j?.reply || "Avatar actualizado."));
-    if (j?.avatar?.url) {
-      // si hay url renderizada, la usamos
-      const av = document.getElementById("avatarVideo");
-      av.pause();
-      av.removeAttribute("src");
-      const img = document.getElementById("avatarImg");
-      img.src = j.avatar.url;
-      img.style.display = "block";
-      av.style.display = "none";
-    }
-  };
-
-  // Buttons preset
-  document.getElementById("btnGuide").onclick = () => { input.value = "Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá."; send(); };
-  document.getElementById("btnCanDo").onclick = () => { input.value = "¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo."; send(); };
-  document.getElementById("btnHyper").onclick = () => { input.value = "Hiperrealismo: dame 3 opciones (Imagen/Video/Avatar). Pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá."; send(); };
-  document.getElementById("btnAscend").onclick = () => { input.value = "ASCEND: modo ultra. Respuestas cortas. 1 pregunta mínima. Checklist inmediato."; send(); };
-
-  // Clear
-  document.getElementById("btnClear").onclick = () => {
-    chat.innerHTML = "";
-    pushSys("SYS","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
-  };
-
-  // Send
-  async function send(){
-    let msg = (input.value || "").trim();
-    if (!msg && files.length === 0) return;
-
-    msg = msg.replaceAll("Concia","CONSIA").replaceAll("concia","CONSIA");
-    pushMsg("YO", msg || "(adjuntos)", "");
-
-    input.value = "";
-
-    let res = null;
-
-    // multipart si hay adjuntos, sino JSON
-    if (files.length > 0) {
-      const fd = new FormData();
-      fd.append("message", msg || "Analizá adjuntos.");
-      fd.append("mode", "mixed");
-      fd.append("lang", "ES");
-      files.forEach((f,i)=>fd.append("file"+i, f, f.name));
-      res = await fetch(ASK_URL, { method:"POST", body: fd }).catch(()=>null);
+    camLive = !camLive;
+    if(camLive){
+      log("sys","Cámara vivo 100%: activo.");
+      $("camState").textContent = "live";
+      // 2 fps (suficiente, sin cortar)
+      camInterval = setInterval(()=>{
+        lastCamFrameB64 = captureFrameBase64();
+      }, 500);
     } else {
-      res = await fetch(ASK_URL, {
-        method:"POST",
-        headers:{ "content-type":"application/json" },
-        body: JSON.stringify({ message: msg, mode:"text", lang:"ES" })
-      }).catch(()=>null);
+      log("sys","Cámara vivo 100%: off.");
+      $("camState").textContent = "on";
+      if(camInterval) clearInterval(camInterval);
+      camInterval = null;
+      lastCamFrameB64 = null;
     }
-
-    // reset adjuntos post envío
-    files = [];
-    fileInput.value = "";
-    attachCount.textContent = "0";
-    attachNote.textContent = "Adjuntos: 0";
-
-    if (!res) return pushAI("CONSIA: backend offline. Decime 1 objetivo y lo ejecuto en modo local.");
-
-    const j = await res.json().catch(()=>({}));
-    if (!j?.ok) return pushAI("CONSIA: error: " + (j?.error || "unknown"));
-
-    pushAI(j.reply || "CONSIA: listo.");
   }
 
-  sendBtn.onclick = send;
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  // ===== File uploads =====
+  $("btnUpload").onclick = ()=> $("fileInput").click();
+  $("fileInput").addEventListener("change", async (e)=>{
+    const files = Array.from(e.target.files || []);
+    if(!files.length) return;
+
+    // limit: 8 files, each 1.5MB encoded target
+    const picked = files.slice(0,8);
+    attachments = [];
+
+    for(const f of picked){
+      const buf = await f.arrayBuffer();
+      // hard cap raw 2.2MB to avoid huge base64
+      if(buf.byteLength > 2_200_000){
+        attachments.push({ name:f.name, type:f.type || "application/octet-stream", size:buf.byteLength, data_base64:"" });
+        continue;
+      }
+      const b64 = arrayBufferToBase64(buf);
+      attachments.push({ name:f.name, type:f.type || "application/octet-stream", size:buf.byteLength, data_base64:b64 });
+    }
+
+    $("attCount").textContent = String(attachments.length);
+    log("sys", `Adjuntos listos: ${attachments.length}.`);
   });
 
-  // Boot
-  document.getElementById("apiLabel").textContent = API_BASE.replace(/^https?:\/\//,"");
-  pushSys("SYS","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
-})();
+  function arrayBufferToBase64(buffer){
+    let binary = "";
+    const bytes = new Uint8Array(buffer);
+    const chunk = 0x8000;
+    for(let i=0;i<bytes.length;i+=chunk){
+      binary += String.fromCharCode.apply(null, bytes.subarray(i,i+chunk));
+    }
+    return btoa(binary);
+  }
+
+  // ===== Send =====
+  async function send(){
+    const text = $("input").value.trim();
+    if(!text && !lastCamFrameB64 && !attachments.length){
+      log("sys","Decime 1 frase.");
+      return;
+    }
+
+    // owner command shortcut (voice/text): "OWNER: ..."
+    const isOwnerCmd = text.toUpperCase().startsWith("OWNER:");
+    if(isOwnerCmd && ownerActive){
+      await ownerCommand(text.slice(6).trim());
+      $("input").value = "";
+      return;
+    }
+
+    log("you", text || "(cámara/adjuntos)");
+
+    const payload = {
+      text: ascend ? `ASCEND: ${text}` : text,
+      attachments,
+      camera_frames: lastCamFrameB64 ? [lastCamFrameB64] : []
+    };
+
+    const headers = { "content-type":"application/json", "x-consia-session":"web" };
+    if(ownerActive) headers["x-consia-owner"] = ownerToken;
+
+    try{
+      const r = await fetch(ENDPOINT_ASK, { method:"POST", headers, body: JSON.stringify(payload) });
+      const j = await r.json();
+      if(!j?.ok){
+        log("sys", "Error: " + (j?.error || "unknown"));
+        return;
+      }
+      log("ai", j.reply || "OK.");
+      // speak by default if voice enabled
+      if($("btnVoice").dataset.on === "1"){
+        speak(j.reply || "");
+      }
+    }catch(e){
+      log("sys","No hay conexión con API.");
+    }
+  }
+
+  $("sendBtn").onclick = send;
+  $("input").addEventListener("keydown",(e)=>{
+    if(e.key==="Enter" && !e.shiftKey){
+      e.preventDefault();
+      send();
+    }
+  });
+
+  // ===== Owner Panel =====
+  $("btnOwner").onclick = ()=>{
+    $("ownerPanel").classList.toggle("show");
+    $("ownerToken").value = ownerToken || "";
+    $("ownerOn").textContent = ownerActive ? "SÍ" : "NO";
+  };
+
+  $("btnOwnerSave").onclick = ()=>{
+    ownerToken = $("ownerToken").value.trim();
+    ownerActive = !!ownerToken;
+    if(ownerActive) localStorage.setItem("CONSIA_OWNER_TOKEN", ownerToken);
+    $("ownerOn").textContent = ownerActive ? "SÍ" : "NO";
+    log("sys", ownerActive ? "Owner: activo." : "Owner: off.");
+  };
+
+  $("btnOwnerOff").onclick = ()=>{
+    ownerToken = "";
+    ownerActive = false;
+    localStorage.removeItem("CONSIA_OWNER_TOKEN");
+    $("ownerOn").textContent = "NO";
+    log("sys","Owner: off.");
+  };
+
+  $("btnAvatarTransform").onclick = async ()=>{
+    if(!ownerActive) { log("sys","Owner requerido."); return; }
+    const prompt = $("avatarPrompt").value.trim() || "ENTIDAD CONSIA — hiperrealista top 1";
+    try{
+      const r = await fetch(ENDPOINT_AVATAR_TRANSFORM, {
+        method:"POST",
+        headers:{ "content-type":"application/json", "x-consia-owner": ownerToken },
+        body: JSON.stringify({ prompt })
+      });
+      const j = await r.json();
+      if(!j?.ok){ log("sys","Error avatar: " + (j?.error||"unknown")); return; }
+      log("sys", j.reply || "Avatar actualizado.");
+      // refresh
+      await fetchUI();
+    }catch(e){
+      log("sys","No se pudo actualizar avatar.");
+    }
+  };
+
+  $("btnSeal").onclick = async ()=>{
+    if(!ownerActive) { log("sys","Owner requerido."); return; }
+    const seal = {
+      flags:{
+        cameraLivePercent: 100,
+        allowUploads:true,
+        allowCamera:true,
+        allowVoice:true,
+        realtime:true
+      }
+    };
+    try{
+      const r = await fetch(ENDPOINT_OWNER_SEAL, {
+        method:"POST",
+        headers:{ "content-type":"application/json", "x-consia-owner": ownerToken },
+        body: JSON.stringify(seal)
+      });
+      const j = await r.json();
+      if(!j?.ok){ log("sys","Error seal: " + (j?.error||"unknown")); return; }
+      log("sys","SELLADO: OK.");
+    }catch(e){
+      log("sys","No se pudo sellar.");
+    }
+  };
+
+  async function ownerCommand(cmd){
+    // minimal owner “superpower”: set avatar prompt global
+    // 1) "avatar: ..."
+    // 2) "seal"
+    const c = cmd.trim();
+    if(!c) return;
+    if(c.toLowerCase().startsWith("avatar:")){
+      $("avatarPrompt").value = c.slice(7).trim();
+      $("btnAvatarTransform").click();
+      return;
+    }
+    if(c.toLowerCase()==="seal"){
+      $("btnSeal").click();
+      return;
+    }
+    log("sys","Owner cmd: OK (avatar: / seal).");
+  }
+
+  // ===== Buttons =====
+  $("btnClear").onclick = ()=>{
+    $("log").innerHTML = "";
+    log("sys","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
+  };
+
+  $("btnTest").onclick = async ()=>{
+    try{
+      const r = await fetch(API + "/health");
+      const j = await r.json();
+      log("sys", JSON.stringify(j, null, 2));
+    }catch(e){
+      log("sys","Health: sin conexión.");
+    }
+  };
+
+  $("btnGuide").onclick = ()=>{
+    $("input").value = "Guiame (3 opciones): dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.";
+    send();
+  };
+
+  $("btnWhat").onclick = ()=>{
+    $("input").value = "¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo.";
+    send();
+  };
+
+  $("btnHyper").onclick = ()=>{
+    $("input").value = "Hiperrealismo con cámara: dame 3 opciones (Imagen/Video/Avatar) y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.";
+    send();
+  };
+
+  $("btnAscend").onclick = ()=>{
+    ascend = !ascend;
+    $("modeText").textContent = ascend ? "ASCEND" : "auto";
+    log("sys", ascend ? "ASCEND: ON (respuestas ultra cortas)." : "ASCEND: OFF.");
+  };
+
+  $("btnVoice").onclick = ()=>{
+    const on = $("btnVoice").dataset.on === "1";
+    $("btnVoice").dataset.on = on ? "0" : "1";
+    log("sys", on ? "Voz: OFF." : "Voz: ON.");
+  };
+
+  $("btnStopVoice").onclick = ()=>{
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+    log("sys","Voz: stop.");
+    // reset avatar to idle
+    avatarVideo.innerHTML = `<source src="${avatarIdleSrc}" type="video/mp4" />`;
+    avatarVideo.load();
+    avatarVideo.play().catch(()=>{});
+  };
+
+  $("btnTalk").onclick = ()=>{
+    if(!recognition){
+      recognition = setupRecognition();
+      if(!recognition){ log("sys","Voz: no soportada en este navegador."); return; }
+    }
+    try{
+      recognition.start();
+      log("sys","Voz: listo. Tocá 🗣️ Hablar y decí tu frase.");
+    }catch(e){}
+  };
+
+  $("btnRead").onclick = ()=>{
+    $("input").value = "Leé y resumí en bullets. Pedime 1 sola cosa si falta.";
+    send();
+  };
+
+  $("btnCamera").onclick = async ()=>{
+    if(camStream){ stopCamera(); log("sys","Cámara: off."); }
+    else { await startCamera(); }
+  };
+
+  $("btnCamLive").onclick = toggleCamLive;
+
+  // ===== Init =====
+  (function init(){
+    $("apiLabel").textContent = API.replace("https://","");
+    log("sys","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
+    connectWS();
+    fetchUI();
+    setOwnerUI();
+    $("ownerOn").textContent = ownerActive ? "SÍ" : "NO";
+  })();
 </script>
+
 </body>
 </html>

@@ -36,21 +36,22 @@
       overflow-x:hidden;
     }
 
-    /* Top bar */
-    .topbar{
-      position:sticky; top:0; z-index:30;
-      padding:14px 14px 10px;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(to bottom, rgba(5,7,11,.92), rgba(5,7,11,.55));
-      border-bottom:1px solid var(--line);
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:14px;
     }
-    .toprow{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      max-width:1100px; margin:0 auto;
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 6px 14px;
     }
     .brand{
       display:flex; align-items:center; gap:10px;
-      font-weight:700; letter-spacing:.4px;
+      font-weight:800; letter-spacing:.4px;
     }
     .dot{width:9px;height:9px;border-radius:999px;background:var(--ok);box-shadow:0 0 16px rgba(25,211,125,.6)}
     .badge{
@@ -60,9 +61,6 @@
       background:rgba(11,16,24,.6);
       padding:8px 10px; border-radius:999px;
       white-space:nowrap;
-    }
-    .toggle{
-      display:flex; align-items:center; gap:8px;
     }
     .pill{
       border:1px solid var(--line);
@@ -78,53 +76,23 @@
     .pill:active{transform:translateY(1px)}
     .pill[disabled]{opacity:.5; cursor:not-allowed}
 
-    /* Layout */
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:14px;
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:14px;
-    }
-    @media (max-width: 980px){
-      .wrap{grid-template-columns:1fr}
-    }
-
-    /* Avatar hero */
-    .hero{
-      position:relative;
+    .panel{
       border:1px solid var(--line);
       border-radius:var(--radius);
       background:linear-gradient(180deg, rgba(11,16,24,.72), rgba(11,16,24,.35));
       box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .heroHeader{
-      padding:12px 12px 0;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .heroTitle{
-      display:flex; flex-direction:column; gap:4px;
-    }
-    .heroTitle b{font-size:14px}
-    .heroTitle span{font-size:12px;color:var(--muted)}
-    .heroBody{
-      position:relative;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      padding:12px;
-    }
+
+    /* Avatar always on top */
     .avatarStage{
       position:relative;
-      border:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid rgba(255,255,255,.10);
       background:radial-gradient(900px 500px at 20% 20%, rgba(36,88,255,.10), transparent 60%),
                  radial-gradient(700px 420px at 75% 10%, rgba(25,211,125,.06), transparent 55%),
                  rgba(0,0,0,.35);
-      border-radius:16px;
+      min-height:240px;
       overflow:hidden;
-      min-height:260px;
     }
     .avatarVideo{
       position:absolute; inset:0;
@@ -134,22 +102,19 @@
     }
     .avatarOverlay{
       position:absolute; inset:0;
-      background:linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,.10) 55%, rgba(0,0,0,.30));
+      background:linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.12) 55%, rgba(0,0,0,.35));
       pointer-events:none;
     }
     .avatarHUD{
       position:absolute; left:12px; right:12px; bottom:12px;
       display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
-      pointer-events:none;
     }
     .hudLeft{
       display:flex; flex-direction:column; gap:6px;
-      pointer-events:none;
     }
     .statusLine{
       display:flex; align-items:center; gap:8px;
       font-size:12px; color:rgba(232,238,248,.95);
-      pointer-events:none;
     }
     .liveDot{
       width:8px; height:8px; border-radius:99px;
@@ -158,36 +123,15 @@
     }
     .kbdHint{
       font-size:12px;
-      color:rgba(232,238,248,.85);
+      color:rgba(232,238,248,.92);
       padding:8px 10px;
       border:1px solid rgba(255,255,255,.10);
       border-radius:12px;
       background:rgba(11,16,24,.45);
-      pointer-events:none;
     }
     .kbdHint span{color:var(--muted)}
 
-    /* Right panel (controls) */
-    .panel{
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      background:linear-gradient(180deg, rgba(11,16,24,.72), rgba(11,16,24,.35));
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:520px;
-    }
-    .panelHeader{
-      padding:12px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      border-bottom:1px solid var(--line);
-    }
-    .panelHeader .title{
-      display:flex; flex-direction:column; gap:4px;
-    }
-    .panelHeader .title b{font-size:13px}
-    .panelHeader .title span{font-size:12px;color:var(--muted)}
+    /* Chips row */
     .chips{
       padding:10px 12px 0;
       display:flex; flex-wrap:wrap; gap:8px;
@@ -206,13 +150,38 @@
     .chip:hover{background:rgba(18,48,85,.65)}
     .chip:active{transform:translateY(1px)}
 
+    /* Tools row */
+    .tools{
+      display:flex; flex-wrap:wrap; gap:8px;
+      padding:10px 12px 0;
+    }
+    .smallBtn{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(12,26,42,.55);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:12px;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .smallBtn:hover{background:rgba(18,48,85,.65)}
+    .smallBtn:active{transform:translateY(1px)}
+    .smallBtn[disabled]{opacity:.5; cursor:not-allowed}
+    input[type="file"]{display:none}
+
+    /* Log */
     .log{
-      flex:1;
       padding:12px;
-      overflow:auto;
       display:flex;
       flex-direction:column;
       gap:10px;
+      min-height:320px;
+      max-height:55vh;
+      overflow:auto;
     }
     .msg{
       border:1px solid rgba(255,255,255,.10);
@@ -281,23 +250,8 @@
       gap:10px;
       font-size:12px;
       color:var(--muted);
+      flex-wrap:wrap;
     }
-    .smallBtn{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(12,26,42,.55);
-      color:var(--text);
-      padding:8px 10px;
-      border-radius:12px;
-      cursor:pointer;
-      font-size:12px;
-      user-select:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .smallBtn:hover{background:rgba(18,48,85,.65)}
-    .smallBtn:active{transform:translateY(1px)}
-    .smallBtn[disabled]{opacity:.5; cursor:not-allowed}
     .send{
       border:1px solid rgba(255,255,255,.12);
       background:linear-gradient(180deg, rgba(18,48,85,.95), rgba(14,34,58,.92));
@@ -305,7 +259,7 @@
       border-radius:16px;
       color:var(--text);
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
       box-shadow:0 10px 30px rgba(0,0,0,.35);
       user-select:none;
       min-width:128px;
@@ -314,22 +268,6 @@
     .send:hover{filter:brightness(1.05)}
     .send:active{transform:translateY(1px)}
     .subnote{font-size:12px;color:var(--muted);padding:0 12px 12px}
-
-    /* Upload / Camera */
-    .tools{
-      display:flex; flex-wrap:wrap; gap:8px;
-      padding:10px 12px 0;
-    }
-    input[type="file"]{display:none}
-    .kbd{
-      font-family:var(--mono);
-      font-size:11px;
-      padding:2px 7px;
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.25);
-      color:rgba(232,238,248,.9);
-    }
 
     /* Camera modal */
     .modal{
@@ -373,93 +311,66 @@
 </head>
 
 <body>
-  <div class="topbar">
-    <div class="toprow">
-      <div class="brand">
-        <span class="dot" aria-hidden="true"></span>
-        <span>CONSIA <span style="opacity:.7">∞</span></span>
-      </div>
-
-      <div class="toggle">
-        <div class="badge" title="Estado del sistema">
-          <span id="onlineDot" class="dot" style="width:8px;height:8px;opacity:.8"></span>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>CONSIA <span style="opacity:.7">∞</span></span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
+        <div class="badge" title="Estado">
+          <span id="onlineDot" class="dot" style="width:8px;height:8px;opacity:.85"></span>
           <span id="onlineText">ONLINE</span>
           <span style="opacity:.5">·</span>
-          <span id="realtimeText">AUTO</span>
+          <span id="rtMode">auto</span>
         </div>
         <div class="pill" id="btnTest">Test API</div>
       </div>
     </div>
-  </div>
 
-  <div class="wrap">
-    <!-- LEFT: Avatar from start -->
-    <section class="hero" aria-label="Avatar">
-      <div class="heroHeader">
-        <div class="heroTitle">
-          <b>Avatar / Inicio</b>
-          <span>Voz · Click · Teclado · Archivos · Cámara</span>
-        </div>
-        <div class="badge" style="gap:10px">
-          <span class="kbd">Enter</span><span>enviar</span>
-          <span style="opacity:.45">|</span>
-          <span class="kbd">Shift</span><span>+</span><span class="kbd">Enter</span><span>salto</span>
-        </div>
-      </div>
-
-      <div class="heroBody">
-        <div class="avatarStage">
-          <!-- PONÉ TU ARCHIVO: /avatar.mp4 (en tu repo Pages) -->
-          <video id="avatar" class="avatarVideo" autoplay muted loop playsinline preload="auto">
-            <source src="./avatar.mp4" type="video/mp4" />
-          </video>
-          <div class="avatarOverlay"></div>
-
-          <div class="avatarHUD">
-            <div class="hudLeft">
-              <div class="statusLine"><span class="liveDot"></span><span id="hudStatus">Realtime: conectando…</span></div>
-              <div class="statusLine" style="opacity:.85"><span style="opacity:.75">API:</span> <span id="hudApi">api.consia.world</span></div>
-            </div>
-            <div class="kbdHint">
-              Decí <b>“Hola CONSIA”</b> por voz o escribí abajo. <span>(si tu navegador soporta voz)</span>
-            </div>
+    <div class="panel">
+      <!-- AVATAR ALWAYS VISIBLE -->
+      <div class="avatarStage">
+        <video id="avatar" class="avatarVideo" autoplay muted loop playsinline preload="auto">
+          <source src="./avatar.mp4" type="video/mp4" />
+        </video>
+        <div class="avatarOverlay"></div>
+        <div class="avatarHUD">
+          <div class="hudLeft">
+            <div class="statusLine"><span class="liveDot"></span><span id="hudStatus">Realtime: conectando…</span></div>
+            <div class="statusLine" style="opacity:.85"><span style="opacity:.75">API:</span> <span id="hudApi">api.consia.world</span></div>
+          </div>
+          <div class="kbdHint">
+            Decí <b>“Hola CONSIA”</b> o escribí abajo. <span>(voz si el navegador soporta)</span>
           </div>
         </div>
-
-        <div class="tools">
-          <label class="smallBtn" for="filePicker">📎 Subir archivo</label>
-          <input id="filePicker" type="file" multiple
-                 accept="image/*,video/*,audio/*,.pdf,.txt,.md,.doc,.docx,.xls,.xlsx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
-          <div class="smallBtn" id="btnCamera">📷 Cámara (vivo 10%)</div>
-          <div class="smallBtn" id="btnMic">🎙️ Voz (hablar)</div>
-          <div class="smallBtn" id="btnSpeak" title="Leer en voz alta la última respuesta">🔊 Voz (leer)</div>
-        </div>
-
-        <div class="subnote" id="voiceNote">Voz: preparando…</div>
-      </div>
-    </section>
-
-    <!-- RIGHT: Chat + actions -->
-    <section class="panel" aria-label="CONSIA Console">
-      <div class="panelHeader">
-        <div class="title">
-          <b>CONSIA Console</b>
-          <span>Click / Voz / Teclado + ejecución</span>
-        </div>
-        <div class="badge"><span id="apiLabel">api.consia.world</span></div>
       </div>
 
+      <!-- CHIPS -->
       <div class="chips">
-        <div class="chip" data-prompt="Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.">🧭 Guiame (3)</div>
+        <div class="chip" data-prompt="Guiame: dame 3 opciones y pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.">🧭 Guiame (3 opciones)</div>
         <div class="chip" data-prompt="¿Qué puede hacer CONSIA hoy? Listá funciones reales disponibles (texto/voz/realtime/archivos/cámara) y pedime lo mínimo.">🧠 ¿Qué puede hacer?</div>
         <div class="chip" data-prompt="Hiperrealismo: dame 3 opciones (Imagen/Video/Avatar). Pedime lo mínimo en 1 sola pregunta. Luego esperá mi 1 frase y ejecutá.">🖼️ Hiperrealismo</div>
         <div class="chip" data-prompt="Voz: activá modo asistente por voz. Hacé preguntas cortas y confirmaciones sí/no.">🎙️ Voz</div>
-        <div class="chip" data-prompt="FaceTime/Cámara: pedime permiso y luego indicame 1 acción de análisis en vivo (10%) y 1 salida esperada.">📷 Cámara</div>
-        <div class="chip" data-prompt="ASCEND: modo ultra. Respuestas cortas, plan de acción inmediato y checklist.">⚡ ASCEND</div>
+        <div class="chip" data-prompt="Cámara: pedime permiso y luego indicame 1 acción de análisis en vivo (10%) y 1 salida esperada.">📷 Cámara</div>
+        <div class="chip" data-prompt="ASCEND: modo ultra. Respuestas cortas, plan inmediato y checklist.">⚡ ASCEND</div>
       </div>
 
+      <!-- TOOLS -->
+      <div class="tools">
+        <label class="smallBtn" for="filePicker">📎 Subir archivo</label>
+        <input id="filePicker" type="file" multiple
+          accept="image/*,video/*,audio/*,.pdf,.txt,.md,.doc,.docx,.xls,.xlsx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+        <div class="smallBtn" id="btnCamera">📷 Cámara (vivo 10%)</div>
+        <div class="smallBtn" id="btnMic">🎙️ Hablar</div>
+        <div class="smallBtn" id="btnSpeak">🔊 Leer</div>
+        <div class="smallBtn" id="btnClear">🧹 Limpiar</div>
+        <div class="smallBtn" id="btnStopTTS">⏹️ Stop voz</div>
+      </div>
+
+      <div class="subnote" id="voiceNote">Voz: preparando…</div>
+
+      <!-- LOG -->
       <div class="log" id="log"></div>
 
+      <!-- COMPOSER -->
       <div class="composer">
         <div class="inputWrap">
           <textarea id="input" placeholder="Decí lo que querés (o escribí '.')"></textarea>
@@ -467,18 +378,17 @@
             <div class="meta">
               <span>Idioma: <b>ES</b></span>
               <span style="opacity:.45">·</span>
-              <span>Realtime: <b id="rtMode">auto</b></span>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap">
-              <div class="smallBtn" id="btnClear">🧹 Limpiar</div>
-              <div class="smallBtn" id="btnStopTTS">⏹️ Stop voz</div>
+              <span>Realtime: <b id="realtimeLabel">auto</b></span>
+              <span style="opacity:.45">·</span>
+              <span id="attachLabel">Adjuntos: 0</span>
             </div>
           </div>
         </div>
         <div class="send" id="send">Enviar</div>
       </div>
-      <div class="subnote">Si no hay IA, igual responde (fallback) y deja logs. Archivos/cámara se envían como “contexto”.</div>
-    </section>
+
+      <div class="subnote">Archivos/cámara se envían como contexto al endpoint /ask (si tu backend los soporta).</div>
+    </div>
   </div>
 
   <!-- CAMERA MODAL -->
@@ -486,9 +396,7 @@
     <div class="modalCard">
       <div class="modalTop">
         <b>Cámara en vivo (10% análisis)</b>
-        <div style="display:flex; gap:8px; flex-wrap:wrap">
-          <div class="smallBtn" id="btnCamClose">✖ Cerrar</div>
-        </div>
+        <div class="smallBtn" id="btnCamClose">✖ Cerrar</div>
       </div>
       <div class="modalBody">
         <div class="camStage">
@@ -498,10 +406,10 @@
           <div class="left">
             <div class="smallBtn" id="btnCamStart">▶️ Iniciar cámara</div>
             <div class="smallBtn" id="btnCamStop" disabled>⏹️ Detener</div>
-            <div class="smallBtn" id="btnSnap" disabled>📸 Capturar 1 frame</div>
+            <div class="smallBtn" id="btnStream10" disabled>🧠 Enviar 10% (frame)</div>
           </div>
           <div class="right">
-            <div class="smallBtn" id="btnStream10" disabled>🧠 Enviar 10% (frame)</div>
+            <div class="smallBtn" id="btnSnap" disabled>📸 Capturar (adjuntar)</div>
           </div>
         </div>
         <div class="subnote" id="camNote">Pedirá permiso. Captura 1 frame y lo envía para análisis.</div>
@@ -511,21 +419,20 @@
 
   <script>
     /**********************
-     * CONFIG (edit if needed)
+     * CONFIG
      **********************/
     const API_BASE = "https://api.consia.world";
-    const ASK_URL  = API_BASE + "/ask";          // tu endpoint de chat
+    const ASK_URL  = API_BASE + "/ask";
     const REALTIME_URL = API_BASE.replace("https://","wss://") + "/realtime"; // opcional
-    const AVATAR_SRC = "./avatar.mp4";           // en tu Pages repo
+    const AVATAR_SRC = "./avatar.mp4";
 
     /**********************
-     * UI helpers
+     * Helpers
      **********************/
     const $ = (id)=>document.getElementById(id);
     const logEl = $("log");
     const inputEl = $("input");
     const onlineText = $("onlineText");
-    const realtimeText = $("realtimeText");
     const hudStatus = $("hudStatus");
     const voiceNote = $("voiceNote");
 
@@ -550,6 +457,12 @@
       $("onlineDot").style.boxShadow = ok ? "0 0 16px rgba(25,211,125,.6)" : "0 0 16px rgba(255,77,77,.5)";
     }
 
+    function autosize(el){
+      el.style.height = "auto";
+      el.style.height = Math.min(180, el.scrollHeight) + "px";
+    }
+    inputEl.addEventListener("input", ()=>autosize(inputEl));
+
     /**********************
      * Avatar init
      **********************/
@@ -561,10 +474,10 @@
         v.playsInline = true;
         v.autoplay = true;
         v.loop = true;
-        v.play().catch(()=>{ /* autoplay may be blocked until user gesture */ });
+        v.play().catch(()=>{});
       }
       $("hudApi").textContent = API_BASE.replace("https://","");
-      $("apiLabel").textContent = API_BASE.replace("https://","");
+      addMsg("sys","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
     })();
 
     /**********************
@@ -574,29 +487,28 @@
     function connectRealtime(){
       try{
         hudStatus.textContent = "Realtime: conectando…";
-        realtimeText.textContent = "AUTO";
         ws = new WebSocket(REALTIME_URL);
         ws.onopen = ()=>{
-          hudStatus.textContent = "Realtime: conectado";
+          hudStatus.textContent = "Realtime conectado.";
           addMsg("sys","Realtime conectado.");
         };
         ws.onmessage = (ev)=>{
-          // si tu backend manda JSON, lo mostramos
           addMsg("sys", String(ev.data));
         };
         ws.onclose = ()=>{
-          hudStatus.textContent = "Realtime: desconectado";
+          hudStatus.textContent = "Realtime desconectado.";
           addMsg("sys","Realtime desconectado.");
           ws = null;
         };
         ws.onerror = ()=>{
-          hudStatus.textContent = "Realtime: error";
+          hudStatus.textContent = "Realtime error.";
         };
       }catch(e){
-        hudStatus.textContent = "Realtime: no disponible";
+        hudStatus.textContent = "Realtime no disponible.";
       }
     }
     connectRealtime();
+    setTimeout(()=>{ if(!ws){ hudStatus.textContent = "Realtime no disponible (ok)."; } }, 1500);
 
     /**********************
      * Voice (SpeechRecognition + TTS)
@@ -604,10 +516,23 @@
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let rec = null;
     let listening = false;
+    let lastAIText = "";
+
+    function speak(text){
+      try{
+        if(!("speechSynthesis" in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "es-AR";
+        u.rate = 1.02;
+        u.pitch = 1.0;
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
 
     function initVoice(){
       if(!SpeechRec){
-        voiceNote.textContent = "Voz: este navegador no soporta reconocimiento. Usá escribir/click.";
+        voiceNote.textContent = "Voz: navegador sin SpeechRecognition. Usá escribir/click.";
         $("btnMic").setAttribute("disabled","disabled");
         return;
       }
@@ -616,9 +541,9 @@
       rec.interimResults = true;
       rec.continuous = false;
 
-      rec.onstart = ()=>{ listening = true; voiceNote.textContent = "Voz: escuchando…"; $("btnMic").textContent = "⏹️ Voz (stop)"; };
-      rec.onerror = (e)=>{ listening = false; voiceNote.textContent = "Voz: error ("+ (e?.error || "unknown") +")"; $("btnMic").textContent = "🎙️ Voz (hablar)"; };
-      rec.onend = ()=>{ listening = false; voiceNote.textContent = "Voz: listo."; $("btnMic").textContent = "🎙️ Voz (hablar)"; };
+      rec.onstart = ()=>{ listening = true; voiceNote.textContent = "Voz: escuchando…"; $("btnMic").textContent = "⏹️ Stop"; };
+      rec.onerror = (e)=>{ listening = false; voiceNote.textContent = "Voz: error ("+ (e?.error || "unknown") +")"; $("btnMic").textContent = "🎙️ Hablar"; };
+      rec.onend = ()=>{ listening = false; voiceNote.textContent = "Voz: listo."; $("btnMic").textContent = "🎙️ Hablar"; };
 
       rec.onresult = (evt)=>{
         let finalTxt = "";
@@ -636,7 +561,7 @@
         }
       };
 
-      voiceNote.textContent = "Voz: listo. Tocá 🎙️ para hablar.";
+      voiceNote.textContent = "Voz: listo. Tocá 🎙️ Hablar.";
     }
     initVoice();
 
@@ -646,21 +571,8 @@
       try{ rec.start(); }catch(e){}
     }
 
-    let lastAIText = "";
-    function speak(text){
-      try{
-        if(!("speechSynthesis" in window)) return;
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "es-AR";
-        u.rate = 1.02;
-        u.pitch = 1.0;
-        window.speechSynthesis.speak(u);
-      }catch(e){}
-    }
-
     /**********************
-     * File upload (as context)
+     * Files (context)
      **********************/
     async function fileToDataURL(file){
       return new Promise((resolve,reject)=>{
@@ -671,7 +583,11 @@
       });
     }
 
-    let pendingAttachments = []; // {name,type,size,dataUrl}
+    let pendingAttachments = [];
+    function updateAttachLabel(){
+      $("attachLabel").textContent = "Adjuntos: " + (pendingAttachments.length || 0);
+    }
+
     $("filePicker").addEventListener("change", async (e)=>{
       const files = Array.from(e.target.files || []);
       if(!files.length) return;
@@ -682,22 +598,20 @@
         const dataUrl = await fileToDataURL(f);
         pendingAttachments.push({ name:f.name, type:f.type || "application/octet-stream", size:f.size, dataUrl });
       }
+      updateAttachLabel();
       addMsg("sys", "Listo: " + files.map(x=>x.name).join(", "));
       e.target.value = "";
     });
 
     /**********************
-     * Camera live (10% frame)
+     * Camera (10% frame)
      **********************/
     const camModal = $("camModal");
     const camVideo = $("camVideo");
     let camStream = null;
 
     function openCam(){ camModal.classList.add("on"); camModal.setAttribute("aria-hidden","false"); }
-    function closeCam(){
-      camModal.classList.remove("on"); camModal.setAttribute("aria-hidden","true");
-      stopCam();
-    }
+    function closeCam(){ camModal.classList.remove("on"); camModal.setAttribute("aria-hidden","true"); stopCam(); }
 
     async function startCam(){
       try{
@@ -707,7 +621,7 @@
         $("btnSnap").disabled = false;
         $("btnStream10").disabled = false;
         $("btnCamStart").disabled = true;
-        $("camNote").textContent = "Cámara activa. Capturá 1 frame y enviá a CONSIA.";
+        $("camNote").textContent = "Cámara activa. Capturá y enviá.";
       }catch(e){
         $("camNote").textContent = "No se pudo acceder a la cámara.";
       }
@@ -728,8 +642,7 @@
       const v = camVideo;
       if(!v || !v.videoWidth) return null;
       const c = document.createElement("canvas");
-      // “10%” => bajamos resolución fuerte (performance)
-      const w = Math.max(320, Math.round(v.videoWidth * 0.10));
+      const w = Math.max(320, Math.round(v.videoWidth * 0.10)); // 10%
       const h = Math.round(w * (v.videoHeight / v.videoWidth));
       c.width = w; c.height = h;
       const ctx = c.getContext("2d", { alpha:false });
@@ -740,7 +653,6 @@
     async function sendCam10(){
       const frame = captureFrameDataURL();
       if(!frame){ addMsg("err","No hay frame para enviar."); return; }
-      // lo agregamos como attachment temporal + prompt corto
       const prompt = "Análisis en vivo (10%): describí lo que ves y seguí mis instrucciones. Respuesta corta + 1 pregunta mínima.";
       const attachments = [{ name:"live_frame.jpg", type:"image/jpeg", size: frame.length, dataUrl: frame }];
       await sendNow(prompt, { source:"camera", attachments });
@@ -759,10 +671,9 @@
       addMsg("you", msg);
 
       const attachments = (opts.attachments || []).concat(pendingAttachments || []);
-      // limpiamos pendingAttachments al enviar
       pendingAttachments = [];
+      updateAttachLabel();
 
-      // payload simple: el backend puede ignorar attachments si no los usa
       const payload = {
         message: msg,
         lang: "es",
@@ -798,16 +709,7 @@
     }
 
     /**********************
-     * Autosize textarea
-     **********************/
-    function autosize(el){
-      el.style.height = "auto";
-      el.style.height = Math.min(180, el.scrollHeight) + "px";
-    }
-    inputEl.addEventListener("input", ()=>autosize(inputEl));
-
-    /**********************
-     * Buttons / events
+     * UI events
      **********************/
     $("send").onclick = ()=>sendNow(inputEl.value, {source:"text"});
     inputEl.addEventListener("keydown",(e)=>{
@@ -826,14 +728,13 @@
       });
     });
 
-    $("btnClear").onclick = ()=>{
-      logEl.innerHTML = "";
-      addMsg("sys","CONSIA UI listo. Input siempre visible. Idioma ES.");
-    };
-
     $("btnMic").onclick = ()=>startStopVoice();
     $("btnSpeak").onclick = ()=>{ if(lastAIText) speak(lastAIText); };
     $("btnStopTTS").onclick = ()=>{ try{window.speechSynthesis.cancel()}catch(e){} };
+    $("btnClear").onclick = ()=>{
+      logEl.innerHTML = "";
+      addMsg("sys","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
+    };
 
     $("btnTest").onclick = async ()=>{
       addMsg("sys","Testeando API…");
@@ -851,25 +752,21 @@
     $("btnCamClose").onclick = ()=>closeCam();
     $("btnCamStart").onclick = ()=>startCam();
     $("btnCamStop").onclick = ()=>stopCam();
+    $("btnStream10").onclick = ()=>sendCam10();
     $("btnSnap").onclick = ()=>{
       const frame = captureFrameDataURL();
-      if(!frame){ $("camNote").textContent = "No se pudo capturar frame."; return; }
-      $("camNote").textContent = "Frame capturado (10%). Listo para enviar.";
-      // lo dejamos listo como attachment pending (sin mandar todavía)
+      if(!frame){ $("camNote").textContent = "No se pudo capturar."; return; }
       pendingAttachments = [{ name:"live_frame.jpg", type:"image/jpeg", size: frame.length, dataUrl: frame }];
+      updateAttachLabel();
       addMsg("sys","Frame capturado y adjuntado como live_frame.jpg");
+      $("camNote").textContent = "Frame capturado (10%). Adjuntado.";
     };
-    $("btnStream10").onclick = ()=>sendCam10();
 
-    // Boot messages
-    addMsg("sys","CONSIA UI HOTFIX activo. Input siempre visible. Idioma ES.");
-    addMsg("sys","Realtime conectando… (si tu backend lo soporta)");
-
-    // keep RT label
+    // Boot
+    setOnline(true);
+    $("realtimeLabel").textContent = "auto";
     $("rtMode").textContent = "auto";
-
-    // if realtime fails quickly, show
-    setTimeout(()=>{ if(!ws){ hudStatus.textContent = "Realtime: no disponible"; } }, 1800);
+    updateAttachLabel();
   </script>
 </body>
 </html>

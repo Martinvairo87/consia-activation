@@ -2,304 +2,314 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>CONSIA ∞</title>
   <style>
-    :root{
-      --bg:#000;
-      --txt:#fff;
-      --muted:rgba(255,255,255,.75);
-      --ui:rgba(10,10,10,.55);
-      --ui2:rgba(10,10,10,.78);
-      --border:rgba(255,255,255,.16);
-      --good:#20ff84;
-      --warn:#ffcc00;
-      --bad:#ff3b30;
-      --r:18px;
-      --shadow:0 18px 60px rgba(0,0,0,.55);
-
-      /* Lipsync regions (ajustables en Owner Mode) */
-      --mouth-x:50%;
-      --mouth-y:70%;
-      --mouth-w:26%;
-      --mouth-h:14%;
-      --eyes-y:46%;
-      --eye-w:12%;
-      --eye-h:6%;
-      --eye-gap:18%;
-    }
-    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body{ margin:0; padding:0; width:100%; height:100%; background:var(--bg); color:var(--txt); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, Segoe UI, Roboto, Helvetica, Arial; overflow:hidden; }
-    button{ font:inherit; color:inherit; background:transparent; border:1px solid var(--border); border-radius:999px; padding:10px 14px; cursor:pointer; }
-    button:active{ transform:scale(.98); }
-    .pill{ background:rgba(255,255,255,.08); border:1px solid var(--border); border-radius:999px; padding:8px 12px; display:inline-flex; gap:8px; align-items:center; }
-    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .dot{ width:10px; height:10px; border-radius:50%; background:var(--bad); box-shadow:0 0 12px rgba(255,0,0,.45); }
-    .dot.good{ background:var(--good); box-shadow:0 0 12px rgba(32,255,132,.45); }
-    .dot.warn{ background:var(--warn); box-shadow:0 0 12px rgba(255,204,0,.45); }
-
-    /* FULLSCREEN STAGE */
-    #stage{
-      position:fixed; inset:0;
-      width:100vw; height:100vh;
-      background:#000;
-      overflow:hidden;
-    }
-
-    /* Intro video (auto) */
-    #introWrap{
-      position:absolute; inset:0;
-      background:#000;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:30;
-      opacity:1;
-      transition:opacity .35s ease;
-    }
-    #introWrap.hidden{ opacity:0; pointer-events:none; }
-    #introVideo{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit:cover;
-      filter:contrast(1.05) saturate(1.05);
-    }
-    #introOverlay{
-      position:absolute; inset:0;
-      background:radial-gradient(60% 60% at 50% 40%, rgba(0,0,0,.15), rgba(0,0,0,.75));
-    }
-    #skipIntro{
-      position:absolute;
-      right:16px; top:16px;
-      z-index:31;
-      backdrop-filter: blur(10px);
-      background:rgba(0,0,0,.25);
-    }
-
-    /* Avatar base fullscreen */
-    #avatarBase{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit:cover;            /* FULLSCREEN (sin corte percibido) */
-      object-position:center center;
-      transform:translateZ(0);
-      filter:contrast(1.06) saturate(1.05);
-      z-index:1;
-    }
-    /* Soft vignette */
-    #vignette{
-      position:absolute; inset:-20px;
-      background:radial-gradient(60% 60% at 50% 40%, rgba(0,0,0,.08), rgba(0,0,0,.78));
-      z-index:2;
-      pointer-events:none;
-    }
-
-    /* Face FX canvas (lipsync + gestures) */
-    #fx{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      z-index:3;
-      pointer-events:none;
-      mix-blend-mode:screen;
-      opacity:.85;
-    }
-
-    /* UI Overlay */
-    #hud{
-      position:absolute; left:14px; right:14px; top:12px;
-      z-index:10;
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      pointer-events:none;
-    }
-    #hud .row{ pointer-events:auto; }
-    #brand{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      border-radius:999px;
-      background:rgba(0,0,0,.25);
-      border:1px solid var(--border);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-    }
-    #brand b{ letter-spacing:.5px; }
-    #statusBar{
-      display:flex; gap:10px; align-items:center;
-      padding:10px 12px;
-      border-radius:999px;
-      background:rgba(0,0,0,.25);
-      border:1px solid var(--border);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-    }
-
-    /* Controls */
-    #controls{
-      position:absolute; left:14px; right:14px; bottom:14px;
-      z-index:12;
-      display:flex; flex-direction:column; gap:10px;
-      pointer-events:none;
-    }
-    #controls .row{ pointer-events:auto; }
-    #chat{
-      pointer-events:auto;
-      border:1px solid var(--border);
-      border-radius: var(--r);
-      background:rgba(0,0,0,.35);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    #log{
-      height:210px;
-      overflow:auto;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      scrollbar-width: thin;
-    }
-    .msg{
-      padding:10px 12px;
-      border-radius:14px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      max-width:92%;
-      white-space:pre-wrap;
-      line-height:1.25;
-    }
-    .msg.sys{ opacity:.9; background:rgba(255,255,255,.04); }
-    .msg.you{ align-self:flex-end; background:rgba(32,255,132,.10); border-color:rgba(32,255,132,.22); }
-    .msg.ai{ align-self:flex-start; background:rgba(255,255,255,.07); }
-    #composer{
-      display:flex; gap:10px; padding:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      align-items:center;
-      background:rgba(0,0,0,.25);
-    }
-    #input{
-      flex:1;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:999px;
-      padding:12px 14px;
-      color:#fff;
-      outline:none;
-    }
-    #send{
-      background:rgba(255,255,255,.10);
-    }
-
-    /* Minimal modal (Owner) */
-    #ownerModal{
-      position:fixed; inset:0;
-      z-index:50;
-      background:rgba(0,0,0,.65);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-    #ownerModal.on{ display:flex; }
-    #ownerCard{
-      width:min(820px, 100%);
-      border-radius:22px;
-      background:rgba(10,10,10,.85);
-      border:1px solid rgba(255,255,255,.16);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-      padding:16px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    #ownerCard textarea{
-      width:100%;
-      min-height:140px;
-      resize:none;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:#fff;
-      padding:12px;
-      outline:none;
-    }
+    html,body{margin:0;height:100%;background:#000;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    video,canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    #overlay{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.06),rgba(0,0,0,.75))}
+    #hud{position:fixed;left:0;right:0;bottom:0;padding:12px 12px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;flex-wrap:wrap;background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,0))}
+    .btn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;border-radius:14px;padding:10px 12px;font-size:14px}
+    .btn:active{transform:scale(.98)}
+    #input{flex:1;min-width:180px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);color:#fff;border-radius:14px;padding:10px 12px;font-size:14px}
+    #log{position:fixed;top:0;left:0;right:0;max-height:38vh;overflow:auto;padding:10px 12px;background:linear-gradient(to bottom,rgba(0,0,0,.85),rgba(0,0,0,0));font-size:13px;white-space:pre-wrap}
+    #brand{position:fixed;top:10px;left:12px;font-weight:700;letter-spacing:.08em;font-size:12px;opacity:.9}
+    #status{position:fixed;top:10px;right:12px;font-size:12px;opacity:.8}
+    #avatar{position:absolute;inset:0}
+    #intro{position:absolute;inset:0;display:none}
+    #intro video{object-fit:cover}
   </style>
 </head>
 <body>
   <div id="stage">
-    <!-- AUTO INTRO -->
-    <div id="introWrap">
-      <video id="introVideo" autoplay muted playsinline loop></video>
-      <div id="introOverlay"></div>
-      <button id="skipIntro">Saltar</button>
-    </div>
+    <!-- INTRO (opcional): si subís intro.mp4 al repo, se activa -->
+    <div id="intro"><video id="introVid" muted playsinline></video></div>
 
-    <!-- AVATAR FULLSCREEN -->
-    <video id="avatarBase" autoplay muted playsinline loop></video>
-    <div id="vignette"></div>
-    <canvas id="fx"></canvas>
+    <!-- CAMERA (frontal) -->
+    <video id="cam" autoplay playsinline muted></video>
 
-    <!-- HUD -->
-    <div id="hud">
-      <div class="row" id="brand">
-        <span class="dot" id="dotApi"></span>
-        <b>CONSIA ∞</b>
-      </div>
+    <!-- COSMIC canvas -->
+    <canvas id="cosmic"></canvas>
 
-      <div class="row" id="statusBar">
-        <span class="pill"><span class="dot" id="dotRt"></span>Realtime <b id="rtTxt">off</b></span>
-        <span class="pill">API <b id="apiTxt">api.consia.world</b></span>
-        <button id="btnTestApi">Test API</button>
-      </div>
-    </div>
+    <!-- AVATAR layer (video) -->
+    <video id="avatar" autoplay playsinline muted loop></video>
 
-    <!-- CONTROLS + CHAT -->
-    <div id="controls">
-      <div class="row">
-        <button id="btnGuide">🧭 Guiame (3 opciones)</button>
-        <button id="btnWhat">🧠 ¿Qué puede hacer?</button>
-        <button id="btnHyper">🖼️ Hiperrealismo</button>
-        <button id="btnVoice">🎙️ Voz</button>
-        <button id="btnCam">📷 Cámara</button>
-        <button id="btnAscend">⚡ ASCEND</button>
-      </div>
-
-      <div class="row">
-        <button id="btnUpload">📎 Subir archivo</button>
-        <button id="btnCamLive">📷 Cámara (vivo <b id="camPct">100%</b>)</button>
-        <button id="btnTalk">🗣️ Hablar</button>
-        <button id="btnRead">👁️ Leer</button>
-        <button id="btnClear">🧹 Limpiar</button>
-        <button id="btnStopVoice">⛔ Stop voz</button>
-        <button id="btnPlans">💳 Planes</button>
-        <button id="btnOwner">🔒 Owner</button>
-      </div>
-
-      <div id="chat">
-        <div id="log"></div>
-        <div id="composer">
-          <input id="input" placeholder="Decí lo que querés (o escribí '.')"/>
-          <button id="send">Enviar</button>
-        </div>
-      </div>
-    </div>
+    <div id="overlay"></div>
   </div>
 
-  <!-- OWNER -->
-  <div id="ownerModal">
-    <div id="ownerCard">
-      <div class="row" style="justify-content:space-between;">
-        <div class="row">
-          <span class="pill">Owner Mode</span>
-          <span class="pill">Comandos por voz/texto</span>
-        </div>
-        <div class="row">
-          <button id="ownerClose">Cerrar</button>
-        </div>
-      </div>
+  <div id="brand">CONSIA ∞</div>
+  <div id="status">INIT</div>
+  <div id="log"></div>
 
-      <textarea id="ownerText" placeholder="Comando Owner. Ej:
-- avatar: ENTIDAD CONSIA hiperrealista, gestos perfectos, labios realistas
-- plan: PRO
--
+  <div id="hud">
+    <input id="input" placeholder="Escribí: Hola CONSIA…" />
+    <button class="btn" id="send">Enviar</button>
+    <button class="btn" id="mic">Voz</button>
+    <button class="btn" id="camBtn">Cámara</button>
+    <button class="btn" id="uploadBtn">Subir</button>
+    <button class="btn" id="teleportBtn">Teleport</button>
+  </div>
+
+  <input id="file" type="file" multiple hidden />
+
+<script>
+/* =========================
+   CONFIG
+========================= */
+const API_BASE = "https://api.consia.world"; // <-- CAMBIAR SI TU API ES OTRA
+const DEVICE = localStorage.getItem("consia_device") || (crypto.randomUUID?.() || String(Date.now()));
+localStorage.setItem("consia_device", DEVICE);
+const LANG = "ES"; // Lock idioma UI (no mezcla)
+
+/* =========================
+   UI HELPERS
+========================= */
+const $ = (id)=>document.getElementById(id);
+const logEl = $("log");
+const statusEl = $("status");
+function log(s){ logEl.textContent = (s + "\n" + logEl.textContent).slice(0,8000); }
+function status(s){ statusEl.textContent = s; }
+
+function safeText(t){ return (t||"").toString(); }
+
+/* =========================
+   INTRO AUTOPLAY (si existe intro.mp4)
+========================= */
+async function tryIntro(){
+  try{
+    const r = await fetch("./intro.mp4", { method:"HEAD" });
+    if(!r.ok) return;
+    $("intro").style.display="block";
+    $("introVid").src="./intro.mp4";
+    $("introVid").play().catch(()=>{});
+    setTimeout(()=>{ $("intro").style.display="none"; }, 6000);
+  }catch{}
+}
+
+/* =========================
+   REALTIME WS
+========================= */
+let ws;
+function wsConnect(){
+  try{
+    ws = new WebSocket(API_BASE.replace("https://","wss://").replace("http://","ws://") + "/realtime?device=" + encodeURIComponent(DEVICE));
+    ws.onopen = ()=> status("REALTIME ON");
+    ws.onmessage = (ev)=>{
+      try{
+        const d = JSON.parse(ev.data);
+        if(d.type==="hello") log("WS: "+d.text);
+        if(d.type==="avatar" && d.avatar){
+          // si el avatar tiene url, úsalo
+          if(d.avatar.url){
+            $("avatar").src = d.avatar.url;
+          }
+          log("Avatar update v"+d.avatar.version);
+        }
+      }catch{}
+    };
+    ws.onclose = ()=> { status("REALTIME OFF"); setTimeout(wsConnect, 1500); };
+  }catch(e){
+    status("REALTIME ERR");
+  }
+}
+
+/* =========================
+   CAMERA (frontal)
+========================= */
+let camOn = false;
+async function cameraStart(){
+  const cam = $("cam");
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, max: 60 } },
+    audio: false
+  });
+  cam.srcObject = stream;
+  camOn = true;
+  status("CAM ON");
+}
+function cameraStop(){
+  const cam = $("cam");
+  const s = cam.srcObject;
+  if(s){ s.getTracks().forEach(t=>t.stop()); }
+  cam.srcObject = null;
+  camOn = false;
+  status("CAM OFF");
+}
+
+/* =========================
+   COSMIC RENDER (simple)
+   — placeholder: fondo dinámico + “teleport” por prompt
+========================= */
+const canvas = $("cosmic");
+const ctx = canvas.getContext("2d");
+function resize(){
+  canvas.width = innerWidth * devicePixelRatio;
+  canvas.height = innerHeight * devicePixelRatio;
+}
+addEventListener("resize", resize); resize();
+
+let cosmicSeed = 0;
+function cosmicLoop(){
+  const w = canvas.width, h = canvas.height;
+  cosmicSeed += 0.01;
+  ctx.clearRect(0,0,w,h);
+  // estrellas
+  for(let i=0;i<200;i++){
+    const x = (Math.sin(i*12.9898+cosmicSeed*3)*0.5+0.5)*w;
+    const y = (Math.cos(i*78.233+cosmicSeed*2)*0.5+0.5)*h;
+    const a = (Math.sin(cosmicSeed+i)*0.5+0.5);
+    ctx.globalAlpha = 0.15 + a*0.35;
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(x,y,2*devicePixelRatio,2*devicePixelRatio);
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(cosmicLoop);
+}
+cosmicLoop();
+
+function teleport(prompt){
+  log("TELEPORT: " + prompt);
+  // Efecto simple: aumenta intensidad cósmica
+  cosmicSeed += 1.0;
+}
+
+/* =========================
+   LIPSYNC HOOK (realista simple)
+   - mueve “intensidad” por amplitude (placeholder)
+   - para lipsync real: se integra motor externo (Audio2Face/Wav2Lip)
+========================= */
+let audioCtx, analyser, micStream;
+async function startMicLipsync(){
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+  const src = audioCtx.createMediaStreamSource(micStream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  src.connect(analyser);
+  status("MIC ON");
+  lipsyncLoop();
+}
+function stopMicLipsync(){
+  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); micStream=null; }
+  analyser=null;
+  status("MIC OFF");
+}
+function lipsyncLoop(){
+  if(!analyser) return;
+  const data = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(data);
+  let sum=0;
+  for(let i=0;i<data.length;i++){
+    const v = (data[i]-128)/128;
+    sum += v*v;
+  }
+  const rms = Math.sqrt(sum/data.length);
+  // Simula “boca” aumentando contraste del avatar
+  $("avatar").style.filter = `contrast(${1 + rms*1.5}) brightness(${1 + rms*0.6})`;
+  requestAnimationFrame(lipsyncLoop);
+}
+
+/* =========================
+   API CALLS
+========================= */
+async function consiaAsk(message, files=null){
+  status("ASK…");
+  if(files && files.length){
+    const fd = new FormData();
+    fd.append("message", message);
+    fd.append("lang", LANG);
+    for(const f of files) fd.append("file", f, f.name);
+    const res = await fetch(API_BASE + "/ask", {
+      method:"POST",
+      headers:{ "x-consia-device": DEVICE },
+      body: fd
+    });
+    const j = await res.json();
+    status("OK");
+    return j;
+  }else{
+    const res = await fetch(API_BASE + "/ask", {
+      method:"POST",
+      headers:{ "content-type":"application/json", "x-consia-device": DEVICE },
+      body: JSON.stringify({ message, lang: LANG })
+    });
+    const j = await res.json();
+    status("OK");
+    return j;
+  }
+}
+
+async function industrialLead(payload){
+  const res = await fetch(API_BASE + "/industrial/lead",{
+    method:"POST",
+    headers:{ "content-type":"application/json", "x-consia-device": DEVICE },
+    body: JSON.stringify({ device: DEVICE, ...payload })
+  });
+  return await res.json();
+}
+
+/* =========================
+   UI EVENTS
+========================= */
+$("send").onclick = async ()=>{
+  const msg = $("input").value.trim() || "Hola CONSIA";
+  $("input").value="";
+  log("YOU: " + msg);
+  const r = await consiaAsk(msg);
+  log("CONSIA: " + safeText(r.reply));
+};
+
+$("mic").onclick = async ()=>{
+  if(!analyser){
+    await startMicLipsync();
+  }else{
+    stopMicLipsync();
+  }
+};
+
+$("camBtn").onclick = async ()=>{
+  try{
+    if(!camOn) await cameraStart();
+    else cameraStop();
+  }catch(e){
+    log("CAM ERR: " + e.message);
+  }
+};
+
+$("uploadBtn").onclick = ()=> $("file").click();
+$("file").onchange = async ()=>{
+  const files = Array.from($("file").files || []);
+  if(!files.length) return;
+  const msg = "Analizá estos archivos y guiame.";
+  log("UPLOAD: " + files.map(f=>f.name).join(", "));
+  const r = await consiaAsk(msg, files);
+  log("CONSIA: " + safeText(r.reply));
+};
+
+$("teleportBtn").onclick = ()=>{
+  const prompt = promptText();
+  teleport(prompt);
+};
+
+function promptText(){
+  const t = $("input").value.trim();
+  return t || "Teleport a un entorno futurista premium";
+}
+
+// Quick-start: WS + Intro
+(async function init(){
+  status("INIT");
+  await tryIntro();
+  wsConnect();
+  // Avatar default: si tenés un video avatar en el repo, ponelo como ./avatar.mp4
+  try{
+    const r = await fetch("./avatar.mp4", { method:"HEAD" });
+    if(r.ok) $("avatar").src = "./avatar.mp4";
+  }catch{}
+  status("READY");
+  log("CONSIA ∞ READY — Decí: Hola CONSIA");
+})();
+</script>
+</body>
+</html>

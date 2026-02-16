@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>CONSIA — OWNER GLOBAL CONTROL</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./panel.css"/>
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="title">CONSIA — OWNER<br/>GLOBAL CONTROL</div>
+        <div class="sub">CORE + DO ACTIVE · AUTO-DECISION · LOGS · NODES · VAULT (OWNER-ONLY)</div>
+      </div>
+
+      <div class="bar">
+        <div class="pill">
+          <span class="lbl">API</span>
+          <input id="apiInput" class="in" value="https://api.consia.world" />
+        </div>
+
+        <div class="pill">
+          <span class="lbl">OWNER TOKEN</span>
+          <input id="tokenInput" class="in" type="password" placeholder="Pegar token (session only)" />
+          <button id="btnShow" class="btn ghost">SHOW</button>
+          <button id="btnSave" class="btn">SAVE</button>
+        </div>
+
+        <div class="live">
+          <span class="dot"></span>
+          <span id="liveTxt">LIVE</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <div class="cardHead">
+          <div class="cardTitle">GLOBAL STATUS</div>
+          <button id="btnRefresh" class="btn ghost">REFRESH</button>
+        </div>
+
+        <div class="statusRow">
+          <div id="badge" class="badge ok">API ONLINE</div>
+        </div>
+
+        <div class="kv">
+          <div class="k">service</div><div id="s_service" class="v">—</div>
+          <div class="k">version</div><div id="s_version" class="v">—</div>
+          <div class="k">core</div><div id="s_core" class="v">—</div>
+          <div class="k">ai</div><div id="s_ai" class="v">—</div>
+          <div class="k">global</div><div id="s_global" class="v">—</div>
+          <div class="k">ts</div><div id="s_ts" class="v">—</div>
+        </div>
+
+        <div class="foot">Public endpoint: <span id="publicEndpoint">api.consia.world</span></div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">
+          <div class="cardTitle">AUTO-DECISION (REAL)</div>
+          <div class="row">
+            <div id="autoBadge" class="badge warn">AUTO: OFF</div>
+          </div>
+        </div>
+
+        <div class="row gap">
+          <button id="btnExec" class="btn xl">EXECUTE GLOBAL BEST ACTION</button>
+          <button id="btnLock" class="btn danger ghost">EMERGENCY LOCK</button>
+          <button id="btnSafe" class="btn warn">SAFE MODE</button>
+        </div>
+
+        <div class="row gap right">
+          <div class="mini">interval (sec)</div>
+          <input id="intervalInput" class="smallIn" value="12"/>
+          <button id="btnStart" class="btn">START</button>
+          <button id="btnStop" class="btn ghost">STOP</button>
+        </div>
+
+        <div class="note">Auto-Decision llama OWNER endpoint (Bearer token). Todo queda en DO logs.</div>
+      </div>
+
+      <div class="card full">
+        <div class="cardHead">
+          <div class="cardTitle">OWNER CONTROL</div>
+          <div class="row gap">
+            <button id="btnOwnerStatus" class="btn">OWNER STATUS</button>
+            <button id="btnHealth" class="btn ghost">HEALTH CHECK</button>
+            <button id="btnWhoami" class="btn ghost">WHOAMI</button>
+          </div>
+        </div>
+
+        <pre id="out" class="out">{ "note": "Paste Owner token to enable owner endpoints." }</pre>
+
+        <div class="warnLine">⚠️ No pegues tokens en GitHub. Token solo aquí (sessionStorage).</div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="logs">LOGS (DO)</button>
+          <button class="tab" data-tab="nodes">MULTI-NODE MAP</button>
+          <button class="tab" data-tab="vault">SECURITY VAULT</button>
+        </div>
+
+        <div class="pane" id="pane-logs">
+          <div class="row gap right">
+            <div class="mini">limit</div>
+            <input id="logLimit" class="smallIn" value="80"/>
+            <button id="btnLogsLoad" class="btn ghost">LOAD</button>
+            <button id="btnLogsLive" class="btn">LIVE</button>
+            <button id="btnLogsClear" class="btn ghost">CLEAR</button>
+          </div>
+
+          <div class="filterBox">
+            <div class="filterTitle">LOG FILTER</div>
+            <input id="logFilter" class="filterIn" placeholder="type to filter... (match text)"/>
+            <div class="row gap">
+              <button id="btnCopy" class="btn ghost">COPY</button>
+              <button id="btnExport" class="btn ghost">EXPORT JSON</button>
+            </div>
+          </div>
+
+          <pre id="logs" class="out">[]</pre>
+          <div class="mini foot2">Endpoint owner: GET /owner/logs?limit=80</div>
+        </div>
+
+        <div class="pane hide" id="pane-nodes">
+          <div class="row gap right">
+            <button id="btnNodes" class="btn ghost">LOAD NODES</button>
+          </div>
+          <pre id="nodes" class="out">[]</pre>
+          <div class="mini foot2">Public: GET /system/nodes</div>
+        </div>
+
+        <div class="pane hide" id="pane-vault">
+          <div class="row gap">
+            <button id="btnVaultStatus" class="btn ghost">VAULT STATUS</button>
+            <button id="btnVaultRotate" class="btn ghost">ROTATE</button>
+            <button id="btnVaultLock" class="btn danger ghost">LOCK</button>
+            <button id="btnVaultUnlock" class="btn warn">UNLOCK</button>
+          </div>
+          <pre id="vault" class="out">{}</pre>
+          <div class="mini foot2">Owner: /owner/vault/*</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

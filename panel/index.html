@@ -1,79 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CONSIA — OWNER GLOBAL CONTROL</title>
 
-<title>CONSIA — GLOBAL CONTROL</title>
-
-<!-- FONT TOP 1 -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
+:root{
+  --bg:#000;
+  --fg:#00ffbf;
+  --fg2:#00d8ff;
+  --warn:#ffcc00;
+  --bad:#ff3b3b;
+  --ok:#00ffbf;
+  --muted:#00ffbf66;
+  --line:#00ffbf;
+  --shadow:0 0 24px rgba(0,255,191,.18);
+  --shadow2:0 0 40px rgba(0,216,255,.14);
+  --radius:14px;
+}
 
-/* ===== GLOBAL ===== /
+*{box-sizing:border-box}
 body{
-margin:0;
-background:#000;
-font-family:'Orbitron',sans-serif;
-color:#00ffbf;
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:'Orbitron', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/ HEADER /
 .header{
-padding:25px 50px;
-border-bottom:1px solid #00ffbf;
-font-size:26px;
-letter-spacing:2px;
+  padding:22px 36px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
 }
-
-/ GRID /
-.grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:30px;
-padding:50px;
+.h-title{
+  font-size:22px;
+  letter-spacing:2px;
+  font-weight:800;
+  text-transform:uppercase;
 }
-
-/ BOX /
-.box{
-border:1px solid #00ffbf;
-padding:30px;
-min-height:150px;
-box-shadow:0 0 20px #00ffbf33;
+.h-sub{
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:1px;
+  margin-top:6px;
 }
-
-.box h2{
-margin:0 0 20px 0;
-font-weight:600;
+.h-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
-
-/ BUTTON /
+.pill{
+  border:1px solid var(--line);
+  padding:10px 12px;
+  border-radius:999px;
+  box-shadow:var(--shadow);
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.pill label{
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:1px;
+}
+.pill input{
+  background:#000;
+  color:var(--fg);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:8px 10px;
+  outline:none;
+  width:260px;
+  max-width:60vw;
+}
+.pill input::placeholder{color:#00ffbf55}
 .btn{
-background:#00ffbf;
-color:#000;
-border:none;
-padding:18px 25px;
-font-weight:700;
-cursor:pointer;
-font-family:'Orbitron';
-letter-spacing:1px;
-transition:.3s;
+  background:var(--fg);
+  color:#000;
+  border:none;
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:800;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:.18s ease;
+  box-shadow:var(--shadow);
+}
+.btn:hover{transform:translateY(-1px); box-shadow:0 0 26px rgba(0,255,191,.35)}
+.btn:active{transform:translateY(0px)}
+.btn-ghost{
+  background:transparent;
+  color:var(--fg);
+  border:1px solid var(--line);
+}
+.btn-danger{
+  background:var(--bad);
+  color:#000;
+  border:none;
+}
+.btn-warn{
+  background:var(--warn);
+  color:#000;
+  border:none;
 }
 
-.btn:hover{
-box-shadow:0 0 25px #00ffbf;
+.wrap{
+  padding:26px 26px 40px;
 }
 
-/ GLOBAL STATUS */
-.global{
-margin:50px;
-border:1px solid #00ffbf;
-padding:25px;
-text-align:center;
-font-size:20px;
-box-shadow:0 0 20px #00ffbf33;
+.topgrid{
+  display:grid;
+  grid-template-columns: 1.2fr 1.3fr 1.1fr;
+  gap:18px;
 }
+@media (max-width: 980px){
+  .topgrid{grid-template-columns:1fr; }
+}
+
+.card{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  background:linear-gradient(180deg, rgba(0,255,191,.06), rgba(0,0,0,0));
+}
+.card h2{
+  margin:0 0 10px 0;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+}
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.kv{
+  display:grid;
+  grid-template-columns: 140px 1fr;
+  gap:8px 12px;
+  margin-top:10px;
+}
+.kv .k{
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:1px;
+}
+.kv .v{
+  font-size:12px;
+  color:var(--fg);
+  word-break:break-word;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--line);
+  padding:8px 10px;
+  border-radius:999px;
+  box-shadow:var(--shadow2);
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--muted);
+}
+.dot.ok{background:var(--ok)}
+.dot.bad{background:var(--bad)}
+.dot.warn{background:var(--warn)}
+.small{
+  font-size:11px;
+  letter-spacing:1px;
+  color:var(--muted);
+}
+
+.tabs{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.tab{
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  cursor:pointer;
+  user-select:none;
+  color:var(--muted);
+  transition:.15s;
+}
+.tab.active{
+  background:rgba(0,255,191,.12);
+  color:var(--fg);
+  box-shadow:var(--shadow);
+}
+.panel{
+  margin-top:16px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:var(--shadow);
+  background:linear-gradient(180deg, rgba(0,216,255,.05), rgba(0,0,0,0));
+}
+.hidden{display:none}
+
+.grid2{
+  display:grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap:18px;
+}
+@media (max-width: 980px){
+  .grid2{grid-template-columns:1fr;}
+}
+
+pre{
+  margin:0;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#000;
+  color:var(--fg);
+  overflow:auto;
+  max-height:360px;
+  box-shadow:var(--shadow);
+  font-size:11px;
+  line-height:1.45;
+}
+hr{border:none;border-top:1px solid rgba(0,255,191,.2); margin:14px 0}
+
+input[type="number"], input[type="text"]{
+  background:#000;
+  color:var(--fg);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  outline:none;
+}
+select{
+  background:#000;
+  color:var(--fg);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  outline:none;
+}
+textarea{
+  width:100%;
+  min-height:90px;
+  background:#000;
+  color:var(--fg);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  outline:none;
+  resize:vertical;
+}
+.footer{
+  margin-top:18px;
+  padding:12px 4px 0;
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:1px;
+}
+a{color:var(--fg2); text-decoration:none}
+a:hover{text-decoration:underline}
 
 </style>
 </head>
@@ -81,67 +281,554 @@ box-shadow:0 0 20px #00ffbf33;
 <body>
 
 <div class="header">
-CONSIA — GLOBAL CONTROL
+  <div>
+    <div class="h-title">CONSIA — OWNER GLOBAL CONTROL</div>
+    <div class="h-sub">CORE + DO ACTIVE • AUTO-DECISION • LOGS • NODES • VAULT (OWNER-ONLY)</div>
+  </div>
+
+  <div class="h-right">
+    <div class="pill">
+      <label>API</label>
+      <input id="apiBase" type="text" value="https://api.consia.world" />
+    </div>
+
+    <div class="pill">
+      <label>OWNER TOKEN</label>
+      <input id="ownerToken" type="password" placeholder="Paste token here (NOT in GitHub)" />
+      <button class="btn btn-ghost" onclick="toggleToken()">SHOW</button>
+      <button class="btn" onclick="saveToken()">SAVE</button>
+    </div>
+
+    <div class="badge" id="liveBadge">
+      <span class="dot" id="liveDot"></span>
+      <span id="liveText">BOOTING</span>
+    </div>
+  </div>
 </div>
 
-<div class="grid">
+<div class="wrap">
 
-<div class="box">
-<h2>Status</h2>
-<div id="status">Loading...</div>
-</div>
+  <div class="topgrid">
 
-<div class="box">
-<h2>AI Decision</h2>
-<button class="btn" onclick="execute()">EXECUTE GLOBAL BEST ACTION</button>
-</div>
+    <div class="card">
+      <h2>GLOBAL STATUS</h2>
+      <div class="row">
+        <div class="badge"><span class="dot" id="apiDot"></span><span id="apiState">API …</span></div>
+        <button class="btn btn-ghost" onclick="refreshAll()">REFRESH</button>
+      </div>
 
-<div class="box">
-<h2>Core</h2>
-<div id="core">Checking...</div>
-</div>
+      <div class="kv">
+        <div class="k">service</div><div class="v" id="svc">—</div>
+        <div class="k">version</div><div class="v" id="ver">—</div>
+        <div class="k">core</div><div class="v" id="core">—</div>
+        <div class="k">ai</div><div class="v" id="ai">—</div>
+        <div class="k">global</div><div class="v" id="global">—</div>
+        <div class="k">ts</div><div class="v" id="ts">—</div>
+      </div>
 
-</div>
+      <div class="footer">Public endpoint: <a href="https://api.consia.world" target="_blank">api.consia.world</a></div>
+    </div>
 
-<div class="global" id="global">
-GLOBAL STATUS: CHECKING...
+    <div class="card">
+      <h2>AUTO-DECISION (REAL)</h2>
+
+      <div class="row">
+        <div class="badge"><span class="dot" id="autoDot"></span><span id="autoState">AUTO: OFF</span></div>
+
+        <div class="row" style="gap:10px;">
+          <label class="small">interval (sec)</label>
+          <input id="autoSec" type="number" min="3" value="12" style="width:110px;">
+          <button class="btn" onclick="autoStart()">START</button>
+          <button class="btn btn-ghost" onclick="autoStop()">STOP</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <button class="btn" onclick="executeBest()">EXECUTE GLOBAL BEST ACTION</button>
+        <button class="btn btn-ghost" onclick="execute('lockdown')">EMERGENCY LOCK</button>
+        <button class="btn btn-warn" onclick="execute('safe_mode')">SAFE MODE</button>
+      </div>
+
+      <div class="footer">
+        Auto-Decision llama OWNER endpoint (Bearer token). Si el endpoint aún no existe, verás “endpoint_not_found”.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>OWNER CONTROL</h2>
+      <div class="row">
+        <button class="btn" onclick="ownerStatus()">OWNER STATUS</button>
+        <button class="btn btn-ghost" onclick="health()">HEALTH CHECK</button>
+        <button class="btn btn-ghost" onclick="whoami()">WHOAMI</button>
+      </div>
+
+      <hr>
+
+      <pre id="ownerOut">{ "owner": "—" }</pre>
+
+      <div class="footer">
+        ⚠️ No pegues tokens en GitHub. Token solo en este panel (sessionStorage).
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="logs" onclick="showTab('logs')">LOGS (DO)</div>
+    <div class="tab" data-tab="nodes" onclick="showTab('nodes')">MULTI-NODE MAP</div>
+    <div class="tab" data-tab="vault" onclick="showTab('vault')">SECURITY VAULT</div>
+  </div>
+
+  <!-- LOGS -->
+  <div class="panel" id="tab-logs">
+    <div class="grid2">
+      <div>
+        <div class="row">
+          <div class="badge"><span class="dot" id="logsDot"></span><span id="logsState">LOGS: …</span></div>
+          <div class="row" style="gap:10px;">
+            <label class="small">limit</label>
+            <input id="logsLimit" type="number" min="10" value="80" style="width:110px;">
+            <button class="btn btn-ghost" onclick="loadLogs()">LOAD</button>
+            <button class="btn" onclick="toggleLogs()">LIVE</button>
+            <button class="btn btn-ghost" onclick="clearLogs()">CLEAR</button>
+          </div>
+        </div>
+
+        <hr>
+
+        <pre id="logsOut">[]</pre>
+      </div>
+
+      <div>
+        <h2 style="margin-top:0;">LOG FILTER</h2>
+        <textarea id="logsFilter" placeholder="type to filter... (match text)"></textarea>
+
+        <hr>
+
+        <div class="row">
+          <button class="btn btn-ghost" onclick="copyLogs()">COPY</button>
+          <button class="btn btn-ghost" onclick="exportLogs()">EXPORT JSON</button>
+        </div>
+
+        <div class="footer">
+          Endpoint esperado (owner): <br>
+          <span class="small">GET /owner/logs?limit=80</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NODES -->
+  <div class="panel hidden" id="tab-nodes">
+    <div class="row">
+      <div class="badge"><span class="dot" id="nodesDot"></span><span id="nodesState">NODES: …</span></div>
+      <div class="row" style="gap:10px;">
+        <button class="btn btn-ghost" onclick="loadNodes()">REFRESH</button>
+        <button class="btn" onclick="toggleNodes()">LIVE</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <pre id="nodesOut">[]</pre>
+
+    <div class="footer">
+      Endpoint esperado (owner): <span class="small">GET /owner/nodes</span><br>
+      Si todavía no existe, lo siguiente que hacemos es agregarlo en el Worker + DO.
+    </div>
+  </div>
+
+  <!-- VAULT -->
+  <div class="panel hidden" id="tab-vault">
+    <div class="row">
+      <div class="badge"><span class="dot" id="vaultDot"></span><span id="vaultState">VAULT: …</span></div>
+      <div class="row" style="gap:10px;">
+        <button class="btn btn-ghost" onclick="vaultHealth()">HEALTH</button>
+        <button class="btn btn-warn" onclick="vaultRotate()">ROTATE KEYS</button>
+        <button class="btn btn-danger" onclick="vaultLock()">LOCKDOWN</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <pre id="vaultOut">{}</pre>
+
+    <div class="footer">
+      Endpoints esperados (owner):<br>
+      <span class="small">GET /owner/vault/health</span><br>
+      <span class="small">POST /owner/vault/rotate</span><br>
+      <span class="small">POST /owner/vault/lock</span><br>
+      (Nunca devuelve secretos, solo “health/rotation status”.)
+    </div>
+  </div>
+
 </div>
 
 <script>
-
-const API = "https://api.consia.world/";
-
-async function loadStatus(){
-
-try{
-
-const res = await fetch(API);
-const data = await res.json();
-
-document.getElementById("status").innerText = "API ONLINE";
-document.getElementById("core").innerText = data.core || "ACTIVE";
-document.getElementById("global").innerText =
-"GLOBAL STATUS: " + (data.global || data.status);
-
-}catch(e){
-
-document.getElementById("status").innerText = "API OFFLINE";
-document.getElementById("core").innerText = "UNKNOWN";
-document.getElementById("global").innerText =
-"GLOBAL STATUS: DEGRADED";
-
+/* ==========================
+   CONFIG
+========================== */
+function base(){
+  const v = (document.getElementById('apiBase').value || '').trim().replace(/\/+$/,'');
+  return v || 'https://api.consia.world';
 }
 
+const storeKey = "CONSIA_OWNER_TOKEN";
+let autoTimer = null;
+let logsTimer = null;
+let nodesTimer = null;
+let tokenShown = false;
+
+function authHeaders(){
+  const t = getToken();
+  const h = { "content-type": "application/json" };
+  if(t) h["authorization"] = "Bearer " + t;
+  return h;
 }
 
-async function execute(){
-
-alert("CONSIA executing global best action…");
-
+function getToken(){
+  return (sessionStorage.getItem(storeKey) || '').trim();
 }
 
-loadStatus();
+function setDot(dotId, state){
+  const el = document.getElementById(dotId);
+  el.classList.remove('ok','bad','warn');
+  if(state === 'ok') el.classList.add('ok');
+  else if(state === 'bad') el.classList.add('bad');
+  else if(state === 'warn') el.classList.add('warn');
+}
 
+/* ==========================
+   TOKEN UI
+========================== */
+function toggleToken(){
+  tokenShown = !tokenShown;
+  const inp = document.getElementById('ownerToken');
+  inp.type = tokenShown ? 'text' : 'password';
+}
+
+function saveToken(){
+  const t = (document.getElementById('ownerToken').value || '').trim();
+  if(!t){
+    sessionStorage.removeItem(storeKey);
+    alert("Token cleared (session).");
+    return;
+  }
+  sessionStorage.setItem(storeKey, t);
+  alert("Token saved (session only).");
+}
+
+(function bootToken(){
+  const t = getToken();
+  if(t) document.getElementById('ownerToken').value = t;
+})();
+
+/* ==========================
+   FETCH HELPERS
+========================== */
+async function jget(path){
+  const url = base() + path;
+  const res = await fetch(url, { method:"GET", headers: authHeaders() });
+  const txt = await res.text();
+  let json = null;
+  try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
+  if(!res.ok) throw { status: res.status, json };
+  return json;
+}
+
+async function jpost(path, body){
+  const url = base() + path;
+  const res = await fetch(url, { method:"POST", headers: authHeaders(), body: JSON.stringify(body||{}) });
+  const txt = await res.text();
+  let json = null;
+  try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
+  if(!res.ok) throw { status: res.status, json };
+  return json;
+}
+
+function pretty(x){
+  try{ return JSON.stringify(x, null, 2); }catch(e){ return String(x); }
+}
+
+function nowISO(){ return new Date().toISOString(); }
+
+/* ==========================
+   PUBLIC STATUS
+========================== */
+async function loadPublic(){
+  try{
+    const data = await jget("/");
+    document.getElementById('apiState').innerText = "API ONLINE";
+    setDot('apiDot','ok');
+
+    document.getElementById('svc').innerText = data.service ?? "—";
+    document.getElementById('ver').innerText = data.version ?? "—";
+    document.getElementById('core').innerText = data.core ?? data.state ?? "—";
+    document.getElementById('ai').innerText = data.ai ?? "—";
+    document.getElementById('global').innerText = data.global ?? data.status ?? "—";
+    document.getElementById('ts').innerText = String(data.ts ?? data.time ?? Date.now());
+
+    document.getElementById('liveText').innerText = "LIVE";
+    setDot('liveDot','ok');
+  }catch(e){
+    document.getElementById('apiState').innerText = "API OFFLINE";
+    setDot('apiDot','bad');
+    document.getElementById('liveText').innerText = "DEGRADED";
+    setDot('liveDot','warn');
+  }
+}
+
+/* ==========================
+   OWNER STATUS / HEALTH / WHOAMI
+========================== */
+async function ownerStatus(){
+  const out = document.getElementById('ownerOut');
+  out.textContent = pretty({ ts: nowISO(), action: "ownerStatus", info: "…" });
+
+  try{
+    // expected endpoint; if not exists you'll see endpoint_not_found
+    const data = await jget("/owner/status");
+    out.textContent = pretty(data);
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner/status", error:e });
+  }
+}
+
+async function health(){
+  const out = document.getElementById('ownerOut');
+  out.textContent = pretty({ ts: nowISO(), action: "health", info: "…" });
+
+  try{
+    const data = await jget("/health");
+    out.textContent = pretty(data);
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/health", error:e });
+  }
+}
+
+async function whoami(){
+  const out = document.getElementById('ownerOut');
+  out.textContent = pretty({ ts: nowISO(), action: "whoami", info: "…" });
+
+  try{
+    const data = await jget("/owner");
+    out.textContent = pretty(data);
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner", error:e });
+  }
+}
+
+/* ==========================
+   EXECUTION (OWNER)
+========================== */
+async function execute(kind){
+  try{
+    const data = await jpost("/owner/execute", { action: kind || "best", ts: Date.now() });
+    document.getElementById('ownerOut').textContent = pretty(data);
+    await loadPublic();
+    await loadLogs();
+  }catch(e){
+    document.getElementById('ownerOut').textContent = pretty({ ok:false, where:"/owner/execute", error:e });
+  }
+}
+
+async function executeBest(){ return execute("best"); }
+
+/* ==========================
+   AUTO DECISION LOOP
+========================== */
+function autoStart(){
+  const sec = Math.max(3, parseInt(document.getElementById('autoSec').value || "12", 10));
+  autoStop();
+
+  document.getElementById('autoState').innerText = "AUTO: ON ("+sec+"s)";
+  setDot('autoDot','ok');
+
+  autoTimer = setInterval(async ()=>{
+    // real loop: run best action
+    await execute("best");
+  }, sec*1000);
+}
+
+function autoStop(){
+  if(autoTimer) clearInterval(autoTimer);
+  autoTimer = null;
+  document.getElementById('autoState').innerText = "AUTO: OFF";
+  setDot('autoDot','warn');
+}
+
+/* ==========================
+   LOGS (DO)
+========================== */
+function applyFilter(text, arr){
+  const q = (text||'').trim().toLowerCase();
+  if(!q) return arr;
+  return arr.filter(x => (pretty(x).toLowerCase().includes(q)));
+}
+
+async function loadLogs(){
+  const out = document.getElementById('logsOut');
+  const limit = Math.max(10, parseInt(document.getElementById('logsLimit').value || "80", 10));
+  const filter = document.getElementById('logsFilter').value || "";
+
+  try{
+    const data = await jget("/owner/logs?limit="+encodeURIComponent(limit));
+    const arr = Array.isArray(data) ? data : (data.logs || []);
+    const filtered = applyFilter(filter, arr);
+
+    out.textContent = pretty(filtered);
+    document.getElementById('logsState').innerText = "LOGS: OK ("+filtered.length+")";
+    setDot('logsDot','ok');
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner/logs", error:e });
+    document.getElementById('logsState').innerText = "LOGS: UNAVAILABLE";
+    setDot('logsDot','warn');
+  }
+}
+
+function toggleLogs(){
+  if(logsTimer){
+    clearInterval(logsTimer);
+    logsTimer = null;
+    alert("Logs live: OFF");
+    return;
+  }
+  logsTimer = setInterval(loadLogs, 4000);
+  alert("Logs live: ON");
+}
+
+function clearLogs(){ document.getElementById('logsOut').textContent = "[]"; }
+
+function copyLogs(){
+  const text = document.getElementById('logsOut').textContent;
+  navigator.clipboard.writeText(text);
+  alert("Copied.");
+}
+
+function exportLogs(){
+  const text = document.getElementById('logsOut').textContent;
+  const blob = new Blob([text], {type:"application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "consia_logs_"+Date.now()+".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ==========================
+   NODES MAP
+========================== */
+async function loadNodes(){
+  const out = document.getElementById('nodesOut');
+  try{
+    const data = await jget("/owner/nodes");
+    out.textContent = pretty(data);
+    document.getElementById('nodesState').innerText = "NODES: OK";
+    setDot('nodesDot','ok');
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner/nodes", error:e });
+    document.getElementById('nodesState').innerText = "NODES: UNAVAILABLE";
+    setDot('nodesDot','warn');
+  }
+}
+
+function toggleNodes(){
+  if(nodesTimer){
+    clearInterval(nodesTimer);
+    nodesTimer = null;
+    alert("Nodes live: OFF");
+    return;
+  }
+  nodesTimer = setInterval(loadNodes, 6000);
+  alert("Nodes live: ON");
+}
+
+/* ==========================
+   VAULT
+========================== */
+async function vaultHealth(){
+  const out = document.getElementById('vaultOut');
+  try{
+    const data = await jget("/owner/vault/health");
+    out.textContent = pretty(data);
+    document.getElementById('vaultState').innerText = "VAULT: OK";
+    setDot('vaultDot','ok');
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner/vault/health", error:e });
+    document.getElementById('vaultState').innerText = "VAULT: UNAVAILABLE";
+    setDot('vaultDot','warn');
+  }
+}
+
+async function vaultRotate(){
+  const out = document.getElementById('vaultOut');
+  try{
+    const data = await jpost("/owner/vault/rotate", { ts: Date.now() });
+    out.textContent = pretty(data);
+    await vaultHealth();
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner/vault/rotate", error:e });
+  }
+}
+
+async function vaultLock(){
+  const out = document.getElementById('vaultOut');
+  try{
+    const data = await jpost("/owner/vault/lock", { ts: Date.now(), reason: "manual_lock_from_panel" });
+    out.textContent = pretty(data);
+    await loadPublic();
+  }catch(e){
+    out.textContent = pretty({ ok:false, where:"/owner/vault/lock", error:e });
+  }
+}
+
+/* ==========================
+   TABS
+========================== */
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.tab === name);
+  });
+  document.getElementById('tab-logs').classList.toggle('hidden', name!=="logs");
+  document.getElementById('tab-nodes').classList.toggle('hidden', name!=="nodes");
+  document.getElementById('tab-vault').classList.toggle('hidden', name!=="vault");
+}
+
+/* ==========================
+   MASTER REFRESH
+========================== */
+async function refreshAll(){
+  await loadPublic();
+  await ownerStatus();
+  await loadLogs();
+  await loadNodes();
+  await vaultHealth();
+}
+
+/* ==========================
+   BOOT
+========================== */
+(async function boot(){
+  setDot('liveDot','warn');
+  document.getElementById('liveText').innerText = "BOOTING";
+  setDot('autoDot','warn');
+  setDot('logsDot','warn');
+  setDot('nodesDot','warn');
+  setDot('vaultDot','warn');
+
+  await loadPublic();
+  // Don't auto-call owner endpoints on boot if token missing
+  if(getToken()){
+    await ownerStatus();
+    await loadLogs();
+    await loadNodes();
+    await vaultHealth();
+  }else{
+    document.getElementById('ownerOut').textContent = pretty({ note:"Paste Owner token to enable owner endpoints." });
+  }
+})();
 </script>
 
 </body>

@@ -1,835 +1,1052 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CONSIA — OWNER GLOBAL CONTROL</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CONSIA — OWNER GLOBAL CONTROL</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- TOP UI FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --bg:#000;
-  --fg:#00ffbf;
-  --fg2:#00d8ff;
-  --warn:#ffcc00;
-  --bad:#ff3b3b;
-  --ok:#00ffbf;
-  --muted:#00ffbf66;
-  --line:#00ffbf;
-  --shadow:0 0 24px rgba(0,255,191,.18);
-  --shadow2:0 0 40px rgba(0,216,255,.14);
-  --radius:14px;
-}
+  <style>
+    :root{
+      --bg:#050607;
+      --panel:#070a0b;
+      --panel2:#060808;
+      --text:#d7ffef;
+      --muted:#7ee9c1;
+      --muted2:#2ad79b;
+      --line:#113b2d;
+      --line2:#1b6a4d;
+      --accent:#00ffb2;
+      --accent2:#00c985;
+      --warn:#ffd166;
+      --bad:#ff4d6d;
+      --ok:#1bffb2;
+      --shadow: 0 0 0.8px rgba(0,255,178,.35), 0 0 18px rgba(0,255,178,.10);
+      --shadow2: 0 0 0.8px rgba(0,255,178,.25), 0 0 30px rgba(0,255,178,.08);
+      --radius:18px;
+    }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--fg);
-  font-family:'Orbitron', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(0,255,178,.10), transparent 55%),
+        radial-gradient(900px 600px at 90% 15%, rgba(0,201,133,.10), transparent 55%),
+        radial-gradient(700px 500px at 40% 90%, rgba(0,255,178,.08), transparent 55%),
+        linear-gradient(180deg, #050607 0%, #030405 100%);
+      color:var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      letter-spacing:.2px;
+      overflow-x:hidden;
+    }
 
-.header{
-  padding:22px 36px;
-  border-bottom:1px solid var(--line);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-}
-.h-title{
-  font-size:22px;
-  letter-spacing:2px;
-  font-weight:800;
-  text-transform:uppercase;
-}
-.h-sub{
-  font-size:12px;
-  color:var(--muted);
-  letter-spacing:1px;
-  margin-top:6px;
-}
-.h-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-.pill{
-  border:1px solid var(--line);
-  padding:10px 12px;
-  border-radius:999px;
-  box-shadow:var(--shadow);
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-.pill label{
-  font-size:11px;
-  color:var(--muted);
-  letter-spacing:1px;
-}
-.pill input{
-  background:#000;
-  color:var(--fg);
-  border:1px solid var(--line);
-  border-radius:999px;
-  padding:8px 10px;
-  outline:none;
-  width:260px;
-  max-width:60vw;
-}
-.pill input::placeholder{color:#00ffbf55}
-.btn{
-  background:var(--fg);
-  color:#000;
-  border:none;
-  padding:10px 14px;
-  border-radius:999px;
-  font-weight:800;
-  letter-spacing:1px;
-  cursor:pointer;
-  transition:.18s ease;
-  box-shadow:var(--shadow);
-}
-.btn:hover{transform:translateY(-1px); box-shadow:0 0 26px rgba(0,255,191,.35)}
-.btn:active{transform:translateY(0px)}
-.btn-ghost{
-  background:transparent;
-  color:var(--fg);
-  border:1px solid var(--line);
-}
-.btn-danger{
-  background:var(--bad);
-  color:#000;
-  border:none;
-}
-.btn-warn{
-  background:var(--warn);
-  color:#000;
-  border:none;
-}
+    /* subtle scanlines */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.03),
+          rgba(255,255,255,0.03) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      opacity:.06;
+      mix-blend-mode:overlay;
+    }
 
-.wrap{
-  padding:26px 26px 40px;
-}
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:22px 16px 28px;
+    }
 
-.topgrid{
-  display:grid;
-  grid-template-columns: 1.2fr 1.3fr 1.1fr;
-  gap:18px;
-}
-@media (max-width: 980px){
-  .topgrid{grid-template-columns:1fr; }
-}
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(8,12,11,.92), rgba(6,8,8,.85));
+      box-shadow: var(--shadow2);
+    }
 
-.card{
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:18px;
-  box-shadow:var(--shadow);
-  background:linear-gradient(180deg, rgba(0,255,191,.06), rgba(0,0,0,0));
-}
-.card h2{
-  margin:0 0 10px 0;
-  font-size:15px;
-  font-weight:800;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-}
-.row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap:wrap;
-}
-.kv{
-  display:grid;
-  grid-template-columns: 140px 1fr;
-  gap:8px 12px;
-  margin-top:10px;
-}
-.kv .k{
-  color:var(--muted);
-  font-size:12px;
-  letter-spacing:1px;
-}
-.kv .v{
-  font-size:12px;
-  color:var(--fg);
-  word-break:break-word;
-}
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  border:1px solid var(--line);
-  padding:8px 10px;
-  border-radius:999px;
-  box-shadow:var(--shadow2);
-}
-.dot{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--muted);
-}
-.dot.ok{background:var(--ok)}
-.dot.bad{background:var(--bad)}
-.dot.warn{background:var(--warn)}
-.small{
-  font-size:11px;
-  letter-spacing:1px;
-  color:var(--muted);
-}
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width:0;
+    }
 
-.tabs{
-  margin-top:18px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.tab{
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:999px;
-  cursor:pointer;
-  user-select:none;
-  color:var(--muted);
-  transition:.15s;
-}
-.tab.active{
-  background:rgba(0,255,191,.12);
-  color:var(--fg);
-  box-shadow:var(--shadow);
-}
-.panel{
-  margin-top:16px;
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:16px;
-  box-shadow:var(--shadow);
-  background:linear-gradient(180deg, rgba(0,216,255,.05), rgba(0,0,0,0));
-}
-.hidden{display:none}
+    .logo{
+      width:38px; height:38px;
+      border-radius:12px;
+      border:1px solid rgba(0,255,178,.25);
+      background:
+        radial-gradient(16px 16px at 30% 30%, rgba(0,255,178,.35), transparent 60%),
+        radial-gradient(16px 16px at 70% 70%, rgba(0,201,133,.25), transparent 60%),
+        linear-gradient(180deg, rgba(0,255,178,.10), rgba(0,0,0,0));
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: linear-gradient(90deg, transparent 30%, rgba(0,255,178,.20) 50%, transparent 70%);
+      transform: rotate(35deg);
+      animation: sheen 3.2s linear infinite;
+    }
+    @keyframes sheen{
+      0%{ transform: translateX(-45%) rotate(35deg); opacity:.0; }
+      15%{ opacity:.85; }
+      55%{ opacity:.85; }
+      100%{ transform: translateX(55%) rotate(35deg); opacity:.0; }
+    }
 
-.grid2{
-  display:grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap:18px;
-}
-@media (max-width: 980px){
-  .grid2{grid-template-columns:1fr;}
-}
+    .title{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .title h1{
+      margin:0;
+      font-family: Orbitron, monospace;
+      font-weight:800;
+      letter-spacing:2px;
+      font-size:18px;
+      color:var(--accent);
+      text-shadow: 0 0 14px rgba(0,255,178,.15);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .title .sub{
+      font-family: Orbitron, monospace;
+      font-size:12px;
+      color:rgba(215,255,239,.75);
+      letter-spacing:1.4px;
+    }
 
-pre{
-  margin:0;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#000;
-  color:var(--fg);
-  overflow:auto;
-  max-height:360px;
-  box-shadow:var(--shadow);
-  font-size:11px;
-  line-height:1.45;
-}
-hr{border:none;border-top:1px solid rgba(0,255,191,.2); margin:14px 0}
+    .pillrow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      border:1px solid rgba(0,255,178,.22);
+      background: rgba(0,0,0,.25);
+      padding:8px 10px;
+      border-radius:999px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      max-width: 100%;
+    }
+    .pill b{
+      font-family: Orbitron, monospace;
+      font-size:11px;
+      letter-spacing:1px;
+      color:rgba(215,255,239,.85);
+    }
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background: var(--warn);
+      box-shadow: 0 0 12px rgba(255,209,102,.25);
+    }
+    .dot.ok{ background: var(--ok); box-shadow: 0 0 14px rgba(27,255,178,.25); }
+    .dot.bad{ background: var(--bad); box-shadow: 0 0 14px rgba(255,77,109,.20); }
 
-input[type="number"], input[type="text"]{
-  background:#000;
-  color:var(--fg);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 12px;
-  outline:none;
-}
-select{
-  background:#000;
-  color:var(--fg);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 12px;
-  outline:none;
-}
-textarea{
-  width:100%;
-  min-height:90px;
-  background:#000;
-  color:var(--fg);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 12px;
-  outline:none;
-  resize:vertical;
-}
-.footer{
-  margin-top:18px;
-  padding:12px 4px 0;
-  color:var(--muted);
-  font-size:11px;
-  letter-spacing:1px;
-}
-a{color:var(--fg2); text-decoration:none}
-a:hover{text-decoration:underline}
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .pillrow{ justify-content:flex-start; }
+    }
 
-</style>
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(9,12,12,.92), rgba(6,7,7,.86));
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 240px at 20% 0%, rgba(0,255,178,.08), transparent 55%),
+        radial-gradient(700px 220px at 100% 0%, rgba(0,201,133,.06), transparent 60%);
+      opacity:.7;
+    }
+    .card .head{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(0,255,178,.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+    .card .head h2{
+      margin:0;
+      font-family: Orbitron, monospace;
+      font-weight:800;
+      letter-spacing:1.6px;
+      font-size:14px;
+      color:rgba(215,255,239,.92);
+    }
+    .card .body{
+      padding:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap:8px 10px;
+      align-items:center;
+      font-size:13px;
+    }
+    .kv .k{
+      color:rgba(215,255,239,.70);
+      font-family: Orbitron, monospace;
+      letter-spacing:1px;
+      font-size:12px;
+    }
+    .kv .v{
+      font-weight:700;
+      color:rgba(215,255,239,.95);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      letter-spacing:.2px;
+    }
+
+    .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(0,255,178,.22);
+      background: linear-gradient(180deg, rgba(0,255,178,.18), rgba(0,255,178,.06));
+      color: var(--accent);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-family: Orbitron, monospace;
+      font-weight:800;
+      letter-spacing:1.2px;
+      font-size:12px;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      transition: transform .08s ease, filter .2s ease, border-color .2s ease;
+      user-select:none;
+    }
+    .btn:hover{ filter:brightness(1.06); border-color: rgba(0,255,178,.35); }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn.secondary{
+      background: rgba(0,0,0,.30);
+      color: rgba(215,255,239,.88);
+    }
+    .btn.danger{
+      border-color: rgba(255,77,109,.22);
+      background: linear-gradient(180deg, rgba(255,77,109,.14), rgba(255,77,109,.06));
+      color: rgba(255,77,109,.95);
+      box-shadow: 0 0 0.8px rgba(255,77,109,.25), 0 0 22px rgba(255,77,109,.08);
+    }
+
+    .tokenbox{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .input{
+      flex:1 1 240px;
+      min-width: 220px;
+      border:1px solid rgba(0,255,178,.18);
+      background: rgba(0,0,0,.30);
+      color: rgba(215,255,239,.95);
+      padding: 12px 12px;
+      border-radius: 14px;
+      outline:none;
+      box-shadow: inset 0 0 0.8px rgba(0,255,178,.10);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+    }
+    .input::placeholder{ color: rgba(215,255,239,.45); }
+
+    .bigstatus{
+      margin-top:14px;
+      border:1px solid rgba(0,255,178,.16);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: rgba(0,0,0,.22);
+      box-shadow: var(--shadow);
+      font-family: Orbitron, monospace;
+      letter-spacing:1.8px;
+      text-transform:uppercase;
+      text-align:center;
+      color: rgba(215,255,239,.88);
+    }
+    .bigstatus.ok{ border-color: rgba(27,255,178,.22); color: rgba(27,255,178,.95); }
+    .bigstatus.bad{ border-color: rgba(255,77,109,.22); color: rgba(255,77,109,.95); }
+    .bigstatus.warn{ border-color: rgba(255,209,102,.22); color: rgba(255,209,102,.95); }
+
+    .logs{
+      grid-column: 1 / -1;
+    }
+    .tablewrap{
+      border:1px solid rgba(0,255,178,.14);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(0,0,0,.22);
+      box-shadow: var(--shadow);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+    thead th{
+      text-align:left;
+      padding:12px 12px;
+      font-family: Orbitron, monospace;
+      letter-spacing:1px;
+      color: rgba(215,255,239,.80);
+      border-bottom: 1px solid rgba(0,255,178,.12);
+      background: rgba(0,0,0,.25);
+      position:sticky; top:0;
+      z-index:2;
+    }
+    tbody td{
+      padding:10px 12px;
+      border-bottom: 1px solid rgba(0,255,178,.08);
+      color: rgba(215,255,239,.88);
+      vertical-align:top;
+    }
+    tbody tr:hover td{ background: rgba(0,255,178,.03); }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding: 6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(0,255,178,.14);
+      background: rgba(0,0,0,.18);
+      font-family: Orbitron, monospace;
+      font-size:11px;
+      letter-spacing:.8px;
+      white-space:nowrap;
+    }
+    .tag.ok{ border-color: rgba(27,255,178,.18); color: rgba(27,255,178,.92); }
+    .tag.warn{ border-color: rgba(255,209,102,.18); color: rgba(255,209,102,.92); }
+    .tag.bad{ border-color: rgba(255,77,109,.18); color: rgba(255,77,109,.92); }
+
+    .nodes{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .node{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(0,255,178,.14);
+      background: rgba(0,0,0,.22);
+      box-shadow: var(--shadow);
+    }
+    .node .left{
+      display:flex; flex-direction:column; gap:4px; min-width:0;
+    }
+    .node .name{
+      font-family: Orbitron, monospace;
+      letter-spacing:1px;
+      font-weight:800;
+      font-size:12px;
+      color: rgba(215,255,239,.92);
+    }
+    .node .url{
+      font-size:12px;
+      color: rgba(215,255,239,.62);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 70vw;
+    }
+
+    .footer{
+      margin-top:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 14px 14px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0,0,0,.22);
+      box-shadow: var(--shadow2);
+      color: rgba(215,255,239,.62);
+      font-size:12px;
+    }
+    .footer b{
+      font-family: Orbitron, monospace;
+      letter-spacing:1px;
+      color: rgba(215,255,239,.82);
+      font-weight:800;
+    }
+    a{ color: var(--accent); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+  </style>
 </head>
 
 <body>
-
-<div class="header">
-  <div>
-    <div class="h-title">CONSIA — OWNER GLOBAL CONTROL</div>
-    <div class="h-sub">CORE + DO ACTIVE • AUTO-DECISION • LOGS • NODES • VAULT (OWNER-ONLY)</div>
-  </div>
-
-  <div class="h-right">
-    <div class="pill">
-      <label>API</label>
-      <input id="apiBase" type="text" value="https://api.consia.world" />
-    </div>
-
-    <div class="pill">
-      <label>OWNER TOKEN</label>
-      <input id="ownerToken" type="password" placeholder="Paste token here (NOT in GitHub)" />
-      <button class="btn btn-ghost" onclick="toggleToken()">SHOW</button>
-      <button class="btn" onclick="saveToken()">SAVE</button>
-    </div>
-
-    <div class="badge" id="liveBadge">
-      <span class="dot" id="liveDot"></span>
-      <span id="liveText">BOOTING</span>
-    </div>
-  </div>
-</div>
-
-<div class="wrap">
-
-  <div class="topgrid">
-
-    <div class="card">
-      <h2>GLOBAL STATUS</h2>
-      <div class="row">
-        <div class="badge"><span class="dot" id="apiDot"></span><span id="apiState">API …</span></div>
-        <button class="btn btn-ghost" onclick="refreshAll()">REFRESH</button>
-      </div>
-
-      <div class="kv">
-        <div class="k">service</div><div class="v" id="svc">—</div>
-        <div class="k">version</div><div class="v" id="ver">—</div>
-        <div class="k">core</div><div class="v" id="core">—</div>
-        <div class="k">ai</div><div class="v" id="ai">—</div>
-        <div class="k">global</div><div class="v" id="global">—</div>
-        <div class="k">ts</div><div class="v" id="ts">—</div>
-      </div>
-
-      <div class="footer">Public endpoint: <a href="https://api.consia.world" target="_blank">api.consia.world</a></div>
-    </div>
-
-    <div class="card">
-      <h2>AUTO-DECISION (REAL)</h2>
-
-      <div class="row">
-        <div class="badge"><span class="dot" id="autoDot"></span><span id="autoState">AUTO: OFF</span></div>
-
-        <div class="row" style="gap:10px;">
-          <label class="small">interval (sec)</label>
-          <input id="autoSec" type="number" min="3" value="12" style="width:110px;">
-          <button class="btn" onclick="autoStart()">START</button>
-          <button class="btn btn-ghost" onclick="autoStop()">STOP</button>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="title">
+          <h1>CONSIA — OWNER GLOBAL CONTROL</h1>
+          <div class="sub">CORE • AUTO-DECISION • LOGS • NODES • VAULT</div>
         </div>
       </div>
-
-      <hr>
-
-      <div class="row">
-        <button class="btn" onclick="executeBest()">EXECUTE GLOBAL BEST ACTION</button>
-        <button class="btn btn-ghost" onclick="execute('lockdown')">EMERGENCY LOCK</button>
-        <button class="btn btn-warn" onclick="execute('safe_mode')">SAFE MODE</button>
-      </div>
-
-      <div class="footer">
-        Auto-Decision llama OWNER endpoint (Bearer token). Si el endpoint aún no existe, verás “endpoint_not_found”.
+      <div class="pillrow">
+        <div class="pill"><span id="dotApi" class="dot"></span><b id="pillApi">API: …</b></div>
+        <div class="pill"><span id="dotDo" class="dot"></span><b id="pillDo">DO: …</b></div>
+        <div class="pill"><span id="dotGlobal" class="dot"></span><b id="pillGlobal">GLOBAL: …</b></div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>OWNER CONTROL</h2>
-      <div class="row">
-        <button class="btn" onclick="ownerStatus()">OWNER STATUS</button>
-        <button class="btn btn-ghost" onclick="health()">HEALTH CHECK</button>
-        <button class="btn btn-ghost" onclick="whoami()">WHOAMI</button>
-      </div>
-
-      <hr>
-
-      <pre id="ownerOut">{ "owner": "—" }</pre>
-
-      <div class="footer">
-        ⚠️ No pegues tokens en GitHub. Token solo en este panel (sessionStorage).
-      </div>
-    </div>
-
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" data-tab="logs" onclick="showTab('logs')">LOGS (DO)</div>
-    <div class="tab" data-tab="nodes" onclick="showTab('nodes')">MULTI-NODE MAP</div>
-    <div class="tab" data-tab="vault" onclick="showTab('vault')">SECURITY VAULT</div>
-  </div>
-
-  <!-- LOGS -->
-  <div class="panel" id="tab-logs">
-    <div class="grid2">
-      <div>
-        <div class="row">
-          <div class="badge"><span class="dot" id="logsDot"></span><span id="logsState">LOGS: …</span></div>
-          <div class="row" style="gap:10px;">
-            <label class="small">limit</label>
-            <input id="logsLimit" type="number" min="10" value="80" style="width:110px;">
-            <button class="btn btn-ghost" onclick="loadLogs()">LOAD</button>
-            <button class="btn" onclick="toggleLogs()">LIVE</button>
-            <button class="btn btn-ghost" onclick="clearLogs()">CLEAR</button>
+    <div class="grid">
+      <!-- OWNER -->
+      <div class="card">
+        <div class="head">
+          <h2>OWNER ACCESS</h2>
+          <span class="tag" id="tagAuth">LOCKED</span>
+        </div>
+        <div class="body">
+          <div class="tokenbox">
+            <input id="ownerToken" class="input" placeholder="Pegá OWNER_TOKEN aquí (se guarda en este dispositivo)" />
+            <button class="btn" id="btnSaveToken">SAVE</button>
+            <button class="btn secondary" id="btnClearToken">CLEAR</button>
+          </div>
+          <div style="height:12px"></div>
+          <div class="btnrow">
+            <button class="btn" id="btnRefresh">REFRESH ALL</button>
+            <button class="btn secondary" id="btnOpenApi">OPEN API</button>
           </div>
         </div>
-
-        <hr>
-
-        <pre id="logsOut">[]</pre>
       </div>
 
-      <div>
-        <h2 style="margin-top:0;">LOG FILTER</h2>
-        <textarea id="logsFilter" placeholder="type to filter... (match text)"></textarea>
-
-        <hr>
-
-        <div class="row">
-          <button class="btn btn-ghost" onclick="copyLogs()">COPY</button>
-          <button class="btn btn-ghost" onclick="exportLogs()">EXPORT JSON</button>
+      <!-- STATUS -->
+      <div class="card">
+        <div class="head">
+          <h2>STATUS</h2>
+          <span class="tag" id="tagStatus">LOADING</span>
         </div>
+        <div class="body">
+          <div class="kv">
+            <div class="k">SERVICE</div><div class="v mono" id="s_service">…</div>
+            <div class="k">VERSION</div><div class="v mono" id="s_version">…</div>
+            <div class="k">STATE</div><div class="v mono" id="s_state">…</div>
+            <div class="k">CORE</div><div class="v mono" id="s_core">…</div>
+            <div class="k">AI</div><div class="v mono" id="s_ai">…</div>
+            <div class="k">LOGS</div><div class="v mono" id="s_logs">…</div>
+            <div class="k">TS</div><div class="v mono" id="s_ts">…</div>
+          </div>
+          <div class="bigstatus" id="bigGlobal">GLOBAL STATUS: …</div>
+        </div>
+      </div>
 
-        <div class="footer">
-          Endpoint esperado (owner): <br>
-          <span class="small">GET /owner/logs?limit=80</span>
+      <!-- AI DECISION -->
+      <div class="card">
+        <div class="head">
+          <h2>AUTO-DECISION</h2>
+          <span class="tag" id="tagDecision">READY</span>
+        </div>
+        <div class="body">
+          <div class="btnrow">
+            <button class="btn" id="btnBest">EXECUTE GLOBAL BEST ACTION</button>
+            <button class="btn secondary" id="btnOwnerPing">OWNER PING</button>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="kv">
+            <div class="k">LAST ACTION</div><div class="v mono" id="d_action">…</div>
+            <div class="k">RESULT</div><div class="v mono" id="d_result">…</div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="btnrow">
+            <button class="btn danger" id="btnVaultLock">VAULT LOCK</button>
+            <button class="btn secondary" id="btnVaultRotate">VAULT ROTATE (MARK)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODES -->
+      <div class="card">
+        <div class="head">
+          <h2>MULTI-NODE STATUS MAP</h2>
+          <span class="tag" id="tagNodes">SYNC</span>
+        </div>
+        <div class="body">
+          <div class="nodes" id="nodes"></div>
+        </div>
+      </div>
+
+      <!-- VAULT -->
+      <div class="card">
+        <div class="head">
+          <h2>SECURITY VAULT</h2>
+          <span class="tag" id="tagVault">CHECK</span>
+        </div>
+        <div class="body">
+          <div class="kv">
+            <div class="k">LOCKED</div><div class="v mono" id="v_locked">…</div>
+            <div class="k">ROTATIONS</div><div class="v mono" id="v_rot">…</div>
+            <div class="k">LAST ROT</div><div class="v mono" id="v_last">…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGS -->
+      <div class="card logs">
+        <div class="head">
+          <h2>GLOBAL LOGS (DO)</h2>
+          <div class="btnrow">
+            <button class="btn secondary" id="btnLogs">REFRESH LOGS</button>
+            <button class="btn secondary" id="btnAuto">AUTO: OFF</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="tablewrap" style="max-height: 420px; overflow:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:130px">TS</th>
+                  <th style="width:110px">LEVEL</th>
+                  <th style="width:180px">ACTION</th>
+                  <th style="width:160px">DEVICE</th>
+                  <th>META</th>
+                </tr>
+              </thead>
+              <tbody id="logRows"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- NODES -->
-  <div class="panel hidden" id="tab-nodes">
-    <div class="row">
-      <div class="badge"><span class="dot" id="nodesDot"></span><span id="nodesState">NODES: …</span></div>
-      <div class="row" style="gap:10px;">
-        <button class="btn btn-ghost" onclick="loadNodes()">REFRESH</button>
-        <button class="btn" onclick="toggleNodes()">LIVE</button>
-      </div>
-    </div>
-
-    <hr>
-
-    <pre id="nodesOut">[]</pre>
 
     <div class="footer">
-      Endpoint esperado (owner): <span class="small">GET /owner/nodes</span><br>
-      Si todavía no existe, lo siguiente que hacemos es agregarlo en el Worker + DO.
+      <div><b>CONSIA</b> • Owner-Only Control Plane • Fail-Closed</div>
+      <div class="mono">API_BASE: <span id="apiBaseTxt">…</span></div>
     </div>
   </div>
 
-  <!-- VAULT -->
-  <div class="panel hidden" id="tab-vault">
-    <div class="row">
-      <div class="badge"><span class="dot" id="vaultDot"></span><span id="vaultState">VAULT: …</span></div>
-      <div class="row" style="gap:10px;">
-        <button class="btn btn-ghost" onclick="vaultHealth()">HEALTH</button>
-        <button class="btn btn-warn" onclick="vaultRotate()">ROTATE KEYS</button>
-        <button class="btn btn-danger" onclick="vaultLock()">LOCKDOWN</button>
-      </div>
-    </div>
+  <script>
+    // =========================
+    // CONFIG
+    // =========================
+    const API_BASE = "https://api.consia.world"; // <-- TOP: dejalo así
+    const LS_TOKEN_KEY = "CONSIA_OWNER_TOKEN_V1";
 
-    <hr>
+    // nodes fallback (si el API no trae /owner/nodes)
+    const DEFAULT_NODES = [
+      { name: "API", url: "https://api.consia.world" },
+      { name: "API (workers.dev)", url: "https://consia-api.jbdkb7r94d.workers.dev" }
+    ];
 
-    <pre id="vaultOut">{}</pre>
+    // =========================
+    // DOM
+    // =========================
+    const $ = (id) => document.getElementById(id);
 
-    <div class="footer">
-      Endpoints esperados (owner):<br>
-      <span class="small">GET /owner/vault/health</span><br>
-      <span class="small">POST /owner/vault/rotate</span><br>
-      <span class="small">POST /owner/vault/lock</span><br>
-      (Nunca devuelve secretos, solo “health/rotation status”.)
-    </div>
-  </div>
+    const dotApi = $("dotApi");
+    const dotDo = $("dotDo");
+    const dotGlobal = $("dotGlobal");
+    const pillApi = $("pillApi");
+    const pillDo = $("pillDo");
+    const pillGlobal = $("pillGlobal");
 
-</div>
+    const tagAuth = $("tagAuth");
+    const tagStatus = $("tagStatus");
+    const tagDecision = $("tagDecision");
+    const tagNodes = $("tagNodes");
+    const tagVault = $("tagVault");
 
-<script>
-/* ==========================
-   CONFIG
-========================== */
-function base(){
-  const v = (document.getElementById('apiBase').value || '').trim().replace(/\/+$/,'');
-  return v || 'https://api.consia.world';
-}
+    const ownerToken = $("ownerToken");
+    const apiBaseTxt = $("apiBaseTxt");
 
-const storeKey = "CONSIA_OWNER_TOKEN";
-let autoTimer = null;
-let logsTimer = null;
-let nodesTimer = null;
-let tokenShown = false;
+    const s_service = $("s_service");
+    const s_version = $("s_version");
+    const s_state = $("s_state");
+    const s_core = $("s_core");
+    const s_ai = $("s_ai");
+    const s_logs = $("s_logs");
+    const s_ts = $("s_ts");
+    const bigGlobal = $("bigGlobal");
 
-function authHeaders(){
-  const t = getToken();
-  const h = { "content-type": "application/json" };
-  if(t) h["authorization"] = "Bearer " + t;
-  return h;
-}
+    const d_action = $("d_action");
+    const d_result = $("d_result");
 
-function getToken(){
-  return (sessionStorage.getItem(storeKey) || '').trim();
-}
+    const v_locked = $("v_locked");
+    const v_rot = $("v_rot");
+    const v_last = $("v_last");
 
-function setDot(dotId, state){
-  const el = document.getElementById(dotId);
-  el.classList.remove('ok','bad','warn');
-  if(state === 'ok') el.classList.add('ok');
-  else if(state === 'bad') el.classList.add('bad');
-  else if(state === 'warn') el.classList.add('warn');
-}
+    const nodesWrap = $("nodes");
+    const logRows = $("logRows");
 
-/* ==========================
-   TOKEN UI
-========================== */
-function toggleToken(){
-  tokenShown = !tokenShown;
-  const inp = document.getElementById('ownerToken');
-  inp.type = tokenShown ? 'text' : 'password';
-}
+    apiBaseTxt.textContent = API_BASE;
 
-function saveToken(){
-  const t = (document.getElementById('ownerToken').value || '').trim();
-  if(!t){
-    sessionStorage.removeItem(storeKey);
-    alert("Token cleared (session).");
-    return;
-  }
-  sessionStorage.setItem(storeKey, t);
-  alert("Token saved (session only).");
-}
+    // =========================
+    // AUTH
+    // =========================
+    function getToken(){
+      return (localStorage.getItem(LS_TOKEN_KEY) || "").trim();
+    }
+    function setToken(t){
+      localStorage.setItem(LS_TOKEN_KEY, (t || "").trim());
+    }
+    function clearToken(){
+      localStorage.removeItem(LS_TOKEN_KEY);
+    }
+    function isAuthed(){
+      return !!getToken();
+    }
+    function paintAuth(){
+      const ok = isAuthed();
+      tagAuth.className = "tag " + (ok ? "ok" : "bad");
+      tagAuth.textContent = ok ? "UNLOCKED" : "LOCKED";
+    }
 
-(function bootToken(){
-  const t = getToken();
-  if(t) document.getElementById('ownerToken').value = t;
-})();
+    // =========================
+    // HTTP
+    // =========================
+    async function api(path, opts={}){
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
 
-/* ==========================
-   FETCH HELPERS
-========================== */
-async function jget(path){
-  const url = base() + path;
-  const res = await fetch(url, { method:"GET", headers: authHeaders() });
-  const txt = await res.text();
-  let json = null;
-  try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
-  if(!res.ok) throw { status: res.status, json };
-  return json;
-}
+      const t = getToken();
+      if (t) headers["Authorization"] = "Bearer " + t;
 
-async function jpost(path, body){
-  const url = base() + path;
-  const res = await fetch(url, { method:"POST", headers: authHeaders(), body: JSON.stringify(body||{}) });
-  const txt = await res.text();
-  let json = null;
-  try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
-  if(!res.ok) throw { status: res.status, json };
-  return json;
-}
+      const res = await fetch(API_BASE + path, Object.assign({}, opts, { headers }));
+      const text = await res.text();
+      let data = null;
+      try{ data = JSON.parse(text); } catch(e){ data = { raw: text }; }
+      if (!res.ok){
+        const err = new Error("HTTP " + res.status);
+        err.status = res.status;
+        err.data = data;
+        throw err;
+      }
+      return data;
+    }
 
-function pretty(x){
-  try{ return JSON.stringify(x, null, 2); }catch(e){ return String(x); }
-}
+    async function apiTry(path, opts){
+      try{ return await api(path, opts); }
+      catch(e){ return { ok:false, error: e.status ? ("HTTP "+e.status) : "ERR", detail: e.data || e.message }; }
+    }
 
-function nowISO(){ return new Date().toISOString(); }
+    function setDot(el, state){
+      el.classList.remove("ok","bad");
+      if (state === "ok") el.classList.add("ok");
+      if (state === "bad") el.classList.add("bad");
+    }
 
-/* ==========================
-   PUBLIC STATUS
-========================== */
-async function loadPublic(){
-  try{
-    const data = await jget("/");
-    document.getElementById('apiState').innerText = "API ONLINE";
-    setDot('apiDot','ok');
+    function setTag(el, type, text){
+      el.className = "tag " + (type || "");
+      el.textContent = text || "";
+    }
 
-    document.getElementById('svc').innerText = data.service ?? "—";
-    document.getElementById('ver').innerText = data.version ?? "—";
-    document.getElementById('core').innerText = data.core ?? data.state ?? "—";
-    document.getElementById('ai').innerText = data.ai ?? "—";
-    document.getElementById('global').innerText = data.global ?? data.status ?? "—";
-    document.getElementById('ts').innerText = String(data.ts ?? data.time ?? Date.now());
+    function tsFmt(ts){
+      if (!ts) return "—";
+      const d = new Date(ts);
+      const pad = (n)=> String(n).padStart(2,"0");
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
 
-    document.getElementById('liveText').innerText = "LIVE";
-    setDot('liveDot','ok');
-  }catch(e){
-    document.getElementById('apiState').innerText = "API OFFLINE";
-    setDot('apiDot','bad');
-    document.getElementById('liveText').innerText = "DEGRADED";
-    setDot('liveDot','warn');
-  }
-}
+    // =========================
+    // STATUS
+    // =========================
+    let lastStatus = null;
 
-/* ==========================
-   OWNER STATUS / HEALTH / WHOAMI
-========================== */
-async function ownerStatus(){
-  const out = document.getElementById('ownerOut');
-  out.textContent = pretty({ ts: nowISO(), action: "ownerStatus", info: "…" });
+    async function refreshStatus(){
+      setTag(tagStatus, "warn", "LOADING");
+      pillApi.textContent = "API: …";
+      setDot(dotApi, "warn");
 
-  try{
-    // expected endpoint; if not exists you'll see endpoint_not_found
-    const data = await jget("/owner/status");
-    out.textContent = pretty(data);
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner/status", error:e });
-  }
-}
+      const st = await apiTry("/");
 
-async function health(){
-  const out = document.getElementById('ownerOut');
-  out.textContent = pretty({ ts: nowISO(), action: "health", info: "…" });
+      // API ONLINE/OFFLINE
+      const apiOnline = !!st && st.ok === true;
+      setDot(dotApi, apiOnline ? "ok" : "bad");
+      pillApi.textContent = "API: " + (apiOnline ? "ONLINE" : "OFFLINE");
 
-  try{
-    const data = await jget("/health");
-    out.textContent = pretty(data);
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/health", error:e });
-  }
-}
+      if (!apiOnline){
+        setTag(tagStatus, "bad", "OFFLINE");
+        s_service.textContent = "—";
+        s_version.textContent = "—";
+        s_state.textContent = "—";
+        s_core.textContent = "—";
+        s_ai.textContent = "—";
+        s_logs.textContent = "—";
+        s_ts.textContent = "—";
+        bigGlobal.className = "bigstatus bad";
+        bigGlobal.textContent = "GLOBAL STATUS: DEGRADED";
+        setDot(dotGlobal, "bad");
+        pillGlobal.textContent = "GLOBAL: DEGRADED";
+        return;
+      }
 
-async function whoami(){
-  const out = document.getElementById('ownerOut');
-  out.textContent = pretty({ ts: nowISO(), action: "whoami", info: "…" });
+      lastStatus = st;
 
-  try{
-    const data = await jget("/owner");
-    out.textContent = pretty(data);
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner", error:e });
-  }
-}
+      s_service.textContent = st.service || "CONSIA";
+      s_version.textContent = st.version || "—";
+      s_state.textContent = st.state || st.status || "—";
+      s_core.textContent = st.core || "—";
+      s_ai.textContent = st.ai || "—";
+      s_logs.textContent = (st.log_count ?? "—");
+      s_ts.textContent = String(st.ts ?? "—");
 
-/* ==========================
-   EXECUTION (OWNER)
-========================== */
-async function execute(kind){
-  try{
-    const data = await jpost("/owner/execute", { action: kind || "best", ts: Date.now() });
-    document.getElementById('ownerOut').textContent = pretty(data);
-    await loadPublic();
-    await loadLogs();
-  }catch(e){
-    document.getElementById('ownerOut').textContent = pretty({ ok:false, where:"/owner/execute", error:e });
-  }
-}
+      // DO assumed ok if log_count exists or core online
+      const doOk = (st.core && String(st.core).toUpperCase().includes("ON")) || (typeof st.log_count === "number");
+      setDot(dotDo, doOk ? "ok" : "warn");
+      pillDo.textContent = "DO: " + (doOk ? "ACTIVE" : "CHECK");
 
-async function executeBest(){ return execute("best"); }
+      const globalText = (st.global || st.status || "UNKNOWN").toString();
+      const isTop = globalText.toUpperCase().includes("TOP 1") || globalText.includes("🌍");
+      const globalOk = isTop && apiOnline;
 
-/* ==========================
-   AUTO DECISION LOOP
-========================== */
-function autoStart(){
-  const sec = Math.max(3, parseInt(document.getElementById('autoSec').value || "12", 10));
-  autoStop();
+      setDot(dotGlobal, globalOk ? "ok" : "warn");
+      pillGlobal.textContent = "GLOBAL: " + (globalOk ? "TOP 1 ACTIVE" : "DEGRADED");
 
-  document.getElementById('autoState').innerText = "AUTO: ON ("+sec+"s)";
-  setDot('autoDot','ok');
+      bigGlobal.className = "bigstatus " + (globalOk ? "ok" : "warn");
+      bigGlobal.textContent = "GLOBAL STATUS: " + (globalOk ? "TOP 1 GLOBAL ACTIVE 🌍" : "DEGRADED");
 
-  autoTimer = setInterval(async ()=>{
-    // real loop: run best action
-    await execute("best");
-  }, sec*1000);
-}
+      setTag(tagStatus, globalOk ? "ok" : "warn", globalOk ? "TOP 1 ACTIVE" : "DEGRADED");
+    }
 
-function autoStop(){
-  if(autoTimer) clearInterval(autoTimer);
-  autoTimer = null;
-  document.getElementById('autoState').innerText = "AUTO: OFF";
-  setDot('autoDot','warn');
-}
+    // =========================
+    // OWNER + ACTIONS
+    // =========================
+    async function ownerPing(){
+      setTag(tagDecision, "warn", "PING…");
+      const r = await apiTry("/owner");
+      const ok = r && r.ok === true;
+      setTag(tagDecision, ok ? "ok" : "bad", ok ? "OWNER OK" : "UNAUTHORIZED");
+      d_action.textContent = "owner_ping";
+      d_result.textContent = ok ? "ACCESS GRANTED" : JSON.stringify(r).slice(0,160);
+      return ok;
+    }
 
-/* ==========================
-   LOGS (DO)
-========================== */
-function applyFilter(text, arr){
-  const q = (text||'').trim().toLowerCase();
-  if(!q) return arr;
-  return arr.filter(x => (pretty(x).toLowerCase().includes(q)));
-}
+    async function executeBest(){
+      setTag(tagDecision, "warn", "EXECUTING…");
+      d_action.textContent = "best_action";
+      d_result.textContent = "…";
 
-async function loadLogs(){
-  const out = document.getElementById('logsOut');
-  const limit = Math.max(10, parseInt(document.getElementById('logsLimit').value || "80", 10));
-  const filter = document.getElementById('logsFilter').value || "";
+      // try multiple known endpoints (compat)
+      let r = await apiTry("/owner/execute", {
+        method:"POST",
+        body: JSON.stringify({ action:"best" })
+      });
 
-  try{
-    const data = await jget("/owner/logs?limit="+encodeURIComponent(limit));
-    const arr = Array.isArray(data) ? data : (data.logs || []);
-    const filtered = applyFilter(filter, arr);
+      if (!r || r.ok !== true){
+        r = await apiTry("/owner/ai/execute", {
+          method:"POST",
+          body: JSON.stringify({ action:"best" })
+        });
+      }
+      if (!r || r.ok !== true){
+        r = await apiTry("/owner/best", { method:"POST" });
+      }
 
-    out.textContent = pretty(filtered);
-    document.getElementById('logsState').innerText = "LOGS: OK ("+filtered.length+")";
-    setDot('logsDot','ok');
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner/logs", error:e });
-    document.getElementById('logsState').innerText = "LOGS: UNAVAILABLE";
-    setDot('logsDot','warn');
-  }
-}
+      const ok = r && r.ok === true;
+      setTag(tagDecision, ok ? "ok" : "bad", ok ? "EXECUTED" : "FAILED");
+      d_result.textContent = ok ? (r.result ? JSON.stringify(r.result) : "OK") : JSON.stringify(r).slice(0,220);
 
-function toggleLogs(){
-  if(logsTimer){
-    clearInterval(logsTimer);
-    logsTimer = null;
-    alert("Logs live: OFF");
-    return;
-  }
-  logsTimer = setInterval(loadLogs, 4000);
-  alert("Logs live: ON");
-}
+      // refresh after action
+      await refreshStatus();
+      await refreshLogs();
+      await refreshVault();
+    }
 
-function clearLogs(){ document.getElementById('logsOut').textContent = "[]"; }
+    async function vaultLock(){
+      setTag(tagVault, "warn", "LOCKING…");
+      const r = await apiTry("/owner/vault/lock", { method:"POST" });
+      const ok = r && r.ok === true;
+      setTag(tagVault, ok ? "ok" : "bad", ok ? "LOCKED" : "FAILED");
+      d_action.textContent = "vault_lock";
+      d_result.textContent = ok ? "LOCKED" : JSON.stringify(r).slice(0,220);
+      await refreshVault();
+      await refreshLogs();
+    }
 
-function copyLogs(){
-  const text = document.getElementById('logsOut').textContent;
-  navigator.clipboard.writeText(text);
-  alert("Copied.");
-}
+    async function vaultRotate(){
+      setTag(tagVault, "warn", "ROTATE…");
+      const r = await apiTry("/owner/vault/rotate", { method:"POST" });
+      const ok = r && r.ok === true;
+      setTag(tagVault, ok ? "ok" : "bad", ok ? "ROTATED" : "FAILED");
+      d_action.textContent = "vault_rotate";
+      d_result.textContent = ok ? "MARK UPDATED" : JSON.stringify(r).slice(0,220);
+      await refreshVault();
+      await refreshLogs();
+    }
 
-function exportLogs(){
-  const text = document.getElementById('logsOut').textContent;
-  const blob = new Blob([text], {type:"application/json"});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = "consia_logs_"+Date.now()+".json";
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
+    // =========================
+    // LOGS
+    // =========================
+    function levelTag(level){
+      const L = (level || "").toString().toUpperCase();
+      if (L.includes("ERROR") || L.includes("CRIT")) return "bad";
+      if (L.includes("WARN")) return "warn";
+      return "ok";
+    }
 
-/* ==========================
-   NODES MAP
-========================== */
-async function loadNodes(){
-  const out = document.getElementById('nodesOut');
-  try{
-    const data = await jget("/owner/nodes");
-    out.textContent = pretty(data);
-    document.getElementById('nodesState').innerText = "NODES: OK";
-    setDot('nodesDot','ok');
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner/nodes", error:e });
-    document.getElementById('nodesState').innerText = "NODES: UNAVAILABLE";
-    setDot('nodesDot','warn');
-  }
-}
+    function safeStr(x){
+      if (x === null || x === undefined) return "—";
+      if (typeof x === "string") return x;
+      try{ return JSON.stringify(x); } catch(e){ return String(x); }
+    }
 
-function toggleNodes(){
-  if(nodesTimer){
-    clearInterval(nodesTimer);
-    nodesTimer = null;
-    alert("Nodes live: OFF");
-    return;
-  }
-  nodesTimer = setInterval(loadNodes, 6000);
-  alert("Nodes live: ON");
-}
+    async function refreshLogs(){
+      const r = await apiTry("/owner/logs?limit=80");
+      logRows.innerHTML = "";
 
-/* ==========================
-   VAULT
-========================== */
-async function vaultHealth(){
-  const out = document.getElementById('vaultOut');
-  try{
-    const data = await jget("/owner/vault/health");
-    out.textContent = pretty(data);
-    document.getElementById('vaultState').innerText = "VAULT: OK";
-    setDot('vaultDot','ok');
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner/vault/health", error:e });
-    document.getElementById('vaultState').innerText = "VAULT: UNAVAILABLE";
-    setDot('vaultDot','warn');
-  }
-}
+      if (!r || r.ok === false){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" class="mono">NO LOGS / UNAUTHORIZED</td>`;
+        logRows.appendChild(tr);
+        return;
+      }
 
-async function vaultRotate(){
-  const out = document.getElementById('vaultOut');
-  try{
-    const data = await jpost("/owner/vault/rotate", { ts: Date.now() });
-    out.textContent = pretty(data);
-    await vaultHealth();
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner/vault/rotate", error:e });
-  }
-}
+      const rows = (r.logs || r.items || r.data || []);
+      if (!rows.length){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" class="mono">EMPTY</td>`;
+        logRows.appendChild(tr);
+        return;
+      }
 
-async function vaultLock(){
-  const out = document.getElementById('vaultOut');
-  try{
-    const data = await jpost("/owner/vault/lock", { ts: Date.now(), reason: "manual_lock_from_panel" });
-    out.textContent = pretty(data);
-    await loadPublic();
-  }catch(e){
-    out.textContent = pretty({ ok:false, where:"/owner/vault/lock", error:e });
-  }
-}
+      for (const it of rows){
+        const ts = it.ts ? tsFmt(it.ts) : (it.time ? tsFmt(it.time) : "—");
+        const level = (it.level || it.lvl || "INFO").toString();
+        const action = (it.action || it.event || "—").toString();
+        const device = (it.device || it.dev || "—").toString();
+        const meta = safeStr(it.meta || it.data || it.payload || null);
 
-/* ==========================
-   TABS
-========================== */
-function showTab(name){
-  document.querySelectorAll('.tab').forEach(t=>{
-    t.classList.toggle('active', t.dataset.tab === name);
-  });
-  document.getElementById('tab-logs').classList.toggle('hidden', name!=="logs");
-  document.getElementById('tab-nodes').classList.toggle('hidden', name!=="nodes");
-  document.getElementById('tab-vault').classList.toggle('hidden', name!=="vault");
-}
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="mono">${ts}</td>
+          <td><span class="tag ${levelTag(level)}">${level.toUpperCase()}</span></td>
+          <td class="mono">${action}</td>
+          <td class="mono">${device}</td>
+          <td class="mono" style="max-width:560px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${meta.replaceAll('"','&quot;')}">${meta}</td>
+        `;
+        logRows.appendChild(tr);
+      }
+    }
 
-/* ==========================
-   MASTER REFRESH
-========================== */
-async function refreshAll(){
-  await loadPublic();
-  await ownerStatus();
-  await loadLogs();
-  await loadNodes();
-  await vaultHealth();
-}
+    // =========================
+    // NODES
+    // =========================
+    async function refreshNodes(){
+      setTag(tagNodes, "warn", "CHECK…");
+      let r = await apiTry("/owner/nodes");
+      let nodes = null;
 
-/* ==========================
-   BOOT
-========================== */
-(async function boot(){
-  setDot('liveDot','warn');
-  document.getElementById('liveText').innerText = "BOOTING";
-  setDot('autoDot','warn');
-  setDot('logsDot','warn');
-  setDot('nodesDot','warn');
-  setDot('vaultDot','warn');
+      if (r && r.ok !== false && (r.nodes || r.items)){
+        nodes = r.nodes || r.items;
+      } else {
+        // fallback to default nodes
+        nodes = DEFAULT_NODES;
+      }
 
-  await loadPublic();
-  // Don't auto-call owner endpoints on boot if token missing
-  if(getToken()){
-    await ownerStatus();
-    await loadLogs();
-    await loadNodes();
-    await vaultHealth();
-  }else{
-    document.getElementById('ownerOut').textContent = pretty({ note:"Paste Owner token to enable owner endpoints." });
-  }
-})();
-</script>
+      nodesWrap.innerHTML = "";
+      const checks = await Promise.all(nodes.map(async n=>{
+        const url = n.url;
+        try{
+          const res = await fetch(url.replace(/\/$/,'') + "/");
+          const ok = res.ok;
+          return { ...n, ok };
+        }catch(e){
+          return { ...n, ok:false };
+        }
+      }));
 
+      for (const n of checks){
+        const el = document.createElement("div");
+        el.className = "node";
+        el.innerHTML = `
+          <div class="left">
+            <div class="name">${n.name || "NODE"}</div>
+            <div class="url mono">${n.url || ""}</div>
+          </div>
+          <div class="tag ${n.ok ? "ok" : "bad"}">${n.ok ? "ONLINE" : "OFFLINE"}</div>
+        `;
+        nodesWrap.appendChild(el);
+      }
+
+      const onlineCount = checks.filter(x=>x.ok).length;
+      setTag(tagNodes, onlineCount ? "ok" : "bad", `${onlineCount}/${checks.length} ONLINE`);
+    }
+
+    // =========================
+    // VAULT
+    // =========================
+    async function refreshVault(){
+      setTag(tagVault, "warn", "CHECK…");
+      let r = await apiTry("/owner/vault/health");
+
+      // compat fallback (si no existe)
+      if (!r || r.ok === false){
+        // try status-only storage keys from /owner (optional)
+        r = await apiTry("/owner/vault");
+      }
+
+      if (!r || r.ok === false){
+        v_locked.textContent = "—";
+        v_rot.textContent = "—";
+        v_last.textContent = "—";
+        setTag(tagVault, "warn", "NO DATA");
+        return;
+      }
+
+      v_locked.textContent = safeStr(r.locked ?? r.vault_locked ?? false);
+      v_rot.textContent = safeStr(r.rotations ?? r.vault_rotations ?? 0);
+      v_last.textContent = safeStr(r.last_rotation_ts ?? r.vault_last_rotation_ts ?? "—");
+
+      const locked = (r.locked === true) || (r.vault_locked === true);
+      setTag(tagVault, locked ? "warn" : "ok", locked ? "LOCKED" : "UNLOCKED");
+    }
+
+    // =========================
+    // MASTER REFRESH
+    // =========================
+    let auto = false;
+    let timer = null;
+
+    async function refreshAll(){
+      paintAuth();
+      await refreshStatus();
+      await refreshNodes();
+      await refreshVault();
+      if (isAuthed()) await refreshLogs();
+    }
+
+    function setAuto(on){
+      auto = !!on;
+      const btn = $("btnAuto");
+      btn.textContent = "AUTO: " + (auto ? "ON" : "OFF");
+      btn.className = "btn " + (auto ? "" : "secondary");
+
+      if (timer) clearInterval(timer);
+      if (auto){
+        timer = setInterval(()=>{ refreshAll(); }, 6000);
+      }
+    }
+
+    // =========================
+    // EVENTS
+    // =========================
+    $("btnSaveToken").onclick = () => {
+      setToken(ownerToken.value);
+      ownerToken.value = getToken();
+      paintAuth();
+      refreshAll();
+    };
+
+    $("btnClearToken").onclick = () => {
+      clearToken();
+      ownerToken.value = "";
+      paintAuth();
+      refreshAll();
+    };
+
+    $("btnRefresh").onclick = () => refreshAll();
+    $("btnOpenApi").onclick = () => window.open(API_BASE + "/", "_blank");
+
+    $("btnOwnerPing").onclick = async () => {
+      paintAuth();
+      await ownerPing();
+      await refreshStatus();
+    };
+
+    $("btnBest").onclick = async () => {
+      paintAuth();
+      if (!isAuthed()){
+        setTag(tagDecision, "bad", "TOKEN REQUIRED");
+        return;
+      }
+      await executeBest();
+    };
+
+    $("btnVaultLock").onclick = async () => {
+      paintAuth();
+      if (!isAuthed()){
+        setTag(tagVault, "bad", "TOKEN REQUIRED");
+        return;
+      }
+      await vaultLock();
+    };
+
+    $("btnVaultRotate").onclick = async () => {
+      paintAuth();
+      if (!isAuthed()){
+        setTag(tagVault, "bad", "TOKEN REQUIRED");
+        return;
+      }
+      await vaultRotate();
+    };
+
+    $("btnLogs").onclick = async () => {
+      paintAuth();
+      if (!isAuthed()){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" class="mono">TOKEN REQUIRED</td>`;
+        logRows.innerHTML = "";
+        logRows.appendChild(tr);
+        return;
+      }
+      await refreshLogs();
+    };
+
+    $("btnAuto").onclick = () => setAuto(!auto);
+
+    // =========================
+    // BOOT
+    // =========================
+    ownerToken.value = getToken();
+    paintAuth();
+    refreshAll();
+    setAuto(false);
+  </script>
 </body>
 </html>

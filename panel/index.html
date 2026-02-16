@@ -11,82 +11,68 @@
 
 <style>
 
-/* ===== GLOBAL ===== */
+/* ===== GLOBAL ===== /
 body{
-    margin:0;
-    background:#000;
-    font-family:'Orbitron',sans-serif;
-    color:#00ffb3;
+margin:0;
+background:#000;
+font-family:'Orbitron',sans-serif;
+color:#00ffbf;
 }
 
-/* ===== HEADER ===== */
+/ HEADER /
 .header{
-    padding:20px 40px;
-    border-bottom:1px solid #00ffb3;
-    font-size:22px;
-    letter-spacing:2px;
+padding:25px 50px;
+border-bottom:1px solid #00ffbf;
+font-size:26px;
+letter-spacing:2px;
 }
 
-/* ===== GRID ===== */
+/ GRID /
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:30px;
-    padding:40px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:30px;
+padding:50px;
 }
 
-/* ===== BOX ===== */
+/ BOX /
 .box{
-    border:1px solid #00ffb3;
-    padding:30px;
-    min-height:160px;
-    position:relative;
-    background:rgba(0,255,179,0.02);
-    box-shadow:0 0 20px rgba(0,255,179,0.1);
+border:1px solid #00ffbf;
+padding:30px;
+min-height:150px;
+box-shadow:0 0 20px #00ffbf33;
 }
 
-/* ===== TITLES ===== */
 .box h2{
-    margin-top:0;
-    font-weight:600;
-    letter-spacing:1px;
+margin:0 0 20px 0;
+font-weight:600;
 }
 
-/* ===== STATUS ===== */
-.status{
-    font-size:18px;
-    margin-top:20px;
-}
-
-/* ===== BUTTON ===== */
+/ BUTTON /
 .btn{
-    margin-top:25px;
-    padding:15px;
-    background:#00ffb3;
-    color:#000;
-    text-align:center;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
+background:#00ffbf;
+color:#000;
+border:none;
+padding:18px 25px;
+font-weight:700;
+cursor:pointer;
+font-family:'Orbitron';
+letter-spacing:1px;
+transition:.3s;
 }
 
 .btn:hover{
-    background:#00cc8f;
+box-shadow:0 0 25px #00ffbf;
 }
 
-/* ===== CORE ===== */
-.core{
-    font-size:18px;
-    margin-top:25px;
-}
-
-/* ===== GLOBAL STATUS ===== */
+/ GLOBAL STATUS */
 .global{
-    margin:40px;
-    padding:25px;
-    border:1px solid #00ffb3;
-    text-align:center;
-    font-size:20px;
+margin:50px;
+border:1px solid #00ffbf;
+padding:25px;
+text-align:center;
+font-size:20px;
+box-shadow:0 0 20px #00ffbf33;
 }
 
 </style>
@@ -100,75 +86,60 @@ CONSIA — GLOBAL CONTROL
 
 <div class="grid">
 
-    <!-- STATUS -->
-    <div class="box">
-        <h2>Status</h2>
-        <div class="status" id="status">
-            Connecting...
-        </div>
-    </div>
+<div class="box">
+<h2>Status</h2>
+<div id="status">Loading...</div>
+</div>
 
-    <!-- AI DECISION -->
-    <div class="box">
-        <h2>AI Decision</h2>
-        <div class="btn" onclick="executeAction()">
-            EXECUTE GLOBAL BEST ACTION
-        </div>
-    </div>
+<div class="box">
+<h2>AI Decision</h2>
+<button class="btn" onclick="execute()">EXECUTE GLOBAL BEST ACTION</button>
+</div>
 
-    <!-- CORE -->
-    <div class="box">
-        <h2>Core</h2>
-        <div class="core">
-            ASCEND IMMORTAL ACTIVE
-        </div>
-    </div>
+<div class="box">
+<h2>Core</h2>
+<div id="core">Checking...</div>
+</div>
 
 </div>
 
-<div class="global" id="globalStatus">
-GLOBAL STATUS: INITIALIZING...
+<div class="global" id="global">
+GLOBAL STATUS: CHECKING...
 </div>
 
 <script>
 
-/* ===== API URL ===== */
-const API_URL = "https://consia-api.jbdbkb7r94d.workers.dev";
+const API = "https://api.consia.world/";
 
-/* ===== STATUS LOAD ===== */
 async function loadStatus(){
 
-    try{
+try{
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+const res = await fetch(API);
+const data = await res.json();
 
-        document.getElementById("status").innerText =
-            data.service + " — ONLINE";
+document.getElementById("status").innerText = "API ONLINE";
+document.getElementById("core").innerText = data.core || "ACTIVE";
+document.getElementById("global").innerText =
+"GLOBAL STATUS: " + (data.global || data.status);
 
-        document.getElementById("globalStatus").innerText =
-            "GLOBAL STATUS: TOP 1 GLOBAL ACTIVE 🌍";
+}catch(e){
 
-    }catch(e){
-
-        document.getElementById("status").innerText =
-            "API OFFLINE";
-
-        document.getElementById("globalStatus").innerText =
-            "GLOBAL STATUS: DEGRADED";
-
-    }
+document.getElementById("status").innerText = "API OFFLINE";
+document.getElementById("core").innerText = "UNKNOWN";
+document.getElementById("global").innerText =
+"GLOBAL STATUS: DEGRADED";
 
 }
 
-/* ===== EXECUTE ===== */
-function executeAction(){
+}
 
-    alert("CONSIA EXECUTING GLOBAL BEST ACTION ⚡");
+async function execute(){
+
+alert("CONSIA executing global best action…");
 
 }
 
-/* ===== INIT ===== */
 loadStatus();
 
 </script>

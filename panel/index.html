@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CONSIA GLOBAL PANEL</title>
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#00ff88;
+  font-family:monospace;
+}
+
+header{
+  padding:20px;
+  border-bottom:1px solid #00ff88;
+}
+
+h1{
+  margin:0;
+  font-size:18px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  padding:20px;
+}
+
+.card{
+  border:1px solid #00ff88;
+  padding:20px;
+  background:#010101;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:#00ff88;
+  color:#000;
+  border:none;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>CONSIA — GLOBAL CONTROL</h1>
+</header>
+
+<div class="grid">
+
+<div class="card">
+<h3>Status</h3>
+<p id="status">Loading...</p>
+</div>
+
+<div class="card">
+<h3>AI Decision</h3>
+<button onclick="execute()">EXECUTE GLOBAL BEST ACTION</button>
+</div>
+
+<div class="card">
+<h3>Core</h3>
+<p>ASCEND IMMORTAL ACTIVE</p>
+</div>
+
+</div>
+
+<script>
+
+async function loadStatus(){
+  const res = await fetch("https://consia-api.jbdbkb7r94d.workers.dev/");
+  const data = await res.json();
+  document.getElementById("status").innerText =
+    data.service + " — GLOBAL ACTIVE";
+}
+
+async function execute(){
+  await fetch(
+    "https://consia-api.jbdbkb7r94d.workers.dev/execute",
+    { method:"POST" }
+  );
+
+  alert("GLOBAL ACTION EXECUTED");
+}
+
+loadStatus();
+
+</script>
+
+</body>
+</html>

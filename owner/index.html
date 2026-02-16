@@ -1,159 +1,76 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<title>CONSIA OWNER</title>
 
-<title>CONSIA — OWNER GLOBAL CONTROL</title>
+<style>
+body{
+background:black;
+color:#00ffe0;
+font-family:Arial;
+padding:40px;
+}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+button{
+padding:10px;
+margin:5px;
+background:#00ffe0;
+border:none;
+cursor:pointer;
+}
 
-<link rel="stylesheet" href="./panel.css"/>
-
+.card{
+border:1px solid #00ffe0;
+padding:20px;
+margin-bottom:20px;
+}
+</style>
 </head>
+
 <body>
 
-<div class="wrap">
+<h1>CONSIA — OWNER GLOBAL CONTROL</h1>
 
-<header class="top">
-
-<div class="brand">
-<div class="title">CONSIA — OWNER<br/>GLOBAL CONTROL</div>
-<div class="sub">
-CORE · AUTO-DECISION · LOGS · NODES · VAULT · SELF-HEALING
-</div>
-</div>
-
-<div class="bar">
-
-<div class="pill">
-<span>API</span>
-<input id="apiInput" value="https://api.consia.world"/>
-</div>
-
-<div class="pill">
-<span>OWNER TOKEN</span>
-<input id="tokenInput" placeholder="Paste Owner Token"/>
-</div>
-
-<button onclick="saveToken()">SAVE</button>
-
-</div>
-</header>
-
-<!-- GLOBAL STATUS -->
-
-<section class="panel">
-
+<div class="card">
 <h2>GLOBAL STATUS</h2>
-
-<div id="statusBox" class="box">Loading...</div>
-
-<button onclick="loadStatus()">REFRESH</button>
-
-</section>
-
-<!-- AUTO DECISION -->
-
-<section class="panel">
-
-<h2>AUTO-DECISION (REAL)</h2>
-
-<div class="row">
-
-<span id="autoState">AUTO: OFF</span>
-
-<input id="interval" type="number" value="12"/>
-
-<button onclick="startAuto()">START</button>
-<button onclick="stopAuto()">STOP</button>
-
+<button onclick="status()">REFRESH</button>
+<pre id="status"></pre>
 </div>
 
-<div class="row">
-
-<button onclick="executeBest()">EXECUTE GLOBAL BEST ACTION</button>
-<button onclick="emergency()">EMERGENCY LOCK</button>
-<button onclick="safeMode()">SAFE MODE</button>
-
+<div class="card">
+<h2>AUTO DECISION</h2>
+<button onclick="heal()">EXECUTE SELF-HEAL</button>
 </div>
 
-</section>
-
-<!-- OWNER CONTROL -->
-
-<section class="panel">
-
-<h2>OWNER CONTROL</h2>
-
-<div class="row">
-
-<button onclick="ownerStatus()">OWNER STATUS</button>
-<button onclick="health()">HEALTH CHECK</button>
-<button onclick="whoami()">WHOAMI</button>
-
+<div class="card">
+<h2>ROOM TEST</h2>
+<button onclick="join()">JOIN ROOM</button>
+<pre id="room"></pre>
 </div>
 
-<pre id="ownerBox">{}</pre>
+<script>
+const API="https://api.consia.world";
 
-</section>
+async function status(){
+let r=await fetch(API);
+let j=await r.json();
+document.getElementById("status").innerText=
+JSON.stringify(j,null,2);
+}
 
-<!-- LOGS -->
+async function heal(){
+await fetch(API+"/self-heal");
+alert("SELF HEAL EXECUTED");
+}
 
-<section class="panel">
-
-<h2>LOGS (DO)</h2>
-
-<div class="row">
-
-<input id="logLimit" value="80"/>
-<button onclick="loadLogs()">LOAD</button>
-<button onclick="liveLogs()">LIVE</button>
-<button onclick="clearLogs()">CLEAR</button>
-
-</div>
-
-<pre id="logsBox">[]</pre>
-
-</section>
-
-<!-- MULTI NODE -->
-
-<section class="panel">
-
-<h2>MULTI-NODE STATUS MAP</h2>
-
-<div id="nodesBox">Loading nodes...</div>
-
-<button onclick="loadNodes()">REFRESH NODES</button>
-
-</section>
-
-<!-- VAULT -->
-
-<section class="panel">
-
-<h2>SECURITY VAULT</h2>
-
-<div class="row">
-
-<input id="vaultKey" placeholder="Key"/>
-<input id="vaultValue" placeholder="Value"/>
-
-<button onclick="vaultSet()">SET</button>
-<button onclick="vaultGet()">GET</button>
-
-</div>
-
-<pre id="vaultBox">{}</pre>
-
-</section>
-
-</div>
-
-<script src="./app.js"></script>
+async function join(){
+let r=await fetch(API+"/room/join?id=global");
+let j=await r.json();
+document.getElementById("room").innerText=
+JSON.stringify(j,null,2);
+}
+</script>
 
 </body>
 </html>

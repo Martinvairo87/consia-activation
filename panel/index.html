@@ -1,94 +1,174 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CONSIA GLOBAL PANEL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CONSIA — GLOBAL CONTROL</title>
+
+<!-- FONT TOP 1 -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
+
+/* ===== GLOBAL ===== */
 body{
-  margin:0;
-  background:#000;
-  color:#00ff88;
-  font-family:monospace;
+    margin:0;
+    background:#000;
+    font-family:'Orbitron',sans-serif;
+    color:#00ffb3;
 }
 
-header{
-  padding:20px;
-  border-bottom:1px solid #00ff88;
+/* ===== HEADER ===== */
+.header{
+    padding:20px 40px;
+    border-bottom:1px solid #00ffb3;
+    font-size:22px;
+    letter-spacing:2px;
 }
 
-h1{
-  margin:0;
-  font-size:18px;
-}
-
+/* ===== GRID ===== */
 .grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-  padding:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+    padding:40px;
 }
 
-.card{
-  border:1px solid #00ff88;
-  padding:20px;
-  background:#010101;
+/* ===== BOX ===== */
+.box{
+    border:1px solid #00ffb3;
+    padding:30px;
+    min-height:160px;
+    position:relative;
+    background:rgba(0,255,179,0.02);
+    box-shadow:0 0 20px rgba(0,255,179,0.1);
 }
 
-button{
-  width:100%;
-  padding:12px;
-  background:#00ff88;
-  color:#000;
-  border:none;
-  font-weight:bold;
+/* ===== TITLES ===== */
+.box h2{
+    margin-top:0;
+    font-weight:600;
+    letter-spacing:1px;
 }
+
+/* ===== STATUS ===== */
+.status{
+    font-size:18px;
+    margin-top:20px;
+}
+
+/* ===== BUTTON ===== */
+.btn{
+    margin-top:25px;
+    padding:15px;
+    background:#00ffb3;
+    color:#000;
+    text-align:center;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn:hover{
+    background:#00cc8f;
+}
+
+/* ===== CORE ===== */
+.core{
+    font-size:18px;
+    margin-top:25px;
+}
+
+/* ===== GLOBAL STATUS ===== */
+.global{
+    margin:40px;
+    padding:25px;
+    border:1px solid #00ffb3;
+    text-align:center;
+    font-size:20px;
+}
+
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>CONSIA — GLOBAL CONTROL</h1>
-</header>
+<div class="header">
+CONSIA — GLOBAL CONTROL
+</div>
 
 <div class="grid">
 
-<div class="card">
-<h3>Status</h3>
-<p id="status">Loading...</p>
+    <!-- STATUS -->
+    <div class="box">
+        <h2>Status</h2>
+        <div class="status" id="status">
+            Connecting...
+        </div>
+    </div>
+
+    <!-- AI DECISION -->
+    <div class="box">
+        <h2>AI Decision</h2>
+        <div class="btn" onclick="executeAction()">
+            EXECUTE GLOBAL BEST ACTION
+        </div>
+    </div>
+
+    <!-- CORE -->
+    <div class="box">
+        <h2>Core</h2>
+        <div class="core">
+            ASCEND IMMORTAL ACTIVE
+        </div>
+    </div>
+
 </div>
 
-<div class="card">
-<h3>AI Decision</h3>
-<button onclick="execute()">EXECUTE GLOBAL BEST ACTION</button>
-</div>
-
-<div class="card">
-<h3>Core</h3>
-<p>ASCEND IMMORTAL ACTIVE</p>
-</div>
-
+<div class="global" id="globalStatus">
+GLOBAL STATUS: INITIALIZING...
 </div>
 
 <script>
 
+/* ===== API URL ===== */
+const API_URL = "https://consia-api.jbdbkb7r94d.workers.dev";
+
+/* ===== STATUS LOAD ===== */
 async function loadStatus(){
-  const res = await fetch("https://consia-api.jbdbkb7r94d.workers.dev/");
-  const data = await res.json();
-  document.getElementById("status").innerText =
-    data.service + " — GLOBAL ACTIVE";
+
+    try{
+
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        document.getElementById("status").innerText =
+            data.service + " — ONLINE";
+
+        document.getElementById("globalStatus").innerText =
+            "GLOBAL STATUS: TOP 1 GLOBAL ACTIVE 🌍";
+
+    }catch(e){
+
+        document.getElementById("status").innerText =
+            "API OFFLINE";
+
+        document.getElementById("globalStatus").innerText =
+            "GLOBAL STATUS: DEGRADED";
+
+    }
+
 }
 
-async function execute(){
-  await fetch(
-    "https://consia-api.jbdbkb7r94d.workers.dev/execute",
-    { method:"POST" }
-  );
+/* ===== EXECUTE ===== */
+function executeAction(){
 
-  alert("GLOBAL ACTION EXECUTED");
+    alert("CONSIA EXECUTING GLOBAL BEST ACTION ⚡");
+
 }
 
+/* ===== INIT ===== */
 loadStatus();
 
 </script>

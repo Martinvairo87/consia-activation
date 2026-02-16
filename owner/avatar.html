@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>CONSIA — AVATAR LIVE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="./panel.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="title">CONSIA — AVATAR LIVE</div>
+        <div class="sub">VOICE REALTIME · OWNER CONTROL (SAFE)</div>
+      </div>
+      <div class="bar">
+        <div class="pill">
+          <span class="lbl">API</span>
+          <input id="apiInput" class="in" value="https://api.consia.world" />
+        </div>
+        <button class="btn" id="connectBtn">CONNECT</button>
+        <button class="btn warn" id="stopBtn">STOP</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="cardTitle">STATUS</div>
+      <pre id="out" class="code">{ "note":"Press CONNECT" }</pre>
+    </section>
+
+    <section class="card">
+      <div class="cardTitle">MIC</div>
+      <button class="btn ok" id="micBtn">START MIC</button>
+      <button class="btn" id="muteBtn">MUTE</button>
+    </section>
+  </div>
+
+  <script type="module" src="./avatar.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CONSIA • WebRTC Room</title>
+  <style>
+    body{margin:0;background:#050606;color:#8fffe6;font-family:Arial;padding:16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input,button{padding:10px;border-radius:10px;border:1px solid #2cffc6;background:#061010;color:#8fffe6}
+    button{cursor:pointer;background:#00ffd0;color:#001}
+    video{width:320px;max-width:100%;border:1px solid #2cffc6;border-radius:14px;background:#000}
+    pre{white-space:pre-wrap;background:#061010;border:1px solid #2cffc6;border-radius:14px;padding:12px}
+  </style>
+</head>
+<body>
+  <h1>CONSIA • WebRTC Room (P2P)</h1>
+
+  <div class="row">
+    <label>API</label>
+    <input id="api" value="https://api.consia.world" style="min-width:320px" />
+    <label>Room</label>
+    <input id="room" value="global" />
+    <button id="start">START CAM/MIC</button>
+    <button id="create">CREATE OFFER</button>
+    <button id="applyAnswer">APPLY ANSWER</button>
+    <button id="applyOffer">APPLY OFFER</button>
+    <button id="createAnswer">CREATE ANSWER</button>
+  </div>
+
+  <p>Flow rápido (2 personas):</p>
+  <ol>
+    <li>Ambos: START CAM/MIC</li>
+    <li>A: CREATE OFFER → copia OFFER y mándaselo a B</li>
+    <li>B: pegá OFFER en “Remote SDP” → APPLY OFFER → CREATE ANSWER → copiá ANSWER y mandáselo a A</li>
+    <li>A: pegá ANSWER en “Remote SDP” → APPLY ANSWER</li>
+  </ol>
+
+  <div class="row">
+    <div>
+      <h3>Local</h3>
+      <video id="local" autoplay muted playsinline></video>
+    </div>
+    <div>
+      <h3>Remote</h3>
+      <video id="remote" autoplay playsinline></video>
+    </div>
+  </div>
+
+  <h3>Local SDP (copiar)</h3>
+  <pre id="localSdp">{}</pre>
+
+  <h3>Remote SDP (pegar)</h3>
+  <textarea id="remoteSdp" style="width:100%;height:160px;border-radius:14px;border:1px solid #2cffc6;background:#061010;color:#8fffe6;padding:12px"></textarea>
+
+  <h3>Log</h3>
+  <pre id="log"></pre>
+
+  <script src="./webrtc.js"></script>
+</body>
+</html>
